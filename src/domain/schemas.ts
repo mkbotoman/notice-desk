@@ -156,6 +156,11 @@ export const CaseEventSchema = z.discriminatedUnion('type', [
     type: z.literal('notification_sent'),
     payload: z.strictObject({ notificationId: id }),
   }),
+  z.strictObject({
+    ...caseEventBase,
+    type: z.literal('notification_dismissed'),
+    payload: z.strictObject({ notificationId: id }),
+  }),
 ]);
 
 export const NotificationSchema = z.strictObject({

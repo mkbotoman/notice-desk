@@ -52,3 +52,23 @@ screen-reader behaviour, behaviour on the deployed host.
 | 7   | Low      | Name variants crossed property scope.                                                                | Fixed: only all-property personas see them.         |
 | 8   | Low      | Property filter doesn't close on Escape; stat-card active state is a ring only.                      | Open (the first is recorded as an assumption).      |
 | 9   | Low      | Some browser tests derive per-persona expectations from the seed through the same scoping rules.     | Open; headline counts are asserted as literals.     |
+
+## Pass 3: merged M3 (notifications, analytics, data quality, watchlist, weekly summary)
+
+No Critical findings and no data exposure. The weekly summary's HTML escaping is complete (every
+dynamic string is escaped and only appears as element text); notification text has no guarantor,
+SSN or note fields; every new page is gated by `can()`; opened watchlist cases are valid. Not
+checked: the app in a browser, chart accessibility beyond the e2e tests.
+
+| #   | Severity | Finding                                                                                                                                 | Status                                                                                            |
+| --- | -------- | --------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| 1   | High     | The automatic-notification hook used the as-of picker's date, so previewing a later date created permanent drafts.                      | Fixed: drafts are judged against the data date only. Test added (a later date adds none).         |
+| 2   | High     | Two tabs each logged their own "drafted" event (random event ids).                                                                      | Fixed: the event id is fixed by the notification id and the event is skipped if it exists.        |
+| 3   | Medium   | Dismissing a draft was unaudited.                                                                                                       | Fixed: new `notification_dismissed` event (contract change), logged and shown in the case log.    |
+| 4   | Medium   | A save failure could leave a draft with no event, silently.                                                                             | Fixed: the event is written first; a failure is warned (ids only) and retried on the next change. |
+| 5   | Medium   | The analytics activity chart bucketed by recorded time; the summary by effective date.                                                  | Fixed: both use the effective date.                                                               |
+| 6   | Medium   | Domain code imports `lib`; the watchlist imports from case-list and tenant folders; `LEGAL_PERSONA_ID` is declared twice.               | Open (listed in `NEXT_STEPS.md`): harmless today.                                                 |
+| 7   | Low      | A stage-change draft is addressed to the person who made the change.                                                                    | Open.                                                                                             |
+| 8   | Low      | Insurance drafts attach to the lease's first open (else first) case, and `expiring` then `expired` make two drafts for one certificate. | Open; recorded in the assumptions.                                                                |
+| 9   | Low      | Stale comment in `weeklyActivity`.                                                                                                      | Open.                                                                                             |
+| 10  | Low      | Outbox browser tests could not tell 22 drafts from 44.                                                                                  | Fixed: an exact first-load count, stable across a reload.                                         |

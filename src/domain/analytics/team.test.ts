@@ -278,17 +278,18 @@ describe('cureRate', () => {
 
 describe('weeklyActivity', () => {
   it('counts app work by ISO week, fills empty weeks and skips other events', () => {
-    const at = (day: string) => `${day}T09:00:00.000Z`;
+    // Recorded weeks after they happened: the chart must bucket by the date they happened.
+    const on = (day: string) => ({ at: '2026-11-30T09:00:00.000Z', effectiveDate: day });
     const { weeks, total } = weeklyActivity([
-      makeEvent({ at: at('2026-10-05') }),
-      makeEvent({ at: at('2026-10-11') }),
+      makeEvent({ ...on('2026-10-05') }),
+      makeEvent({ ...on('2026-10-11') }),
       makeEvent({
-        at: at('2026-10-26'),
+        ...on('2026-10-26'),
         type: 'stage_changed',
         payload: { from: 'default', to: 'collections' },
       }),
       makeEvent({
-        at: at('2026-10-27'),
+        ...on('2026-10-27'),
         type: 'owner_changed',
         payload: { from: 'legal', to: 'asset_management' },
       }),

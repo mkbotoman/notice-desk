@@ -168,6 +168,8 @@ export function describeEvent(event: CaseEvent): EventView {
       return { ...base, kind: 'Notification', tone: 'outline', summary: 'Notification drafted' };
     case 'notification_sent':
       return { ...base, kind: 'Notification', tone: 'success', summary: 'Notification sent' };
+    case 'notification_dismissed':
+      return { ...base, kind: 'Notification', tone: 'gray', summary: 'Notification dismissed' };
   }
 }
 

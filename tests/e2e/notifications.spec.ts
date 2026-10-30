@@ -95,11 +95,27 @@ test.describe('outbox', () => {
     await expect(page.getByRole('region', { name: 'Notification detail' })).toContainText(
       'Dismissed',
     );
-    await page.reload();
+    await page.goto('/cases/N-001');
+    await expect(log(page)).toContainText('Notification dismissed');
+    await page.goto('/outbox');
     await tab(page, /Dismissed/).click();
     await expect(page.getByRole('list', { name: 'Notification list' })).toContainText(
       'E2E to dismiss',
     );
+  });
+
+  test('raises each automatic draft exactly once, and previewing a later date adds none', async ({
+    page,
+  }) => {
+    await signIn(page, '/outbox');
+    await expect(tab(page, /Drafts/)).toHaveText(/Drafts\s*22$/);
+    await page.reload();
+    await expect(tab(page, /Drafts/)).toHaveText(/Drafts\s*22$/);
+
+    await page.goto('/outbox?asOf=2027-02-01');
+    await expect(page.getByText(/^As of /)).toContainText('Feb 1, 2027');
+    await page.waitForTimeout(1500);
+    await expect(tab(page, /Drafts/)).toHaveText(/Drafts\s*22$/);
   });
 
   test('filters by case and recipient, and New notification starts blank', async ({ page }) => {

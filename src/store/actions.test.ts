@@ -152,6 +152,22 @@ describe('buildNotificationEvent', () => {
     expect(event.actorPersonaId).toBe('system');
   });
 
+  it('logs a dismissal, and honours a fixed event id', () => {
+    const dismissed = buildNotificationEvent(
+      makeCase(),
+      'notification_dismissed',
+      'NT-1',
+      ctx(maya),
+    );
+    expect(CaseEventSchema.parse(dismissed)).toEqual(dismissed);
+    expect(dismissed.type).toBe('notification_dismissed');
+    const fixed = buildNotificationEvent(makeCase(), 'notification_drafted', 'NT-1', ctx(maya), {
+      automatic: true,
+      id: 'EV-AUTO-NT-1',
+    });
+    expect(fixed.id).toBe('EV-AUTO-NT-1');
+  });
+
   it('refuses a persona that may not send notifications', () => {
     expect(() =>
       buildNotificationEvent(makeCase(), 'notification_sent', 'NT-1', ctx(lena)),

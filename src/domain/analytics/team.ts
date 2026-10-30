@@ -236,7 +236,7 @@ const emptyWeek = (week: ISODate): WeekActivity => ({
 });
 
 /**
- * Work people did in the app, by the week it was recorded. Imported notes and notification
+ * Work people did in the app, by the week they happened (the event's effective date, as the weekly summary uses). Imported notes and notification
  * events are not counted: they are not work done here.
  */
 export function weeklyActivity(events: Iterable<CaseEvent>): ActivityTimeline {
@@ -244,7 +244,7 @@ export function weeklyActivity(events: Iterable<CaseEvent>): ActivityTimeline {
   let total = 0;
   for (const e of events) {
     if (e.type !== 'note' && e.type !== 'stage_changed' && e.type !== 'owner_changed') continue;
-    const week = format(startOfISOWeek(parseISO(e.at.slice(0, 10))), 'yyyy-MM-dd');
+    const week = format(startOfISOWeek(parseISO(e.effectiveDate)), 'yyyy-MM-dd');
     const row = byWeek.get(week) ?? emptyWeek(week);
     if (e.type === 'note') row.notes += 1;
     else if (e.type === 'stage_changed') row.stageChanges += 1;

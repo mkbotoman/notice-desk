@@ -152,6 +152,7 @@ export const CASE_EVENT_TYPES = [
   'owner_changed',
   'notification_drafted',
   'notification_sent',
+  'notification_dismissed',
 ] as const;
 export type CaseEventType = (typeof CASE_EVENT_TYPES)[number];
 
@@ -175,6 +176,7 @@ export type CaseEvent = CaseEventBase &
     | { type: 'owner_changed'; payload: { from: Team; to: Team } }
     | { type: 'notification_drafted'; payload: { notificationId: string } }
     | { type: 'notification_sent'; payload: { notificationId: string } }
+    | { type: 'notification_dismissed'; payload: { notificationId: string } }
   );
 
 export const NOTIFICATION_TRIGGERS = [

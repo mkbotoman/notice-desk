@@ -36,10 +36,10 @@ export function useCaseActions() {
       store.append(buildAdvance(withCase(caseId), to, ctx, note)),
     changeOwner: (caseId: string, to: Team, note?: string) =>
       store.append(buildOwnerChange(withCase(caseId), to, ctx, note)),
-    /** Logs that a notification was drafted or sent. The notification itself is saved with `store.upsertNotification`. */
+    /** Logs that a notification was drafted, sent or dismissed. The notification itself is saved with `store.upsertNotification`. */
     logNotification: (
       caseId: string,
-      type: 'notification_drafted' | 'notification_sent',
+      type: 'notification_drafted' | 'notification_sent' | 'notification_dismissed',
       notificationId: string,
       options?: NotificationEventOptions,
     ) => store.append(buildNotificationEvent(withCase(caseId), type, notificationId, ctx, options)),

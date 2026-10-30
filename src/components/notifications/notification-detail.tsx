@@ -109,6 +109,7 @@ export function NotificationDetail({
   const dismiss = () =>
     run(() => {
       const next = dismissDraft(n);
+      actions.logNotification(n.caseId, 'notification_dismissed', n.id);
       store.upsertNotification(next);
       return next;
     });

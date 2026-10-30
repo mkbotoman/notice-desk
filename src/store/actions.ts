@@ -70,12 +70,14 @@ export function buildOwnerChange(c: Case, to: Team, ctx: ActionContext, note?: s
 export interface NotificationEventOptions {
   /** True for drafts raised by the app itself (deadline and COI triggers). They are logged as `system`. */
   automatic?: boolean;
+  /** A fixed event id, so the same automatic draft logs the same event however many tabs raise it. */
+  id?: string;
 }
 
-/** Logs that a notification was drafted or sent on a case. */
+/** Logs that a notification was drafted, sent or dismissed on a case. */
 export function buildNotificationEvent(
   c: Case,
-  type: 'notification_drafted' | 'notification_sent',
+  type: 'notification_drafted' | 'notification_sent' | 'notification_dismissed',
   notificationId: string,
   ctx: ActionContext,
   options: NotificationEventOptions = {},
@@ -86,6 +88,7 @@ export function buildNotificationEvent(
   const event = base(c, ctx, ctx.asOf);
   return {
     ...event,
+    id: options.id ?? event.id,
     actorPersonaId: options.automatic ? 'system' : event.actorPersonaId,
     type,
     payload: { notificationId },
