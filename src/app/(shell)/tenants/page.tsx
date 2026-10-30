@@ -1,5 +1,5 @@
-import { RouteStub } from '@/components/shell/route-stub';
+import { TenantIndex } from '@/components/tenant/tenant-index';
 
 export default function Page() {
-  return <RouteStub title="Tenants" requires="view_case" />;
+  return <TenantIndex />;
 }
