@@ -174,18 +174,18 @@ const escapeHtml = (text: string) =>
 // Email clients ignore stylesheets, so the HTML carries its own inline styles.
 const FONT = 'font-family:Arial,Helvetica,sans-serif;color:#111827;';
 const P = `margin:0 0 6px;${FONT}font-size:14px;line-height:1.5;`;
-const UL = `margin:0 0 6px;padding-left:20px;${FONT}font-size:14px;line-height:1.5;`;
+const UL = `margin:0 0 6px;padding-left:20px;list-style:disc;${FONT}font-size:14px;line-height:1.5;`;
 
 /** The body only (no <html> wrapper) so it can be pasted or embedded as-is. */
 export function renderHtml(s: WeekSummary): string {
   const doc = buildDoc(s);
   const parts = [
-    `<h1 style="margin:0 0 6px;${FONT}font-size:20px;color:#0e1b3d;">${escapeHtml(doc.title)}</h1>`,
+    `<h1 style="margin:0 0 6px;${FONT}font-size:20px;font-weight:bold;color:#0e1b3d;">${escapeHtml(doc.title)}</h1>`,
     ...doc.intro.map((line) => `<p style="${P}color:#4b5563;">${escapeHtml(line)}</p>`),
   ];
   for (const section of doc.sections) {
     parts.push(
-      `<h2 style="margin:18px 0 6px;${FONT}font-size:15px;color:#0e1b3d;">${escapeHtml(section.heading)}</h2>`,
+      `<h2 style="margin:18px 0 6px;${FONT}font-size:15px;font-weight:bold;color:#0e1b3d;">${escapeHtml(section.heading)}</h2>`,
       ...section.notes.map((note) => `<p style="${P}">${escapeHtml(note)}</p>`),
     );
     for (const group of section.groups) {

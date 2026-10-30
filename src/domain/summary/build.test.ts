@@ -95,7 +95,7 @@ const ann: Persona = {
   scopePropertyIds: ['P-1'],
 };
 
-const event = (over: Partial<CaseEvent> & { type: CaseEvent['type'] }): CaseEvent =>
+const event = (over: Record<string, unknown>): CaseEvent =>
   ({
     id: 'E-1',
     caseId: 'N-1',
@@ -106,7 +106,7 @@ const event = (over: Partial<CaseEvent> & { type: CaseEvent['type'] }): CaseEven
     ...over,
   }) as CaseEvent;
 
-const stageEvent = (over: Partial<CaseEvent> = {}): CaseEvent =>
+const stageEvent = (over: Record<string, unknown> = {}): CaseEvent =>
   event({ type: 'stage_changed', payload: { from: 'notice_to_cure', to: 'default' }, ...over });
 
 const build = (over: Partial<SummaryInput> = {}) =>
@@ -206,7 +206,7 @@ describe('stage changes', () => {
           effectiveDate: '2026-10-09',
           actorPersonaId: 'nobody',
           payload: { from: 'default', to: 'closed' },
-        } as Partial<CaseEvent>),
+        }),
         stageEvent({
           id: 'E-3',
           caseId: 'N-2',
@@ -234,9 +234,7 @@ describe('stage changes', () => {
   it('counts a move to cured as cured', () => {
     const s = build({
       cases,
-      events: [
-        stageEvent({ payload: { from: 'notice_to_cure', to: 'cured' } } as Partial<CaseEvent>),
-      ],
+      events: [stageEvent({ payload: { from: 'notice_to_cure', to: 'cured' } })],
     });
     expect(s.curedOrClosed.map((c) => c.to)).toEqual(['cured']);
   });

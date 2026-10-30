@@ -1,5 +1,5 @@
-import { RouteStub } from '@/components/shell/route-stub';
+import { WeeklySummary } from '@/components/summary/weekly-summary';
 
 export default function Page() {
-  return <RouteStub title="Weekly summary" requires="view_analytics" />;
+  return <WeeklySummary />;
 }
