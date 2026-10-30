@@ -9,3 +9,4 @@ One line each, tagged with the workstream ID, e.g. `- [WS-1B] ...`. Feeds the sh
 - [M0] Asset managers can add updates and hand cases back to Legal; property managers are read-only.
 - [M0] An unparseable cure period becomes `unknown` (shown as "deadline missing"), distinct from `none`.
 - [M0] Personas are not security. The seed ships to the browser and `?as=` can switch persona, so `can()` shapes the UI only. Deployment Protection is the access control.
+- [M0] The deployed site sits behind a shared password (`ACCESS_PASSWORD` in Vercel env, enforced by `src/proxy.ts`), because reviewers won't have Vercel accounts. It is a gate, not user auth: one shared secret, no rate limiting, and the signed-in cookie lasts 7 days. Build assets under `/_next/static` stay public and contain no seed data. With no password set, production returns 503.
