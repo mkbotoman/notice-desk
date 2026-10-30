@@ -88,6 +88,12 @@ describe('deadlineRule', () => {
     expect(rule({ curePeriod: { kind: 'unknown' } })).toMatch(/could not be read/);
     expect(rule({ dateSent: null })).toMatch(/No send date/);
   });
+
+  it('does not blame a missing send date when the send date is too old to count from', () => {
+    const old = rule({ dateSent: '2019-12-20' });
+    expect(old).toMatch(/before 2021/);
+    expect(old).not.toMatch(/No send date/);
+  });
 });
 
 describe('describeEvent', () => {

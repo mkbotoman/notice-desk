@@ -31,3 +31,24 @@ Checked and sound: business-day counting and holiday observance, the as-of rule,
 after-Notice-to-Cure rule, the stage machine, store replay and rollback, validated persistence,
 `can()`, absence of `dangerouslySetInnerHTML` and inline styles, the CSV parser dropping the SSN
 column, the CI workflow, gate cookie flags and constant-time comparison.
+
+## Pass 2: merged M2 (case list, case detail, tenant view, inbox)
+
+No Critical or High findings. Typecheck, lint, 416 tests, coverage thresholds, build and 58 browser
+tests passed. All four pages use the same domain functions for overdue, due this week, open and
+waiting-on, and the headline counts agree (8, 4, 30, 21). Scope and permission checks hold on every
+page; guarantor names render only behind `view_guarantor`; notes and names render as text; no new
+inline styles, contract changes or edits outside lanes. Not checked: visual drift, real keyboard and
+screen-reader behaviour, behaviour on the deployed host.
+
+| #   | Severity | Finding                                                                                              | Status                                              |
+| --- | -------- | ---------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| 1   | Medium   | The case list showed "Changed since notice" on a case with no lease (no live balance).               | Fixed.                                              |
+| 2   | Medium   | "In trouble" omits open cases that have no lease.                                                    | Documented as lease-only; the real data has none.   |
+| 3   | Medium   | The deadline sentence said "no send date" when the send date was before the holiday calendar begins. | Fixed; test added.                                  |
+| 4   | Low      | Event wording, actor labels and insurance wording drifted between the case-detail and tenant pages.  | Open: unify in `src/lib` before M3 adds more pages. |
+| 5   | Low      | Case detail's update form let an invalid date through to a raw validation error.                     | Fixed: a plain message.                             |
+| 6   | Low      | After a hand-back the row disappears, so its confirmation isn't announced to assistive technology.   | Open.                                               |
+| 7   | Low      | Name variants crossed property scope.                                                                | Fixed: only all-property personas see them.         |
+| 8   | Low      | Property filter doesn't close on Escape; stat-card active state is a ring only.                      | Open (the first is recorded as an assumption).      |
+| 9   | Low      | Some browser tests derive per-persona expectations from the seed through the same scoping rules.     | Open; headline counts are asserted as literals.     |

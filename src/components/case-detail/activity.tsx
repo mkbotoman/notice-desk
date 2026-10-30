@@ -9,6 +9,7 @@ import type { Case, CaseEvent, Persona } from '@/domain/types';
 import { shortDate } from '@/lib/format';
 import { useAsOf } from '@/lib/persona/context';
 import { useCaseActions } from '@/store/use-case-actions';
+import { isValidAsOf } from '@/lib/persona/asof';
 import { TEXTAREA_CLASS, errorMessage } from './case-actions';
 import { actorLabel, describeEvent, newestFirst } from './logic';
 
@@ -21,8 +22,13 @@ function AddUpdate({ caseId }: { caseId: string }) {
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
+    const date = dateOverride || asOf;
+    if (!isValidAsOf(date)) {
+      setError('Enter a valid date for this update.');
+      return;
+    }
     try {
-      actions.addUpdate(caseId, text, dateOverride || asOf);
+      actions.addUpdate(caseId, text, date);
       setText('');
       setDateOverride(null);
       setError(null);

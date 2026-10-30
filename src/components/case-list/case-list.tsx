@@ -128,7 +128,8 @@ export function CaseList() {
         tenant: lookups.tenantById.get(c.tenantId)?.displayName ?? 'Unknown tenant',
         place: lease?.suite ? `${propertyName} · Ste ${lease.suite}` : propertyName,
         owed,
-        owedChanged: c.amountOwedAtNotice !== null && owed !== c.amountOwedAtNotice,
+        owedChanged:
+          owed !== null && c.amountOwedAtNotice !== null && owed !== c.amountOwedAtNotice,
         hasDataCheck: issuesNeedingReview(byRowRef, c.id, c.leaseId).length > 0,
         dataCheckHref: canSeeDataQuality ? '/data-quality' : null,
       });

@@ -158,7 +158,11 @@ export function TenantDetail({ id }: { id: string }) {
   const openCount = tenantCases.filter((c) => !isTerminal(c.stage)).length;
   const totalAr = leases.reduce((sum, l) => sum + (l.arBalance ?? 0), 0);
   const totalRent = leases.reduce((sum, l) => sum + (l.monthlyRent ?? 0), 0);
-  const variants = tenant.nameVariants.filter((n) => n !== tenant.displayName);
+  // Variants can come from leases outside a scoped persona's properties, so only all-scope personas see them.
+  const variants =
+    persona.scopePropertyIds === 'all'
+      ? tenant.nameVariants.filter((n) => n !== tenant.displayName)
+      : [];
 
   return (
     <>

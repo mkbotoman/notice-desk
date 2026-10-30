@@ -1,5 +1,6 @@
 import type { ChipTone } from '@/components/ui/chip';
 import { describeCurePeriod } from '@/domain/cure';
+import { FIRST_SUPPORTED_YEAR } from '@/domain/holidays';
 import type { DeadlineDetail } from '@/domain/deadline';
 import { can } from '@/domain/permissions';
 import { allowedTransitions, isTerminal } from '@/domain/stage';
@@ -46,8 +47,11 @@ export function deadlineRule(c: Case, detail: DeadlineDetail | null): string {
   if (c.curePeriod.kind === 'unknown') {
     return 'The cure period could not be read, so no deadline can be calculated.';
   }
-  if (detail === null || c.dateSent === null) {
+  if (c.dateSent === null) {
     return 'No send date is recorded, so no deadline can be calculated.';
+  }
+  if (detail === null) {
+    return `The send date is before ${FIRST_SUPPORTED_YEAR}, the earliest year business days can be counted, so no deadline can be calculated.`;
   }
   const skips = [
     ...(c.curePeriod.unit === 'business' ? ['weekends'] : []),
