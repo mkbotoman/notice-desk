@@ -14,7 +14,8 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "scan:pii": "node scripts/pii-scan.mjs",
-    "check": "pnpm typecheck && pnpm lint && pnpm test && pnpm scan:pii"
+    "check": "pnpm typecheck && pnpm lint && pnpm test && pnpm scan:pii",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.93",

@@ -8,6 +8,12 @@ export default defineConfig({
   test: {
     include: ['src/**/*.test.{ts,tsx}', 'scripts/**/*.test.{ts,mjs}'],
     environment: 'node',
-    coverage: { provider: 'v8', include: ['src/domain/**', 'scripts/ingest/**'] },
+    coverage: {
+      provider: 'v8',
+      // Pure logic that must stay fully branch-covered. Contracts hold no logic of their own.
+      include: ['src/domain/**', 'scripts/ingest/**'],
+      exclude: ['**/*.test.*', 'src/domain/types.ts', 'src/domain/schemas.ts'],
+      thresholds: { branches: 100 },
+    },
   },
 });
