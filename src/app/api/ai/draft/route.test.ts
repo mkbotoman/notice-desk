@@ -8,7 +8,6 @@ import { POST } from './route';
 
 /** Built at runtime so no SSN-shaped literal sits in the repository (pnpm scan:pii). */
 const SSN_A = ['123', '45', '6789'].join('-');
-const SSN_B = ['987', '65', '4321'].join('-');
 
 const usage = {
   inputTokens: { total: 10, noCache: 10, cacheRead: undefined, cacheWrite: undefined },

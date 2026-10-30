@@ -13,6 +13,12 @@ export default defineConfig({
     url: `http://localhost:${PORT}/gate`,
     reuseExistingServer: false,
     timeout: 240_000,
-    env: { ACCESS_PASSWORD: 'e2e-password' },
+    env: {
+      ACCESS_PASSWORD: 'e2e-password',
+      // Blank, not absent: Next would otherwise fill them from .env.local and the tests would make
+      // real, billed gateway calls. With no credentials the AI routes take their fallback path.
+      AI_GATEWAY_API_KEY: '',
+      VERCEL_OIDC_TOKEN: '',
+    },
   },
 });
