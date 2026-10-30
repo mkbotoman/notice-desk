@@ -70,5 +70,14 @@
     ],
     "status": "valid",
     "expiresOn": "2027-04-30"
+  },
+  {
+    "tenantId": "T-08",
+    "propertyId": null,
+    "leaseIds": [
+      "L-009"
+    ],
+    "status": "missing",
+    "expiresOn": null
   }
 ]

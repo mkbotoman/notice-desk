@@ -61,8 +61,9 @@ const baseCase: Case = {
   curePeriod: { kind: 'days', n: 10, unit: 'business' },
   owner: 'legal',
   amountOwedAtNotice: 1000,
-  legalFees: null,
-  lenderNoticeRequired: null,
+  legalFeesTerms: null,
+  lenderNotice: null,
+  workflowStatus: null,
   courtCaseNo: null,
   guarantorName: null,
   hasGuarantor: false,
@@ -79,8 +80,8 @@ describe('CaseSchema', () => {
     );
   });
 
-  it('rejects a lease without a property, and the reverse', () => {
-    expect(CaseSchema.safeParse({ ...baseCase, propertyId: null }).success).toBe(false);
+  it('accepts a lease whose own property is unknown, but not a property without a lease', () => {
+    expect(CaseSchema.safeParse({ ...baseCase, propertyId: null }).success).toBe(true);
     expect(CaseSchema.safeParse({ ...baseCase, leaseId: null }).success).toBe(false);
   });
 

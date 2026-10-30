@@ -11,7 +11,7 @@
     "monthlyRent": 850000,
     "arBalance": 1845000,
     "arAgingRecorded": "61_90",
-    "arAgingImplied": "61_90",
+    "arAgingImplied": "31_60",
     "watchlistReasons": []
   },
   {
@@ -41,7 +41,7 @@
     "monthlyRent": 500000,
     "arBalance": 1500000,
     "arAgingRecorded": "90_plus",
-    "arAgingImplied": "90_plus",
+    "arAgingImplied": "61_90",
     "watchlistReasons": []
   },
   {
@@ -56,7 +56,7 @@
     "monthlyRent": 2200000,
     "arBalance": 2200000,
     "arAgingRecorded": "31_60",
-    "arAgingImplied": "31_60",
+    "arAgingImplied": "current",
     "watchlistReasons": []
   },
   {
@@ -86,7 +86,7 @@
     "monthlyRent": 700000,
     "arBalance": 1400000,
     "arAgingRecorded": "current",
-    "arAgingImplied": "61_90",
+    "arAgingImplied": "31_60",
     "watchlistReasons": [
       "Late payer"
     ]
@@ -103,7 +103,7 @@
     "monthlyRent": 400000,
     "arBalance": 1200000,
     "arAgingRecorded": "90_plus",
-    "arAgingImplied": "90_plus",
+    "arAgingImplied": "61_90",
     "watchlistReasons": []
   },
   {
@@ -118,7 +118,22 @@
     "monthlyRent": 650000,
     "arBalance": 650000,
     "arAgingRecorded": "31_60",
-    "arAgingImplied": "31_60",
+    "arAgingImplied": "current",
+    "watchlistReasons": []
+  },
+  {
+    "id": "L-009",
+    "propertyId": null,
+    "tenantId": "T-08",
+    "suite": "D",
+    "sqFt": 3000,
+    "status": "active",
+    "startDate": "2024-04-01",
+    "endDate": "2029-03-31",
+    "monthlyRent": 410000,
+    "arBalance": 0,
+    "arAgingRecorded": "current",
+    "arAgingImplied": "current",
     "watchlistReasons": []
   }
 ]

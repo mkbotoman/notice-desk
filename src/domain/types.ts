@@ -33,8 +33,18 @@ export type ArAging = (typeof AR_AGINGS)[number];
 export const LEASE_STATUSES = ['active', 'expired', 'terminated', 'holdover', 'unknown'] as const;
 export type LeaseStatus = (typeof LEASE_STATUSES)[number];
 
-export const COI_STATUSES = ['valid', 'expiring', 'expired', 'missing', 'unknown'] as const;
+export const COI_STATUSES = [
+  'valid',
+  'expiring',
+  'expired',
+  'non_compliant',
+  'missing',
+  'unknown',
+] as const;
 export type CoiStatus = (typeof COI_STATUSES)[number];
+
+export const LENDER_NOTICES = ['none', 'notice_only', 'consent_and_notice'] as const;
+export type LenderNotice = (typeof LENDER_NOTICES)[number];
 
 export const PERSON_ROLES = ['asset_manager', 'property_manager'] as const;
 export type PersonRole = (typeof PERSON_ROLES)[number];
@@ -79,7 +89,8 @@ export interface Tenant {
 
 export interface Lease {
   id: string;
-  propertyId: string;
+  /** Null when the source names a property that does not exist (rule DQ-ORPHAN). */
+  propertyId: string | null;
   tenantId: string;
   suite: string | null;
   sqFt: number | null;
@@ -90,14 +101,18 @@ export interface Lease {
   arBalance: Cents | null;
   /** As exported. */
   arAgingRecorded: ArAging;
-  /** Computed from balance / rent (rule DQ-AR); null when it cannot be validated. */
+  /**
+   * The best aging the balance allows (rule DQ-AR floor): the oldest open charge is at least
+   * (open charges - 1) months old. Null when rent is missing or zero.
+   */
   arAgingImplied: ArAging | null;
   watchlistReasons: string[];
 }
 
+/** `status: 'missing'` with `expiresOn: null` is synthesized for leases the COI tool has no row for. */
 export interface CoiRecord {
   tenantId: string;
-  propertyId: string;
+  propertyId: string | null;
   leaseIds: string[];
   status: CoiStatus;
   expiresOn: ISODate | null;
@@ -109,7 +124,7 @@ export interface Case {
   /** Null for an orphan notice whose lease_id is not in leases (rule DQ-ORPHAN). */
   leaseId: string | null;
   tenantId: string;
-  /** Null exactly when leaseId is null. */
+  /** Null when leaseId is null, or when the lease itself has no property. */
   propertyId: string | null;
   stage: Stage;
   issueType: IssueType;
@@ -118,8 +133,11 @@ export interface Case {
   owner: Team;
   /** Snapshot from Legal's sheet; the live figure is lease.arBalance. */
   amountOwedAtNotice: Cents | null;
-  legalFees: Cents | null;
-  lenderNoticeRequired: boolean | null;
+  /** Whether the lease lets Legal recover fees, verbatim from the sheet (e.g. 'Yes, Section 18.4'). */
+  legalFeesTerms: string | null;
+  lenderNotice: LenderNotice | null;
+  /** Legal's working status, verbatim (e.g. 'Hold per AM'). Not the stage. */
+  workflowStatus: string | null;
   courtCaseNo: string | null;
   /** Never an SSN. Held apart from the case so it can be removed per person. */
   guarantorName: string | null;
@@ -127,6 +145,7 @@ export interface Case {
 }
 
 export const CASE_EVENT_TYPES = [
+  'case_opened',
   'imported_note',
   'note',
   'stage_changed',
@@ -149,6 +168,7 @@ interface CaseEventBase {
 
 export type CaseEvent = CaseEventBase &
   (
+    | { type: 'case_opened'; payload: Record<string, never> }
     | { type: 'imported_note'; payload: Record<string, never> }
     | { type: 'note'; payload: Record<string, never> }
     | { type: 'stage_changed'; payload: { from: Stage; to: Stage } }

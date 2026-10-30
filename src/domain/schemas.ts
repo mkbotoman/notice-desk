@@ -8,6 +8,7 @@ import {
   DQ_FILES,
   DQ_SEVERITIES,
   ISSUE_TYPES,
+  LENDER_NOTICES,
   LEASE_STATUSES,
   NOTIFICATION_SOURCES,
   NOTIFICATION_STATUSES,
@@ -70,7 +71,7 @@ export const TenantSchema = z.strictObject({
 
 export const LeaseSchema = z.strictObject({
   id,
-  propertyId: id,
+  propertyId: id.nullable(),
   tenantId: id,
   suite: z.string().nullable(),
   sqFt: z.number().int().nonnegative().nullable(),
@@ -86,7 +87,7 @@ export const LeaseSchema = z.strictObject({
 
 export const CoiRecordSchema = z.strictObject({
   tenantId: id,
-  propertyId: id,
+  propertyId: id.nullable(),
   leaseIds: z.array(id),
   status: z.enum(COI_STATUSES),
   expiresOn: isoDate.nullable(),
@@ -104,14 +105,15 @@ export const CaseSchema = z
     curePeriod: CurePeriodSchema,
     owner: TeamSchema,
     amountOwedAtNotice: nonNegativeCents.nullable(),
-    legalFees: nonNegativeCents.nullable(),
-    lenderNoticeRequired: z.boolean().nullable(),
+    legalFeesTerms: z.string().nullable(),
+    lenderNotice: z.enum(LENDER_NOTICES).nullable(),
+    workflowStatus: z.string().nullable(),
     courtCaseNo: z.string().nullable(),
     guarantorName: z.string().nullable(),
     hasGuarantor: z.boolean(),
   })
-  .refine((c) => (c.leaseId === null) === (c.propertyId === null), {
-    message: 'leaseId and propertyId must both be set or both be null',
+  .refine((c) => c.leaseId !== null || c.propertyId === null, {
+    message: 'propertyId requires a leaseId',
     path: ['propertyId'],
   })
   .refine((c) => c.guarantorName === null || c.hasGuarantor, {
@@ -131,6 +133,7 @@ const caseEventBase = {
 const emptyPayload = z.strictObject({});
 
 export const CaseEventSchema = z.discriminatedUnion('type', [
+  z.strictObject({ ...caseEventBase, type: z.literal('case_opened'), payload: emptyPayload }),
   z.strictObject({ ...caseEventBase, type: z.literal('imported_note'), payload: emptyPayload }),
   z.strictObject({ ...caseEventBase, type: z.literal('note'), payload: emptyPayload }),
   z.strictObject({

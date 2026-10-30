@@ -3,12 +3,12 @@
 Facts about the four source CSVs, measured on 2026-10-30. No raw rows. The SSN column was never loaded
 into the profiler; only its shape counts were taken, in a separate pass that kept no values.
 
-| File | Rows | Notes |
-|---|---|---|
-| properties.csv | 21 | Clean. All keys unique. |
-| leases.csv | 174 | Two leases point at unknown properties. |
-| notices.csv | 37 | One notice per lease. Every `lease_id` exists in leases. |
-| coi_status.csv | 150 | One row per tenant + property. |
+| File           | Rows | Notes                                                    |
+| -------------- | ---- | -------------------------------------------------------- |
+| properties.csv | 21   | Clean. All keys unique.                                  |
+| leases.csv     | 174  | Two leases point at unknown properties.                  |
+| notices.csv    | 37   | One notice per lease. Every `lease_id` exists in leases. |
+| coi_status.csv | 150  | One row per tenant + property.                           |
 
 The latest date anywhere in the data (`date_sent` and `updates`) is **2026-10-13**. That is the
 default asOf (`meta.dataAsOf`).
@@ -36,7 +36,7 @@ default asOf (`meta.dataAsOf`).
 
 ## notices.csv
 
-- Columns: 17, including `guarantor_ssn`, which is present on all 37 rows in `999-99-9999` form. Every row also has a guarantor name. No SSN-shaped value appears in any other column.
+- Columns: 17, including `guarantor_ssn`, which is present on all 37 rows as three-two-four digit groups with dashes. Every row also has a guarantor name. No SSN-shaped value appears in any other column.
 - `stage`: Notice to Cure 14, Default 7, Non-Compliant 5, Collections 4, Cured 4, Closed 3. Spellings are already clean.
 - `status` is **not an enum of the stage**: 14 workflow values ("Hold per AM", "Payment Sent", "With Outside Counsel", …). No stage/status contradictions found.
 - `type_of_default`: Monetary 30, Insurance 5, **Breach 2**.

@@ -37,13 +37,13 @@ describe('fixture seed', () => {
     const personIds = new Set(seed.people.map((p) => p.id));
 
     for (const l of seed.leases) {
-      expect(propertyIds.has(l.propertyId)).toBe(true);
+      expect(l.propertyId === null || propertyIds.has(l.propertyId)).toBe(true);
       expect(tenantIds.has(l.tenantId)).toBe(true);
     }
     for (const c of seed.cases) {
       if (c.leaseId) {
         const lease = seed.leases.find((l) => l.id === c.leaseId);
-        expect(lease?.propertyId).toBe(c.propertyId);
+        if (c.propertyId !== null) expect(lease?.propertyId).toBe(c.propertyId);
         expect(lease?.tenantId).toBe(c.tenantId);
       }
       expect(leaseIds.has(c.leaseId ?? '') || c.leaseId === null).toBe(true);
@@ -54,6 +54,15 @@ describe('fixture seed', () => {
       for (const id of [p.assetManagerId, p.propertyManagerId]) {
         expect(id === null || personIds.has(id)).toBe(true);
       }
+    }
+  });
+
+  it('includes a lease with no property, and a missing-COI record for it', async () => {
+    const { leases, coi } = await readSeedDir(FIXTURE);
+    const unlinked = leases.filter((l) => l.propertyId === null);
+    expect(unlinked.length).toBeGreaterThan(0);
+    for (const l of unlinked) {
+      expect(coi.some((c) => c.leaseIds.includes(l.id) && c.status === 'missing')).toBe(true);
     }
   });
 
