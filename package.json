@@ -19,7 +19,6 @@
     "ingest": "tsx scripts/ingest/index.ts"
   },
   "dependencies": {
-    "@ai-sdk/anthropic": "^4.0.93",
     "@base-ui/react": "^1.9.0",
     "ai": "^7.0.158",
     "class-variance-authority": "^0.7.1",
