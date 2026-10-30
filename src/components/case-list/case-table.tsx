@@ -57,7 +57,7 @@ function DeadlineCell({ c, asOf }: { c: Case; asOf: ISODate }) {
   if (deadline.deadline === null) {
     return (
       <div className="text-muted-foreground">
-        {c.curePeriod.kind === 'none' ? 'No cure date' : '—'}
+        {c.stage === 'notice_to_cure' && c.curePeriod.kind === 'none' ? 'No cure date' : '—'}
       </div>
     );
   }
@@ -136,7 +136,7 @@ export function CaseTable({
   weekEnd: ISODate;
 }) {
   return (
-    <div className="overflow-x-auto rounded-xl border bg-card">
+    <div className="relative overflow-x-auto rounded-xl border bg-card">
       <table className="w-full border-collapse text-sm">
         <thead>
           <tr className="border-b bg-surface text-left text-xs font-semibold whitespace-nowrap text-gray-600">
@@ -158,7 +158,7 @@ export function CaseTable({
                 colSpan={7}
                 scope="colgroup"
                 className={cn(
-                  'px-4 py-2 text-xs font-bold tracking-wide',
+                  'px-4 py-2 text-left text-xs font-bold tracking-wide',
                   GROUP_STYLES[g.key].text,
                 )}
               >

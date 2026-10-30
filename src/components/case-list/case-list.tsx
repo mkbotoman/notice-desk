@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { Guard } from '@/components/shell/guard';
 import { PageHeader } from '@/components/shell/page-header';
@@ -74,9 +74,15 @@ export function CaseList() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const filters = useMemo(() => parseFilters(new URLSearchParams(searchParams)), [searchParams]);
-  // replaceState rather than router.replace: the update is synchronous, so typing in the search box never lags.
+  const urlFilters = useMemo(() => parseFilters(new URLSearchParams(searchParams)), [searchParams]);
+  // The URL catches up a moment after replaceState; until then show what was just chosen so
+  // controlled inputs don't snap back and fast typing doesn't drop characters.
+  const [pending, setPending] = useState<{ base: URLSearchParams; value: CaseFilters } | null>(
+    null,
+  );
+  const filters = pending && pending.base === searchParams ? pending.value : urlFilters;
   const setFilters = (next: CaseFilters) => {
+    setPending({ base: searchParams, value: next });
     const query = writeFilters(new URLSearchParams(searchParams), next).toString();
     window.history.replaceState(null, '', query ? `${pathname}?${query}` : pathname);
   };
