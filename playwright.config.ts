@@ -15,10 +15,10 @@ export default defineConfig({
     timeout: 240_000,
     env: {
       ACCESS_PASSWORD: 'e2e-password',
-      // Blank, not absent: Next would otherwise fill them from .env.local and the tests would make
-      // real, billed gateway calls. With no credentials the AI routes take their fallback path.
-      AI_GATEWAY_API_KEY: '',
-      VERCEL_OIDC_TOKEN: '',
+      // The tests must never call, or spend, a real model. Next fills blank variables back in from
+      // .env.local, so credentials can't be removed reliably; instead the model is made unusable.
+      // The AI routes then take their fallback path, as they do with no credit.
+      AI_GATEWAY_MODEL: 'e2e/no-such-model',
     },
   },
 });

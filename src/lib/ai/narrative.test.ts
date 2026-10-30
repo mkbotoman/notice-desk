@@ -190,6 +190,18 @@ describe('checkNarrative', () => {
     expect(checkNarrative('The balance is $599,535.09 exactly.', real).ok).toBe(true);
   });
 
+  it('rejects text that stops mid-sentence, even when its figures are real', () => {
+    expect(
+      checkNarrative('There are 30 open cases and 8 are overdue, with a balance of $599,', real).ok,
+    ).toBe(false);
+    expect(checkNarrative('There are 30 open cases and 8 are overdue', real)).toMatchObject({
+      ok: false,
+      reason: 'unfinished',
+    });
+    expect(checkNarrative('There are 30 open cases and 8 are overdue.', real).ok).toBe(true);
+    expect(checkNarrative('There are 30 open cases (8 overdue).', real).ok).toBe(true);
+  });
+
   it('judges dates as dates: a wrong date fails, and a count cannot borrow a number from a date', () => {
     // The as-of date is Oct 13, so "13" appears in the data, but only as a day of the month.
     expect(checkNarrative('There are 13 open cases. Nothing else changed.', real).ok).toBe(false);

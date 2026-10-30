@@ -33,7 +33,7 @@ export function createGenerator(options: GeneratorOptions = {}): Generator {
 
   return async ({ system, prompt, maxOutputTokens }) => {
     try {
-      const { text } = await generateText({
+      const { text, finishReason } = await generateText({
         model,
         system,
         prompt,
@@ -43,6 +43,8 @@ export function createGenerator(options: GeneratorOptions = {}): Generator {
         maxRetries: 0,
         abortSignal: AbortSignal.timeout(timeoutMs),
       });
+      // Cut off by the token limit: the end of the text (a figure, a sentence) may be missing.
+      if (finishReason === 'length') return fail('unavailable');
       const trimmed = text.trim();
       if (trimmed === '') return fail('unavailable');
       return { ok: true, text: trimmed, model: label };

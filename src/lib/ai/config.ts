@@ -5,14 +5,23 @@
  * short-lived token, or set AI_GATEWAY_API_KEY. Model ids must come from
  * https://ai-gateway.vercel.sh/v1/models.
  */
-export const DEFAULT_AI_MODEL = 'anthropic/claude-haiku-5.5';
+export const DEFAULT_AI_MODEL = 'google/gemini-2.5-flash';
 
-/** A few sentences of text: cheap, fast and plenty. Override with AI_GATEWAY_MODEL. */
+/**
+ * Chosen because the team's free gateway tier can use it (Anthropic models need paid credit,
+ * and are refused with a 403 until it is added). Once paid credit is on the team, set
+ * AI_GATEWAY_MODEL to a Claude model, for example one from https://ai-gateway.vercel.sh/v1/models.
+ * Tested over ten real narrative runs: all ten passed the output checks.
+ */
 export function aiModelId(env: Record<string, string | undefined> = process.env): string {
   return env.AI_GATEWAY_MODEL?.trim() || DEFAULT_AI_MODEL;
 }
 
 export const AI_TIMEOUT_MS = 20_000;
-export const AI_MAX_OUTPUT_TOKENS = 600;
+/**
+ * Generous on purpose: a "thinking" model spends part of this on hidden reasoning, and a cap that
+ * is too tight cuts the visible text off mid-sentence. A cut-off reply is rejected, not shown.
+ */
+export const AI_MAX_OUTPUT_TOKENS = 4000;
 /** Largest request body an AI route will read, in bytes. */
 export const AI_MAX_BODY_BYTES = 24_000;

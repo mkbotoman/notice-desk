@@ -186,6 +186,7 @@ export function checkNarrative(value: string, payload: NarrativePayload): Narrat
   if (MARKDOWN.test(trimmed) || BULLET_LINE.test(trimmed))
     return { ok: false, reason: 'formatting' };
   if (META.test(trimmed)) return { ok: false, reason: 'not a summary' };
+  if (!/[.!?]["')]?$/.test(trimmed)) return { ok: false, reason: 'unfinished' };
   const sentences = sentenceCount(trimmed);
   if (sentences < 1 || sentences > MAX_SENTENCES) return { ok: false, reason: 'sentence count' };
   if (unexpectedFigures(trimmed, sourcesFor(payload), datesIn(payload)).length > 0) {

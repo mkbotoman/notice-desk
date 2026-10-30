@@ -65,6 +65,22 @@ describe('createGenerator', () => {
     );
   });
 
+  it('rejects a reply that was cut off by the token limit', async () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const cutOff = new MockLanguageModelV4({
+      doGenerate: async () => ({
+        content: [{ type: 'text', text: 'There are 30 open cases and the balance is $11,' }],
+        finishReason: { unified: 'length', raw: undefined },
+        usage,
+        warnings: [],
+      }),
+    });
+    expect(await createGenerator({ model: cutOff })({ system: 's', prompt: 'p' })).toEqual({
+      ok: false,
+      reason: 'unavailable',
+    });
+  });
+
   it('gives up after the timeout', async () => {
     vi.spyOn(console, 'warn').mockImplementation(() => {});
     const slow = new MockLanguageModelV4({
