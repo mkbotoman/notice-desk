@@ -583,6 +583,11 @@ describe('templates', () => {
     });
     expect(moved).toMatchObject({ recipientPersonaId: 'pm-dan-whitfield', recipientLabel: 'Dan' });
     expect(editDraft(n, { subject: 'S', body: 'B' }).recipientLabel).toBe('Choose');
+    const fresh = { ...n, source: 'template' as const };
+    expect(editDraft(fresh, { subject: 'S2', body: 'B2' }).source).toBe('manual');
+    expect(editDraft(fresh, { subject: 'S2', body: 'B2', fromTemplate: true }).source).toBe(
+      'template',
+    );
   });
 
   it('never includes guarantor data or notes, and tolerates missing data', () => {

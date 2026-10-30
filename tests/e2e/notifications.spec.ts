@@ -83,6 +83,14 @@ test.describe('outbox', () => {
     await expect(body).not.toHaveValue(/Dear /);
     await expect(body).toHaveValue(/Hi Maya,/);
 
+    await draft.getByLabel('To', { exact: true }).selectOption('founder');
+    await expect(body).toHaveValue(/Heads-up:/);
+    await draft.getByLabel('To', { exact: true }).selectOption('am-lena-brooks');
+    await expect(body).toHaveValue(
+      /Please ask the property manager|Please review|add an update|Nothing is needed/,
+    );
+    await expect(draft.getByText('Standard template · no AI')).toBeVisible();
+
     await body.fill('My own words');
     await draft.getByLabel('To', { exact: true }).selectOption('founder');
     await expect(body).toHaveValue('My own words');

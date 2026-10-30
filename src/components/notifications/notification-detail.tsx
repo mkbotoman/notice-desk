@@ -78,6 +78,8 @@ export function NotificationDetail({
   const [subject, setSubject] = useState(n.subject);
   const [body, setBody] = useState(n.body);
   const [aiUsed, setAiUsed] = useState(false);
+  /** The text the template last produced; the draft is untouched while it still matches. */
+  const [baseline, setBaseline] = useState({ subject: n.subject, body: n.body });
   const [recipientId, setRecipientId] = useState<string | null>(n.recipientPersonaId);
   const [error, setError] = useState<string | null>(null);
   const lookups = useLookups();
@@ -126,7 +128,8 @@ export function NotificationDetail({
     ? personaRecipient(chosen)
     : { personaId: n.recipientPersonaId, label: n.recipientLabel };
   const audience = audienceFor(recipient.personaId, personas);
-  const untouched = n.source === 'template' && subject === n.subject && body === n.body;
+  const untouched =
+    n.source === 'template' && subject === baseline.subject && body === baseline.body;
 
   const changeRecipient = (id: string) => {
     setRecipientId(id);
@@ -139,6 +142,7 @@ export function NotificationDetail({
       events: eventsByCase.get(n.caseId),
     });
     if (text) {
+      setBaseline(text);
       setSubject(text.subject);
       setBody(text.body);
     }
@@ -175,7 +179,7 @@ export function NotificationDetail({
 
   const save = () =>
     run(() => {
-      const next = editDraft(current, { subject, body, recipient });
+      const next = editDraft(current, { subject, body, recipient, fromTemplate: untouched });
       store.upsertNotification(next);
       return next;
     });
@@ -183,7 +187,7 @@ export function NotificationDetail({
   const send = () =>
     run(() => {
       const next = sendDraft(
-        editDraft(current, { subject, body, recipient }),
+        editDraft(current, { subject, body, recipient, fromTemplate: untouched }),
         new Date().toISOString(),
       );
       actions.logNotification(n.caseId, 'notification_sent', n.id);

@@ -143,7 +143,7 @@ function requireDraft(n: Notification) {
 /** An automatic draft keeps its trigger; editing its text marks it as hand-written. */
 export function editDraft(
   n: Notification,
-  edit: { subject: string; body: string; recipient?: Recipient },
+  edit: { subject: string; body: string; recipient?: Recipient; fromTemplate?: boolean },
 ): Notification {
   requireDraft(n);
   requireText(edit.subject, edit.body);
@@ -155,7 +155,7 @@ export function editDraft(
     ...(edit.recipient
       ? { recipientPersonaId: edit.recipient.personaId, recipientLabel: edit.recipient.label }
       : {}),
-    source: changed && n.source === 'template' ? 'manual' : n.source,
+    source: changed && !edit.fromTemplate && n.source === 'template' ? 'manual' : n.source,
   };
 }
 
