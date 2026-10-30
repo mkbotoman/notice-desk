@@ -1,7 +1,9 @@
+import { cp, mkdtemp, readFile, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { STAGES } from '@/domain/types';
-import { loadSeed, readSeedDir } from './seed';
+import { readSeed, readSeedDir } from './seed';
 
 const FIXTURE = path.join(process.cwd(), 'data', 'seed', 'fixture');
 
@@ -72,9 +74,30 @@ describe('fixture seed', () => {
   });
 });
 
-describe('loadSeed', () => {
+describe('readSeed', () => {
+  const makeRoot = async (withIngestOutput: boolean) => {
+    const root = await mkdtemp(path.join(tmpdir(), 'nd-seed-'));
+    await cp(FIXTURE, path.join(root, 'fixture'), { recursive: true });
+    if (withIngestOutput) {
+      await cp(FIXTURE, root, { recursive: true });
+      const metaPath = path.join(root, 'meta.json');
+      const meta = JSON.parse(await readFile(metaPath, 'utf8'));
+      await writeFile(metaPath, JSON.stringify({ ...meta, dataAsOf: '2026-01-01' }));
+    }
+    return root;
+  };
+
   it('falls back to the fixture when there is no ingest output', async () => {
-    const seed = await loadSeed();
-    expect(['fixture', 'ingest']).toContain(seed.meta.source);
+    const seed = await readSeed(await makeRoot(false));
+    expect(seed.meta.dataAsOf).toBe('2026-10-14');
+  });
+
+  it('prefers ingest output when it exists', async () => {
+    const seed = await readSeed(await makeRoot(true));
+    expect(seed.meta.dataAsOf).toBe('2026-01-01');
+  });
+
+  it('reads the committed seed by default', async () => {
+    await expect(readSeed()).resolves.toBeDefined();
   });
 });

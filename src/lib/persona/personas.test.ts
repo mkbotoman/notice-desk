@@ -10,6 +10,7 @@ import {
   describePersona,
   navFor,
   personaKindLabel,
+  personaOptionLabel,
   resolvePersonaId,
 } from './personas';
 
@@ -127,6 +128,11 @@ describe('describePersona', () => {
     expect(describePersona(byId('pm-priya-shah'))).toBe(
       'Priya · Property manager · read-only on 1 property',
     );
+  });
+
+  it('words the switcher options', () => {
+    expect(personaOptionLabel(byId('am-lena-park'))).toBe('Lena Park · Asset manager');
+    expect(personaOptionLabel(byId('founder'))).toBe('Founder');
   });
 
   it('labels each kind', () => {

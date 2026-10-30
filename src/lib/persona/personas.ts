@@ -67,6 +67,13 @@ const KIND_LABELS: Record<PersonaKind, string> = {
 
 export const personaKindLabel = (kind: PersonaKind) => KIND_LABELS[kind];
 
+/** Option text for the switcher: "Lena Brooks · Asset manager". */
+export function personaOptionLabel(persona: Persona): string {
+  return persona.kind === 'founder'
+    ? persona.label
+    : `${persona.label} · ${personaKindLabel(persona.kind)}`;
+}
+
 /** "Lena · Asset manager · can add updates on 4 properties", for the always-visible chip. */
 export function describePersona(persona: Persona): string {
   const first = persona.label.split(' ')[0];

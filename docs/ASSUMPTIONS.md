@@ -21,3 +21,7 @@ One line each, tagged with the workstream ID, e.g. `- [WS-1B] ...`. Feeds the sh
 - [WS-1A] DQ-AR infers only a floor: the best aging the balance allows. It flags understated aging (error) and a zero balance with non-current aging (stale, warning). Overstated aging is not flagged, because partial payments lower the balance. Real data: zero flags.
 - [WS-1A] A second lease on the same property and suite is flagged (rule DQ-SUITE, warning); both leases are kept.
 - [WS-1B] A cure deadline is only "overdue" or "due this week" while the case is in Notice to Cure. In Default and Collections the cure period has already ended by definition, so those show the deadline as history and carry no overdue flag.
+- [WS-1C] Pages live under `src/app/(shell)/` (not directly under `src/app/` as the plan's layout shows) so they share the sidebar and header; `/gate` stays outside it with no chrome.
+- [WS-1C] Persona ids are `maya`, `founder`, `am-<name>` and `pm-<name>`. The persona choice and any changed as-of date are saved in the browser. A saved as-of date is ignored if the data date has changed since.
+- [WS-1C] Nav items are gated by `can()` on one action each (Waiting on me needs `add_update`; Watchlist and Weekly summary follow `view_analytics`), never by persona kind. Typing a URL for a page the persona can't use shows a plain explanation instead of the page.
+- [WS-1C] The home page is an overview for now. Asset managers land on "Waiting on me" once that page exists (M2).

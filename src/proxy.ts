@@ -15,7 +15,8 @@ export function proxy(request: NextRequest) {
       return NextResponse.next();
     case 'to_gate': {
       const url = new URL(GATE_PATH, request.url);
-      if (pathname !== '/') url.searchParams.set('next', pathname + search);
+      // Keep the target (and any ?as= / ?asOf= deep link) across the password page.
+      if (pathname !== '/' || search) url.searchParams.set('next', pathname + search);
       return NextResponse.redirect(url);
     }
     case 'to_next':
