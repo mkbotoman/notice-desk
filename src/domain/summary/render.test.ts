@@ -235,6 +235,27 @@ describe('renderHtml', () => {
   });
 });
 
+describe('an accepted narrative paragraph', () => {
+  it('goes first in both renderings, as one escaped plain paragraph', () => {
+    const paragraph = '  Two cases are overdue & one is\n due <soon>.  ';
+    const text = renderPlainText(quiet(), paragraph);
+    expect(text).toContain(
+      'Covers the whole portfolio.\n\nWHAT CHANGED THIS WEEK\nTwo cases are overdue & one is due <soon>.\n\nAT A GLANCE',
+    );
+    const html = renderHtml(quiet(), paragraph);
+    expect(html).toContain('>What changed this week</h2>');
+    expect(html).toContain('Two cases are overdue &amp; one is due &lt;soon&gt;.</p>');
+    expect(html.indexOf('What changed this week')).toBeLessThan(html.indexOf('At a glance'));
+  });
+
+  it('adds nothing when there is no paragraph or it is blank', () => {
+    for (const none of [undefined, '', '   \n ']) {
+      expect(renderPlainText(quiet(), none)).toBe(renderPlainText(quiet()));
+      expect(renderHtml(quiet(), none)).toBe(renderHtml(quiet()));
+    }
+  });
+});
+
 describe('the real seed', () => {
   it('names no guarantor and carries no note text, in either rendering', async () => {
     const seed = await readSeedDir(path.join(process.cwd(), 'data', 'seed'));

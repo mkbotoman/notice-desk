@@ -150,9 +150,26 @@ function buildDoc(s: WeekSummary): Doc {
   };
 }
 
+/**
+ * An accepted narrative paragraph goes first, ahead of "At a glance". It is one plain paragraph:
+ * line breaks are folded away and it is escaped like every other dynamic string. A blank or
+ * missing paragraph adds nothing, so an unaccepted draft can't leak in by accident.
+ */
+function withNarrative(doc: Doc, narrative?: string): Doc {
+  const paragraph = narrative?.replace(/\s+/g, ' ').trim();
+  if (!paragraph) return doc;
+  return {
+    ...doc,
+    sections: [
+      { heading: 'What changed this week', notes: [paragraph], groups: [] },
+      ...doc.sections,
+    ],
+  };
+}
+
 /** Plain lines and "•" bullets only, so it pastes cleanly into any email client. */
-export function renderPlainText(s: WeekSummary): string {
-  const doc = buildDoc(s);
+export function renderPlainText(s: WeekSummary, narrative?: string): string {
+  const doc = withNarrative(buildDoc(s), narrative);
   const out: string[] = [`Subject: ${s.subject}`, '', doc.title, ...doc.intro];
   for (const section of doc.sections) {
     out.push('', section.heading.toUpperCase(), ...section.notes);
@@ -177,8 +194,8 @@ const P = `margin:0 0 6px;${FONT}font-size:14px;line-height:1.5;`;
 const UL = `margin:0 0 6px;padding-left:20px;list-style:disc;${FONT}font-size:14px;line-height:1.5;`;
 
 /** The body only (no <html> wrapper) so it can be pasted or embedded as-is. */
-export function renderHtml(s: WeekSummary): string {
-  const doc = buildDoc(s);
+export function renderHtml(s: WeekSummary, narrative?: string): string {
+  const doc = withNarrative(buildDoc(s), narrative);
   const parts = [
     `<h1 style="margin:0 0 6px;${FONT}font-size:20px;font-weight:bold;color:#0e1b3d;">${escapeHtml(doc.title)}</h1>`,
     ...doc.intro.map((line) => `<p style="${P}color:#4b5563;">${escapeHtml(line)}</p>`),
