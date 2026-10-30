@@ -111,7 +111,7 @@ test.describe('shell and personas', () => {
     await signIn(page, '/analytics?as=pm-nina-foster');
     await expect(page.getByText("This page isn't available in your current view")).toBeVisible();
     await page.getByLabel('Viewing as').selectOption({ label: 'Maya · Legal' });
-    await expect(page.getByText('Analytics is coming next')).toBeVisible();
+    await expect(page.getByTestId('no-history-note')).toBeVisible();
   });
 });
 
