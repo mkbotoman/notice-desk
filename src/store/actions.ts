@@ -1,6 +1,7 @@
 import { can } from '@/domain/permissions';
 import { allowedTransitions } from '@/domain/stage';
-import type { Case, CaseEvent, ISODate, Persona, Stage, Team } from '@/domain/types';
+import type { Case, CaseEvent, ISODate, Lease, Persona, Stage, Team } from '@/domain/types';
+import type { LeaseSignal } from '@/domain/watchlist';
 
 export class PermissionError extends Error {
   constructor(message: string) {
@@ -64,4 +65,76 @@ export function buildOwnerChange(c: Case, to: Team, ctx: ActionContext, note?: s
     type: 'owner_changed',
     payload: { from: c.owner, to },
   };
+}
+
+export interface NotificationEventOptions {
+  /** True for drafts raised by the app itself (deadline and COI triggers). They are logged as `system`. */
+  automatic?: boolean;
+}
+
+/** Logs that a notification was drafted or sent on a case. */
+export function buildNotificationEvent(
+  c: Case,
+  type: 'notification_drafted' | 'notification_sent',
+  notificationId: string,
+  ctx: ActionContext,
+  options: NotificationEventOptions = {},
+): CaseEvent {
+  if (!options.automatic && !can(ctx.persona, 'send_notification', c)) {
+    throw new PermissionError("You can't send notifications for this case");
+  }
+  const event = base(c, ctx, ctx.asOf);
+  return {
+    ...event,
+    actorPersonaId: options.automatic ? 'system' : event.actorPersonaId,
+    type,
+    payload: { notificationId },
+  };
+}
+
+/**
+ * A new Non-Compliant case for a lease the watchlist flagged. Legal-owned, no notice sent yet, so
+ * no deadline. The `case_opened` event records why it was opened.
+ */
+export function buildOpenCase(
+  lease: Lease,
+  signals: readonly LeaseSignal[],
+  ctx: ActionContext,
+): { newCase: Case; event: CaseEvent } {
+  if (!can(ctx.persona, 'edit_case')) throw new PermissionError("You can't open cases");
+  if (signals.length === 0) throw new Error('There is nothing to open a case for');
+
+  const rent = signals.some((s) => s.kind === 'rent');
+  const insurance = signals.some((s) => s.kind === 'insurance');
+  const now = (ctx.now ?? (() => new Date()))();
+  const newCase: Case = {
+    id: `W-${lease.id}-${now.getTime().toString(36)}`,
+    leaseId: lease.id,
+    tenantId: lease.tenantId,
+    propertyId: lease.propertyId,
+    stage: 'non_compliant',
+    issueType: rent ? 'monetary' : insurance ? 'insurance' : 'other_lease_term',
+    dateSent: null,
+    curePeriod: { kind: 'none' },
+    owner: 'legal',
+    amountOwedAtNotice:
+      rent && lease.arBalance !== null && lease.arBalance > 0 ? lease.arBalance : null,
+    legalFeesTerms: null,
+    lenderNotice: null,
+    workflowStatus: null,
+    courtCaseNo: null,
+    guarantorName: null,
+    hasGuarantor: false,
+  };
+  const event = {
+    ...base(
+      newCase,
+      ctx,
+      ctx.asOf,
+      `Opened from the watchlist: ${signals.map((s) => s.label).join('; ')}`,
+    ),
+    type: 'case_opened' as const,
+    payload: {},
+  };
+  return { newCase, event };
 }

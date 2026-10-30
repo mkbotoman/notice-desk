@@ -1,8 +1,16 @@
 'use client';
 
 import { useAsOf, usePersona } from '@/lib/persona/context';
-import type { ISODate, Stage, Team } from '@/domain/types';
-import { buildAdvance, buildOwnerChange, buildUpdate } from './actions';
+import type { ISODate, Lease, Stage, Team } from '@/domain/types';
+import type { LeaseSignal } from '@/domain/watchlist';
+import {
+  buildAdvance,
+  buildNotificationEvent,
+  buildOpenCase,
+  buildOwnerChange,
+  buildUpdate,
+  type NotificationEventOptions,
+} from './actions';
 import { useStore } from './react';
 
 /**
@@ -28,5 +36,18 @@ export function useCaseActions() {
       store.append(buildAdvance(withCase(caseId), to, ctx, note)),
     changeOwner: (caseId: string, to: Team, note?: string) =>
       store.append(buildOwnerChange(withCase(caseId), to, ctx, note)),
+    /** Logs that a notification was drafted or sent. The notification itself is saved with `store.upsertNotification`. */
+    logNotification: (
+      caseId: string,
+      type: 'notification_drafted' | 'notification_sent',
+      notificationId: string,
+      options?: NotificationEventOptions,
+    ) => store.append(buildNotificationEvent(withCase(caseId), type, notificationId, ctx, options)),
+    /** Opens a Non-Compliant case for a flagged lease and returns the new case id. */
+    openCase: (lease: Lease, signals: readonly LeaseSignal[]) => {
+      const { newCase, event } = buildOpenCase(lease, signals, ctx);
+      store.openCase(newCase, event);
+      return newCase.id;
+    },
   };
 }

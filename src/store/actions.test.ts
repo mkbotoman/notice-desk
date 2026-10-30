@@ -2,7 +2,15 @@ import { describe, expect, it } from 'vitest';
 import { makeCase } from '@/test/factories';
 import type { Persona } from '@/domain/types';
 import { CaseEventSchema } from '@/domain/schemas';
-import { buildAdvance, buildOwnerChange, buildUpdate, PermissionError } from './actions';
+import type { Lease } from '@/domain/types';
+import {
+  buildAdvance,
+  buildNotificationEvent,
+  buildOpenCase,
+  buildOwnerChange,
+  buildUpdate,
+  PermissionError,
+} from './actions';
 
 const persona = (over: Partial<Persona>): Persona => ({
   id: 'p',
@@ -120,5 +128,96 @@ describe('default context', () => {
     const event = buildUpdate(makeCase(), 'x', { persona: maya, asOf: '2026-10-13' });
     expect(Date.parse(event.at)).not.toBeNaN();
     expect(event.id.startsWith('EV-N-1-')).toBe(true);
+  });
+});
+
+describe('buildNotificationEvent', () => {
+  it('logs a manual draft or send under the acting persona', () => {
+    const drafted = buildNotificationEvent(makeCase(), 'notification_drafted', 'NT-1', ctx(maya));
+    expect(CaseEventSchema.parse(drafted)).toEqual(drafted);
+    expect(drafted).toMatchObject({
+      type: 'notification_drafted',
+      actorPersonaId: 'maya',
+      payload: { notificationId: 'NT-1' },
+    });
+    expect(buildNotificationEvent(makeCase(), 'notification_sent', 'NT-1', ctx(maya)).type).toBe(
+      'notification_sent',
+    );
+  });
+
+  it('logs an automatic draft as the system, with no permission check', () => {
+    const event = buildNotificationEvent(makeCase(), 'notification_drafted', 'NT-2', ctx(founder), {
+      automatic: true,
+    });
+    expect(event.actorPersonaId).toBe('system');
+  });
+
+  it('refuses a persona that may not send notifications', () => {
+    expect(() =>
+      buildNotificationEvent(makeCase(), 'notification_sent', 'NT-1', ctx(lena)),
+    ).toThrow(PermissionError);
+  });
+});
+
+describe('buildOpenCase', () => {
+  const lease: Lease = {
+    id: 'L-9',
+    propertyId: 'P-1',
+    tenantId: 'T-9',
+    suite: '1',
+    sqFt: null,
+    status: 'active',
+    startDate: null,
+    endDate: null,
+    monthlyRent: 100000,
+    arBalance: 250000,
+    arAgingRecorded: '61_90',
+    arAgingImplied: '31_60',
+    watchlistReasons: [],
+  };
+  const rent = { kind: 'rent', label: 'Rent 61–90 days' } as const;
+  const insurance = { kind: 'insurance', label: 'No insurance on file' } as const;
+  const listed = { kind: 'listed', label: 'Going Dark' } as const;
+
+  it('builds a valid Legal-owned Non-Compliant case with no deadline, and an event saying why', () => {
+    const { newCase, event } = buildOpenCase(lease, [rent, insurance], ctx(maya));
+    expect(newCase).toMatchObject({
+      leaseId: 'L-9',
+      tenantId: 'T-9',
+      propertyId: 'P-1',
+      stage: 'non_compliant',
+      owner: 'legal',
+      dateSent: null,
+      curePeriod: { kind: 'none' },
+      issueType: 'monetary',
+      amountOwedAtNotice: 250000,
+    });
+    expect(newCase.id).toMatch(/^W-L-9-/);
+    expect(CaseEventSchema.parse(event)).toEqual(event);
+    expect(event).toMatchObject({
+      type: 'case_opened',
+      caseId: newCase.id,
+      note: 'Opened from the watchlist: Rent 61–90 days; No insurance on file',
+    });
+  });
+
+  it('chooses the issue type from the signals', () => {
+    expect(buildOpenCase(lease, [insurance], ctx(maya)).newCase).toMatchObject({
+      issueType: 'insurance',
+      amountOwedAtNotice: null,
+    });
+    expect(buildOpenCase(lease, [listed], ctx(maya)).newCase.issueType).toBe('other_lease_term');
+    expect(
+      buildOpenCase({ ...lease, arBalance: null }, [rent], ctx(maya)).newCase.amountOwedAtNotice,
+    ).toBeNull();
+    expect(
+      buildOpenCase({ ...lease, arBalance: 0 }, [rent], ctx(maya)).newCase.amountOwedAtNotice,
+    ).toBeNull();
+  });
+
+  it('refuses anyone but Legal, and an empty reason', () => {
+    expect(() => buildOpenCase(lease, [rent], ctx(lena))).toThrow(PermissionError);
+    expect(() => buildOpenCase(lease, [rent], ctx(founder))).toThrow(PermissionError);
+    expect(() => buildOpenCase(lease, [], ctx(maya))).toThrow(/nothing to open/);
   });
 });
