@@ -1,5 +1,5 @@
-import { RouteStub } from '@/components/shell/route-stub';
+import { Inbox } from '@/components/inbox/inbox';
 
 export default function Page() {
-  return <RouteStub title="Waiting on me" requires="add_update" />;
+  return <Inbox />;
 }
