@@ -7,14 +7,26 @@ import { Chip } from '@/components/ui/chip';
 import { TRIGGER_LABELS, dismissDraft, editDraft, sendDraft } from '@/domain/notifications/compose';
 import type { Notification } from '@/domain/types';
 import { errorMessage } from '@/components/case-detail/case-actions';
-import { useStore } from '@/store/react';
+import { buildDraftRequest, caseFacts, recipientRole } from '@/lib/ai/draft';
+import { usePersona } from '@/lib/persona/context';
+import { useLookups } from '@/store/lookups';
+import { useStore, useStoreState } from '@/store/react';
 import { useCaseActions } from '@/store/use-case-actions';
+import { AiAssist } from './ai-assist';
 import { CONTROL, FIELD_LABEL, TEXTAREA, TRIGGER_TONES, formatWhen } from './shared';
 
 export const NO_EMAIL_NOTE =
   'Sending adds this message to the case history. In this prototype no email leaves Notice Desk.';
 
-function Heading({ n, caseName }: { n: Notification; caseName: string }) {
+function Heading({
+  n,
+  caseName,
+  aiAssisted,
+}: {
+  n: Notification;
+  caseName: string;
+  aiAssisted: boolean;
+}) {
   return (
     <div className="flex flex-wrap items-center justify-between gap-2.5">
       <div className="flex flex-wrap items-center gap-2">
@@ -26,7 +38,9 @@ function Heading({ n, caseName }: { n: Notification; caseName: string }) {
           Case {caseName}
         </Link>
       </div>
-      {n.source === 'template' ? (
+      {aiAssisted ? (
+        <Chip tone="navy">AI-assisted</Chip>
+      ) : n.source === 'template' ? (
         <Chip tone="navy">Standard template · no AI</Chip>
       ) : (
         <Chip tone="warning">Edited by you</Chip>
@@ -49,7 +63,11 @@ export function NotificationDetail({
   const actions = useCaseActions();
   const [subject, setSubject] = useState(n.subject);
   const [body, setBody] = useState(n.body);
+  const [aiUsed, setAiUsed] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const lookups = useLookups();
+  const { cases } = useStoreState();
+  const { personas } = usePersona();
 
   if (n.status !== 'draft') {
     return (
@@ -57,7 +75,7 @@ export function NotificationDetail({
         aria-label="Notification detail"
         className="flex min-w-0 flex-col gap-4 rounded-xl border bg-card p-5 sm:p-6"
       >
-        <Heading n={n} caseName={caseName} />
+        <Heading n={n} caseName={caseName} aiAssisted={n.source === 'ai_draft'} />
         <p className="text-sm text-muted-foreground">
           {n.status === 'sent'
             ? `Sent ${formatWhen(n.sentAt ?? n.createdAt)}. It is in the case log and can no longer be changed. No email was sent.`
@@ -81,6 +99,29 @@ export function NotificationDetail({
     );
   }
 
+  const aiAssisted = aiUsed || n.source === 'ai_draft';
+  const handwritten = n.source !== 'template' || subject !== n.subject || body !== n.body;
+  const canAssist = handwritten && (subject.trim() !== '' || body.trim() !== '');
+  const c = cases.find((x) => x.id === n.caseId);
+  /** Edits made after accepting an AI draft keep the `ai_draft` source. */
+  const current = aiUsed ? { ...n, source: 'ai_draft' as const } : n;
+
+  const buildAiRequest = () => {
+    if (!c) throw new Error('No case');
+    return buildDraftRequest({
+      facts: caseFacts(c, {
+        tenant: lookups.tenantById.get(c.tenantId),
+        property: c.propertyId ? lookups.propertyById.get(c.propertyId) : undefined,
+        lease: c.leaseId ? lookups.leaseById.get(c.leaseId) : undefined,
+      }),
+      recipientRole: recipientRole(personas.find((p) => p.id === n.recipientPersonaId)),
+      tone: 'internal',
+      template: n.trigger === 'manual' ? 'blank' : n.trigger,
+      subject,
+      body,
+    });
+  };
+
   const run = (act: () => Notification) => {
     try {
       const next = act();
@@ -93,14 +134,14 @@ export function NotificationDetail({
 
   const save = () =>
     run(() => {
-      const next = editDraft(n, { subject, body });
+      const next = editDraft(current, { subject, body });
       store.upsertNotification(next);
       return next;
     });
 
   const send = () =>
     run(() => {
-      const next = sendDraft(editDraft(n, { subject, body }), new Date().toISOString());
+      const next = sendDraft(editDraft(current, { subject, body }), new Date().toISOString());
       actions.logNotification(n.caseId, 'notification_sent', n.id);
       store.upsertNotification(next);
       return next;
@@ -119,7 +160,7 @@ export function NotificationDetail({
       aria-label="Draft"
       className="flex min-w-0 flex-col gap-4 rounded-xl border bg-card p-5 sm:p-6"
     >
-      <Heading n={n} caseName={caseName} />
+      <Heading n={n} caseName={caseName} aiAssisted={aiAssisted} />
       <div className="flex flex-col gap-1.5">
         <span className={FIELD_LABEL}>To</span>
         <p className="text-sm">{n.recipientLabel}</p>
@@ -138,6 +179,16 @@ export function NotificationDetail({
           onChange={(e) => setBody(e.target.value)}
         />
       </label>
+      {canAssist ? (
+        <AiAssist
+          build={buildAiRequest}
+          onUse={(draft) => {
+            setSubject(draft.subject);
+            setBody(draft.body);
+            setAiUsed(true);
+          }}
+        />
+      ) : null}
       {error ? (
         <p role="alert" className="text-sm font-semibold text-danger">
           {error}

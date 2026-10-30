@@ -112,7 +112,10 @@ export function NotificationList({
                 className="flex w-full flex-col gap-1.5 px-4 pt-3.5 pb-1.5 text-left hover:bg-surface focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
               >
                 <span className="flex items-center justify-between gap-2">
-                  <Chip tone={TRIGGER_TONES[n.trigger]}>{TRIGGER_LABELS[n.trigger]}</Chip>
+                  <span className="flex flex-wrap items-center gap-1.5">
+                    <Chip tone={TRIGGER_TONES[n.trigger]}>{TRIGGER_LABELS[n.trigger]}</Chip>
+                    {n.source === 'ai_draft' ? <Chip tone="navy">AI-assisted</Chip> : null}
+                  </span>
                   <span className="text-xs text-muted-foreground">
                     {WHEN_PREFIX[n.status]} {formatWhen(n.sentAt ?? n.createdAt)}
                   </span>

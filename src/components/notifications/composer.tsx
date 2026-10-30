@@ -16,17 +16,24 @@ import type { NotificationRefs } from '@/domain/notifications/triggers';
 import { openCases } from '@/domain/selectors';
 import type { Notification } from '@/domain/types';
 import { errorMessage } from '@/components/case-detail/case-actions';
+import { buildDraftRequest, caseFacts, recipientRole } from '@/lib/ai/draft';
 import { useAsOf, usePersona } from '@/lib/persona/context';
 import { personaOptionLabel } from '@/lib/persona/personas';
 import { useLookups } from '@/store/lookups';
 import { useStore, useStoreState } from '@/store/react';
 import { useCaseActions } from '@/store/use-case-actions';
+import { AiAssist } from './ai-assist';
 import { NO_EMAIL_NOTE } from './notification-detail';
 import { CONTROL, FIELD_LABEL, TEXTAREA, newManualId, type CaseLabeler } from './shared';
 
 interface Text {
   subject: string;
   body: string;
+}
+
+/** What the person has changed; `ai` stays true once they accept an AI draft. */
+interface Edit extends Text {
+  ai: boolean;
 }
 
 export function Composer({
@@ -50,7 +57,7 @@ export function Composer({
   const [caseId, setCaseId] = useState(initialCaseId ?? '');
   const [templateOverride, setTemplateOverride] = useState<TemplateId | null>(null);
   const [recipientOverride, setRecipientOverride] = useState<string | null>(null);
-  const [edit, setEdit] = useState<Text | null>(null);
+  const [edit, setEdit] = useState<Edit | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const c = cases.find((x) => x.id === caseId);
@@ -79,6 +86,25 @@ export function Composer({
   const text = edit ?? rendered;
   const edited =
     edit !== null && (edit.subject !== rendered.subject || edit.body !== rendered.body);
+  const aiAssisted = edited && edit?.ai === true;
+  const canAssist = edited && (text.subject.trim() !== '' || text.body.trim() !== '');
+  const typed = (next: Partial<Text>): Edit => ({ ...text, ...next, ai: aiAssisted });
+
+  const buildAiRequest = () => {
+    if (!c) throw new Error('No case');
+    return buildDraftRequest({
+      facts: caseFacts(c, {
+        tenant: lookups.tenantById.get(c.tenantId),
+        property: c.propertyId ? lookups.propertyById.get(c.propertyId) : undefined,
+        lease: c.leaseId ? lookups.leaseById.get(c.leaseId) : undefined,
+      }),
+      recipientRole: recipientRole(personas.find((p) => p.id === recipient.personaId)),
+      tone: 'internal',
+      template: templateId,
+      subject: text.subject,
+      body: text.body,
+    });
+  };
 
   const save = (status: 'draft' | 'sent') => {
     if (!c) {
@@ -101,8 +127,9 @@ export function Composer({
         status === 'sent' ? 'notification_sent' : 'notification_drafted',
         n.id,
       );
-      store.upsertNotification(n);
-      onDone(n);
+      const saved: Notification = aiAssisted ? { ...n, source: 'ai_draft' } : n;
+      store.upsertNotification(saved);
+      onDone(saved);
     } catch (err) {
       setError(errorMessage(err));
     }
@@ -117,7 +144,9 @@ export function Composer({
         <h2 className="text-base font-bold text-navy-deep">New notification</h2>
         {c ? (
           <div className="flex flex-wrap items-center gap-2">
-            {edited ? (
+            {aiAssisted ? (
+              <Chip tone="navy">AI-assisted</Chip>
+            ) : edited ? (
               <Chip tone="warning">Edited by you</Chip>
             ) : templateId === 'blank' ? null : (
               <Chip tone="navy">Standard template · no AI</Chip>
@@ -192,7 +221,7 @@ export function Composer({
           aria-label="Subject"
           className={CONTROL}
           value={text.subject}
-          onChange={(e) => setEdit({ ...text, subject: e.target.value })}
+          onChange={(e) => setEdit(typed({ subject: e.target.value }))}
         />
       </label>
       <label className="flex flex-col gap-1.5">
@@ -202,9 +231,13 @@ export function Composer({
           rows={12}
           className={TEXTAREA}
           value={text.body}
-          onChange={(e) => setEdit({ ...text, body: e.target.value })}
+          onChange={(e) => setEdit(typed({ body: e.target.value }))}
         />
       </label>
+
+      {canAssist ? (
+        <AiAssist build={buildAiRequest} onUse={(draft) => setEdit({ ...draft, ai: true })} />
+      ) : null}
 
       {edited ? (
         <div className="flex justify-end">
