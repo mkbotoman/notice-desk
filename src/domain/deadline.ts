@@ -1,5 +1,5 @@
 import { addDaysISO, daysBetween, isWeekend } from './dates';
-import { holidayOn, type Holiday } from './holidays';
+import { FIRST_SUPPORTED_YEAR, holidayOn, type Holiday } from './holidays';
 import type { Case, CurePeriod, ISODate } from './types';
 
 /** "Due this week" is a rolling window: today through the next 7 days. */
@@ -24,6 +24,9 @@ export function cureDeadlineDetail(
   if (cure.unit === 'calendar') {
     return { deadline: addDaysISO(dateSent, cure.n), skippedHolidays: [] };
   }
+
+  // Before the holiday calendar begins, business days can't be counted: no deadline, not a crash.
+  if (Number(dateSent.slice(0, 4)) < FIRST_SUPPORTED_YEAR) return null;
 
   const skippedHolidays: Holiday[] = [];
   let current = dateSent;
@@ -76,7 +79,7 @@ export function caseDeadline(c: Case, asOf: ISODate): CaseDeadline {
   if (c.stage !== 'notice_to_cure') return { deadline, status: 'none', daysUntil };
 
   const unreadable =
-    c.curePeriod.kind === 'unknown' || (c.curePeriod.kind === 'days' && c.dateSent === null);
+    c.curePeriod.kind === 'unknown' || (c.curePeriod.kind === 'days' && deadline === null);
   if (unreadable) return { deadline, status: 'missing', daysUntil };
   return { deadline, status: deadlineStatus(deadline, asOf), daysUntil };
 }

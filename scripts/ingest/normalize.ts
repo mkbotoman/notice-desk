@@ -69,8 +69,12 @@ export function parseMoney(raw: string): ParsedMoney {
   const text = raw.trim();
   if (text === '') return { kind: 'blank' };
 
+  // Only a leading minus or wrapping parentheses mean negative; a hyphen anywhere else is text.
   const negative = /^\(.*\)$/.test(text) || text.startsWith('-');
-  const digits = text.replace(/[()$,\s-]/g, '');
+  const digits = text
+    .replace(/^\((.*)\)$/, '$1')
+    .replace(/^-/, '')
+    .replace(/[$,\s]/g, '');
   if (!/^\d+(\.\d{1,2})?$/.test(digits)) return { kind: 'text' };
 
   const [whole, fraction = ''] = digits.split('.');

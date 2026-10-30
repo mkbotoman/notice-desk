@@ -1,6 +1,9 @@
 import type { CurePeriod } from './types';
 
 const NO_CURE = /^(no cure( date| period)?|none|n\/a|na|not applicable|no deadline|-|—)$/;
+/** A cure period longer than a year is a typo, not a deadline. */
+export const MAX_CURE_DAYS = 365;
+
 const AMOUNT = /^(\d+)\s*(.*)$/;
 const BUSINESS = /^(business|bus\.?|biz|bd|b\.?d\.?)(\s+days?)?$/;
 const CALENDAR = /^(calendar|cal\.?|cd|consecutive)(\s+days?)?$/;
@@ -24,7 +27,7 @@ export function parseCurePeriod(raw: string | null | undefined): CurePeriod {
   if (!match) return { kind: 'unknown' };
   const n = Number(match[1]);
   const unit = match[2];
-  if (n < 1) return { kind: 'unknown' };
+  if (n < 1 || n > MAX_CURE_DAYS) return { kind: 'unknown' };
 
   if (unit === '' || PLAIN_DAYS.test(unit) || CALENDAR.test(unit)) {
     return { kind: 'days', n, unit: 'calendar' };

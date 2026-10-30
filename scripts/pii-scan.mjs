@@ -65,7 +65,9 @@ export function scan(root, allowlist = []) {
     if (allowed.has(file) || SKIP_FILES.has(path.basename(file))) continue;
     if (SKIP_EXTENSIONS.has(path.extname(file).toLowerCase())) continue;
     const full = path.join(root, file);
-    if (!existsSync(full) || statSync(full).size > MAX_BYTES) continue;
+    const stat = existsSync(full) ? statSync(full) : null;
+    // `git ls-files --others` can list a nested repository or worktree as a directory.
+    if (!stat || !stat.isFile() || stat.size > MAX_BYTES) continue;
     const builtCode = file.startsWith('.next/') && /\.(m?js|cjs|map)$/.test(file);
     const lines = findSsnLines(readFileSync(full, 'utf8'), { dashedOnly: builtCode });
     if (lines.length) hits.push({ file, lines });

@@ -30,12 +30,21 @@ describe('parseCurePeriod', () => {
     },
   );
 
-  it.each([null, undefined, '', '   ', 'soon', 'ten days', '0 days', '10 fortnights', '-5 days'])(
-    'treats %j as unreadable',
-    (raw) => {
-      expect(parseCurePeriod(raw)).toEqual({ kind: 'unknown' });
-    },
-  );
+  it.each([
+    null,
+    undefined,
+    '',
+    '   ',
+    'soon',
+    'ten days',
+    '0 days',
+    '10 fortnights',
+    '-5 days',
+    '366 days',
+    '99999999 days',
+  ])('treats %j as unreadable', (raw) => {
+    expect(parseCurePeriod(raw)).toEqual({ kind: 'unknown' });
+  });
 });
 
 describe('describeCurePeriod', () => {

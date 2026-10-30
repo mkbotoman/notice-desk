@@ -17,7 +17,7 @@ export interface ActionContext {
   newId?: () => string;
 }
 
-const randomId = () => Math.random().toString(36).slice(2, 8);
+const randomId = () => crypto.randomUUID().slice(0, 8);
 
 function base(c: Case, ctx: ActionContext, effectiveDate: ISODate, note?: string) {
   const now = (ctx.now ?? (() => new Date()))();

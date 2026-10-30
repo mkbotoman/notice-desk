@@ -68,7 +68,17 @@ describe('parseMoney', () => {
 
   it('tells blank from text', () => {
     expect(parseMoney('  ')).toEqual({ kind: 'blank' });
-    for (const raw of ['TBD', 'Pending', '12.345', '$', '1.2.3']) {
+    for (const raw of [
+      'TBD',
+      'Pending',
+      '12.345',
+      '$',
+      '1.2.3',
+      '2026-10-13',
+      '555-1234',
+      '5-',
+      '--5',
+    ]) {
       expect(parseMoney(raw)).toEqual({ kind: 'text' });
     }
   });

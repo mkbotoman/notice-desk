@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Chip } from '@/components/ui/chip';
 import { Input } from '@/components/ui/input';
 import { isValidAsOf, todayISO } from '@/lib/persona/asof';
-import { useAsOf, usePersona } from '@/lib/persona/context';
+import { useAsOf, useIsClient, usePersona } from '@/lib/persona/context';
 import { describePersona, personaOptionLabel } from '@/lib/persona/personas';
 
 const pretty = (iso: string) => format(parseISO(iso), 'EEE, MMM d, yyyy');
@@ -14,6 +14,8 @@ const pretty = (iso: string) => format(parseISO(iso), 'EEE, MMM d, yyyy');
 /** The "as of" chip. Every date badge in the app reads this date. */
 export function AsOfControl() {
   const { asOf, dataDate, isDataDate, setAsOf, resetToDataDate, jumpToToday } = useAsOf();
+  // The real date differs between the build and the browser, so only the browser may print it.
+  const isClient = useIsClient();
   const details = useRef<HTMLDetailsElement>(null);
   const close = () => details.current?.removeAttribute('open');
 
@@ -54,7 +56,7 @@ export function AsOfControl() {
               close();
             }}
           >
-            Today ({format(new Date(), 'MMM d')})
+            Today{isClient ? ` (${format(new Date(), 'MMM d')})` : ''}
           </Button>
         </div>
         <p className="text-xs text-muted-foreground">

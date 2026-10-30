@@ -28,7 +28,15 @@ export function isValidToken(token: string | undefined, password: string): boole
 
 /** Same-site paths only, so the gate can't be used as an open redirect. */
 export function safeNextPath(next: string | null | undefined): string {
-  if (!next || !next.startsWith('/') || next.startsWith('//') || next.startsWith('/\\')) return '/';
+  // Control characters are stripped by URL parsers, so "/\t/evil.com" would become "//evil.com".
+  if (
+    !next ||
+    !next.startsWith('/') ||
+    next.startsWith('//') ||
+    /[\u0000-\u001f\u007f\\]/.test(next)
+  ) {
+    return '/';
+  }
   if (next === GATE_PATH || next === GATE_API_PATH || next.startsWith(`${GATE_PATH}?`)) return '/';
   return next;
 }

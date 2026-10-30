@@ -40,6 +40,11 @@ describe('cureDeadline', () => {
     expect(detail?.skippedHolidays.map((h) => h.date)).toEqual(['2027-12-31']);
   });
 
+  it('gives no deadline, instead of throwing, when business days start before the holiday calendar', () => {
+    expect(cureDeadline('2019-12-20', biz(10))).toBeNull();
+    expect(cureDeadline('2019-12-20', cal(10))).toBe('2019-12-30');
+  });
+
   it('is null when there is nothing to calculate', () => {
     expect(cureDeadline(null, biz(10))).toBeNull();
     expect(cureDeadline('2026-09-28', { kind: 'none' })).toBeNull();
@@ -88,6 +93,11 @@ describe('caseDeadline', () => {
       status: 'missing',
       daysUntil: null,
     });
+  });
+
+  it('reports a missing deadline when the send date is too old to count business days from', () => {
+    const c = makeCase({ dateSent: '2019-12-20', curePeriod: biz(10) });
+    expect(caseDeadline(c, asOf)).toEqual({ deadline: null, status: 'missing', daysUntil: null });
   });
 
   it('has no status for a notice with no cure date', () => {
