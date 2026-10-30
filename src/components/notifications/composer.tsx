@@ -133,6 +133,7 @@ export function Composer({
         <label className="flex min-w-0 flex-col gap-1.5">
           <span className={FIELD_LABEL}>Case</span>
           <select
+            aria-label="Case"
             className={CONTROL}
             value={caseId}
             onChange={(e) => {
@@ -153,6 +154,7 @@ export function Composer({
         <label className="flex min-w-0 flex-col gap-1.5">
           <span className={FIELD_LABEL}>Template</span>
           <select
+            aria-label="Template"
             className={CONTROL}
             value={templateId}
             onChange={(e) => {
@@ -170,6 +172,7 @@ export function Composer({
         <label className="flex min-w-0 flex-col gap-1.5">
           <span className={FIELD_LABEL}>To</span>
           <select
+            aria-label="To"
             className={CONTROL}
             value={recipient.personaId ?? ''}
             onChange={(e) => setRecipientOverride(e.target.value)}
@@ -186,6 +189,7 @@ export function Composer({
       <label className="flex flex-col gap-1.5">
         <span className={FIELD_LABEL}>Subject</span>
         <input
+          aria-label="Subject"
           className={CONTROL}
           value={text.subject}
           onChange={(e) => setEdit({ ...text, subject: e.target.value })}
@@ -194,6 +198,7 @@ export function Composer({
       <label className="flex flex-col gap-1.5">
         <span className={FIELD_LABEL}>Message</span>
         <textarea
+          aria-label="Message"
           rows={12}
           className={TEXTAREA}
           value={text.body}

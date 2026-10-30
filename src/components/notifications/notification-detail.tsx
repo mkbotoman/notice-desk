@@ -54,7 +54,7 @@ export function NotificationDetail({
   if (n.status !== 'draft') {
     return (
       <section
-        aria-label="Notification"
+        aria-label="Notification detail"
         className="flex min-w-0 flex-col gap-4 rounded-xl border bg-card p-5 sm:p-6"
       >
         <Heading n={n} caseName={caseName} />
@@ -130,6 +130,7 @@ export function NotificationDetail({
       <label className="flex flex-col gap-1.5">
         <span className={FIELD_LABEL}>Message</span>
         <textarea
+          aria-label="Message"
           rows={12}
           className={TEXTAREA}
           value={body}

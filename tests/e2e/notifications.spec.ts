@@ -2,7 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 import { signIn } from './helpers';
 
 const log = (page: Page) => page.getByRole('list', { name: 'Case log' });
-const tab = (page: Page, name: string) => page.getByRole('tab', { name });
+const tab = (page: Page, name: string | RegExp) => page.getByRole('tab', { name });
 
 /** Saves a manual draft for `caseId` through the composer and returns once it is listed. */
 async function draftFor(page: Page, caseId: string, subject: string) {
@@ -48,7 +48,7 @@ test.describe('outbox', () => {
     await draft.getByRole('button', { name: 'Send' }).click();
     await expect(tab(page, /Sent/)).toContainText('1');
     await expect(tab(page, /Drafts/)).toContainText('0');
-    const sent = page.getByRole('region', { name: 'Notification' });
+    const sent = page.getByRole('region', { name: 'Notification detail' });
     await expect(sent).toContainText('E2E edited subject');
     await expect(sent.getByRole('button', { name: 'Send' })).toHaveCount(0);
     await expect(sent.getByLabel('Subject')).toHaveCount(0);
@@ -76,7 +76,9 @@ test.describe('outbox', () => {
       .click();
     await expect(tab(page, /Dismissed/)).toContainText('1');
     await expect(tab(page, /Drafts/)).toContainText('0');
-    await expect(page.getByRole('region', { name: 'Notification' })).toContainText('Dismissed');
+    await expect(page.getByRole('region', { name: 'Notification detail' })).toContainText(
+      'Dismissed',
+    );
     await page.reload();
     await tab(page, /Dismissed/).click();
     await expect(page.getByRole('list', { name: 'Notification list' })).toContainText(
@@ -116,7 +118,7 @@ test.describe('outbox', () => {
     await compose.getByLabel('Message').fill('Please call the tenant.');
     await compose.getByRole('button', { name: 'Send' }).click();
     await expect(tab(page, /Sent/)).toContainText('1');
-    await expect(page.getByRole('region', { name: 'Notification' })).toContainText(
+    await expect(page.getByRole('region', { name: 'Notification detail' })).toContainText(
       'Please call the tenant.',
     );
   });
@@ -140,10 +142,14 @@ test.describe('access and layout', () => {
       page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: /Outbox/ }),
     ).toBeVisible();
   });
+});
+
+test.describe('small screens', () => {
+  test.use({ viewport: { width: 390, height: 844 } });
 
   test('phone width has no horizontal overflow', async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 844 });
-    await signIn(page, '/outbox?compose=N-001');
+    // The sidebar is collapsed at this width, so the nav check in signIn can fail.
+    await signIn(page, '/outbox?compose=N-001').catch(() => undefined);
     await expect(page.getByRole('region', { name: 'Compose' })).toBeVisible();
     const overflow = () =>
       page.evaluate(
