@@ -3,11 +3,11 @@ import { describeDays, formatCents, longDate, shortDate, weekdayDate } from './f
 
 describe('formatCents', () => {
   it.each([
-    [2190000, '$21,900'],
+    [2190000, '$21,900.00'],
     [2190050, '$21,900.50'],
     [5, '$0.05'],
-    [0, '$0'],
-    [-25000, '-$250'],
+    [0, '$0.00'],
+    [-25000, '-$250.00'],
     [1234567 * 100 + 89, '$1,234,567.89'],
     [null, '—'],
   ])('%s -> %s', (cents, text) => {

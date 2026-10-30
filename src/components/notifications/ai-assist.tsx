@@ -4,8 +4,8 @@ import { Sparkles } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Chip } from '@/components/ui/chip';
-import type { DraftRequest, DraftText } from '@/lib/ai/draft';
-import { FIELD_LABEL } from './shared';
+import { DRAFT_INSTRUCTION_MAX, type DraftRequest, type DraftText } from '@/lib/ai/draft';
+import { CONTROL, FIELD_LABEL } from './shared';
 
 export const AI_UNAVAILABLE = 'AI unavailable, your draft is unchanged';
 const AI_BUSY = 'Drafting with AI, please wait';
@@ -39,19 +39,20 @@ async function requestDraft(request: DraftRequest, signal: AbortSignal): Promise
 }
 
 /**
- * Offers a model rewrite of the person's own edited text. It only runs when they click, shows the
- * result beside their text, and applies it only when they say so.
+ * Offers a model rewrite of the message, with an optional note on what should change. It only runs
+ * when they click, shows the result beside their text, and applies it only when they say so.
  */
 export function AiAssist({
   build,
   onUse,
 }: {
-  /** The allowlisted request for the current text, and whether redaction changed that text. */
-  build: () => { request: DraftRequest; removed: boolean };
+  /** The allowlisted request for the current text and note, and whether redaction changed them. */
+  build: (instruction: string) => { request: DraftRequest; removed: boolean };
   onUse: (draft: DraftText) => void;
 }) {
   const [state, setState] = useState<State>({ kind: 'idle' });
   const [removed, setRemoved] = useState(false);
+  const [instruction, setInstruction] = useState('');
   const controller = useRef<AbortController | null>(null);
 
   useEffect(() => () => controller.current?.abort(), []);
@@ -59,7 +60,7 @@ export function AiAssist({
   const run = async () => {
     let built;
     try {
-      built = build();
+      built = build(instruction);
     } catch {
       setState({ kind: 'unavailable' });
       return;
@@ -80,8 +81,8 @@ export function AiAssist({
     <div className="flex flex-col gap-3 rounded-lg border border-navy-line bg-navy-soft/40 p-3.5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="min-w-0 flex-[1_1_240px] text-[13px] text-gray-700">
-          Sends the case facts (tenant, property, stage, dates, amount, owner team) and your text to
-          the AI. No case notes or guarantor details.
+          Sends the case facts (tenant, property, stage, dates, amount, owner team), your text and
+          your note to the AI. No case notes or guarantor details.
         </p>
         <Button
           type="button"
@@ -94,6 +95,18 @@ export function AiAssist({
           Draft with AI
         </Button>
       </div>
+
+      <label className="flex flex-col gap-1.5">
+        <span className={FIELD_LABEL}>What should change? (optional)</span>
+        <input
+          aria-label="What should change?"
+          className={CONTROL}
+          maxLength={DRAFT_INSTRUCTION_MAX}
+          placeholder="For example: shorter, or friendlier"
+          value={instruction}
+          onChange={(e) => setInstruction(e.target.value)}
+        />
+      </label>
 
       <p role="status" aria-live="polite" className="text-sm font-semibold text-gray-700">
         {state.kind === 'ready' ? AI_READY : status}

@@ -205,11 +205,11 @@ describe('ownerButtonLabel', () => {
 describe('balanceDelta', () => {
   it('compares the live balance with the notice amount', () => {
     expect(balanceDelta(1845000, 2190000, formatCents)).toEqual({
-      text: '+$3,450 since notice',
+      text: '+$3,450.00 since notice',
       tone: 'warning',
     });
     expect(balanceDelta(2190000, 1845000, formatCents)).toEqual({
-      text: '-$3,450 since notice',
+      text: '-$3,450.00 since notice',
       tone: 'success',
     });
     expect(balanceDelta(100, 100, formatCents)?.tone).toBe('gray');

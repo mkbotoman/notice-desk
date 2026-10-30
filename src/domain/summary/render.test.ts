@@ -128,11 +128,11 @@ describe('renderPlainText', () => {
         '• 1 new case and 1 stage change this week',
         '',
         'OVERDUE (1)',
-        '• Acme LLC, Harbor Commons Ste 104: cure date Tue, Oct 6 (7 days overdue), Monetary, AR $21,900, with Legal',
+        '• Acme LLC, Harbor Commons Ste 104: cure date Tue, Oct 6 (7 days overdue), Monetary, AR $21,900.00, with Legal',
         '• Acme LLC, Unknown property: cure date Tue, Oct 6 (7 days overdue), Insurance, with Legal',
         '',
         'DUE IN THE NEXT 7 DAYS (1)',
-        '• Wed, Oct 14: Acme LLC, Harbor Commons Ste 104, Monetary, AR $21,900, with Legal',
+        '• Wed, Oct 14: Acme LLC, Harbor Commons Ste 104, Monetary, AR $21,900.00, with Legal',
         '',
         'NEW THIS WEEK (1)',
         '• Mon, Oct 12: Acme LLC, Harbor Commons Ste 104, Monetary, with Legal',
@@ -145,13 +145,13 @@ describe('renderPlainText', () => {
         '',
         'WAITING ON ASSET MANAGEMENT (2)',
         'Ann Adams: 2 cases (1 overdue)',
-        '• Acme LLC, Harbor Commons Ste 104: Notice to Cure, cure date Tue, Oct 6, Monetary, AR $21,900',
-        '• Acme LLC, Harbor Commons Ste 104: Default, Monetary, AR $21,900',
+        '• Acme LLC, Harbor Commons Ste 104: Notice to Cure, cure date Tue, Oct 6, Monetary, AR $21,900.00',
+        '• Acme LLC, Harbor Commons Ste 104: Default, Monetary, AR $21,900.00',
         'No asset manager on file: 1 case',
-        '• Acme LLC, Harbor Commons Ste 104: Notice to Cure, Monetary, AR $21,900',
+        '• Acme LLC, Harbor Commons Ste 104: Notice to Cure, Monetary, AR $21,900.00',
         '',
         'WAITING ON LEGAL (1)',
-        '• Acme LLC, Harbor Commons Ste 104: Notice to Cure, cure date Wed, Oct 14, Monetary, AR $21,900',
+        '• Acme LLC, Harbor Commons Ste 104: Notice to Cure, cure date Wed, Oct 14, Monetary, AR $21,900.00',
         '',
         'BALANCES',
         'Live AR on the 3 open cases in view: $21,900.05.',
@@ -212,7 +212,7 @@ describe('renderHtml', () => {
     expect(html).toContain('<h2');
     expect(html).toContain('>Overdue (1)</h2>');
     expect(html).toContain(
-      '<li>Wed, Oct 14: Acme LLC, Harbor Commons Ste 104, Monetary, AR $21,900, with Legal</li>',
+      '<li>Wed, Oct 14: Acme LLC, Harbor Commons Ste 104, Monetary, AR $21,900.00, with Legal</li>',
     );
     expect(html).toContain('>Ann Adams: 2 cases (1 overdue)</p>');
     expect(renderHtml(quiet())).toContain('>None this week</p>');

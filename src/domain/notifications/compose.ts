@@ -3,27 +3,57 @@ import type {
   ISODate,
   ISODateTime,
   Notification,
+  NotificationRecipe,
   NotificationStatus,
   NotificationTrigger,
   Persona,
 } from '../types';
 import { caseDeadline, cureDeadline } from '../deadline';
-import { greetingName, propertyContactRecipient, type Recipient } from './recipients';
+import { audienceFor, greetingName, propertyContactRecipient, type Recipient } from './recipients';
 import { buildMergeFields, renderTemplate, type Rendered, type TemplateId } from './templates';
 import { sourcesFor, type NotificationRefs } from './triggers';
 
-/** The template's text for a case, as the composer first shows it. */
+interface RenderInput {
+  asOf: ISODate;
+  refs: NotificationRefs;
+  personas: readonly Persona[];
+}
+
+/**
+ * The template's text for a case, as the composer first shows it. Maya gets the internal wording;
+ * anyone else gets the version written for the tenant. `recipe` carries the facts of an automatic
+ * draft (the stage it moved to, the deadline it was about) so a re-render says the same thing.
+ */
 export function renderForCase(
   templateId: TemplateId,
   c: Case,
   recipient: Recipient,
-  input: { asOf: ISODate; refs: NotificationRefs; personas: readonly Persona[] },
+  input: RenderInput,
+  recipe?: NotificationRecipe,
 ): Rendered {
-  const fields = buildMergeFields(c, sourcesFor(c, input.refs, input.asOf), {
-    deadline: cureDeadline(c.dateSent, c.curePeriod),
-    recipientName: greetingName(recipient.personaId, input.personas),
-  });
-  return renderTemplate(templateId, fields);
+  const sources = sourcesFor(c, input.refs, input.asOf);
+  const fields = buildMergeFields(
+    c,
+    { ...sources, coi: recipe?.coi ?? sources.coi },
+    {
+      stage: recipe?.stage,
+      previousStage: recipe?.previousStage,
+      owner: recipe?.owner,
+      deadline: recipe?.deadline ?? cureDeadline(c.dateSent, c.curePeriod),
+      recipientName: greetingName(recipient.personaId, input.personas),
+    },
+  );
+  return renderTemplate(templateId, fields, audienceFor(recipient.personaId, input.personas));
+}
+
+/** An automatic draft's text for a given recipient; null for a notification with no recipe. */
+export function renderNotification(
+  n: Notification,
+  c: Case,
+  recipient: Recipient,
+  input: RenderInput,
+): Rendered | null {
+  return n.recipe ? renderForCase(n.recipe.template, c, recipient, input, n.recipe) : null;
 }
 
 /** The template that fits where the case is: overdue, due soon, or just its stage. */
@@ -50,7 +80,7 @@ export interface ManualInput {
   subject: string;
   body: string;
   /** The template the text started from, with the text it produced. Null when typed freely. */
-  template: { rendered: Rendered } | null;
+  template: { rendered: Rendered; id: TemplateId } | null;
   status: 'draft' | 'sent';
   now: ISODateTime;
 }
@@ -80,6 +110,7 @@ export function buildManualNotification(input: ManualInput): Notification {
     subject: input.subject,
     body: input.body,
     source: unedited ? 'template' : 'manual',
+    ...(input.template ? { recipe: { template: input.template.id } } : {}),
     status: input.status,
     createdAt: input.now,
     ...(input.status === 'sent' ? { sentAt: input.now } : {}),
@@ -91,7 +122,10 @@ function requireDraft(n: Notification) {
 }
 
 /** An automatic draft keeps its trigger; editing its text marks it as hand-written. */
-export function editDraft(n: Notification, edit: { subject: string; body: string }): Notification {
+export function editDraft(
+  n: Notification,
+  edit: { subject: string; body: string; recipient?: Recipient },
+): Notification {
   requireDraft(n);
   requireText(edit.subject, edit.body);
   const changed = edit.subject !== n.subject || edit.body !== n.body;
@@ -99,6 +133,9 @@ export function editDraft(n: Notification, edit: { subject: string; body: string
     ...n,
     subject: edit.subject,
     body: edit.body,
+    ...(edit.recipient
+      ? { recipientPersonaId: edit.recipient.personaId, recipientLabel: edit.recipient.label }
+      : {}),
     source: changed && n.source === 'template' ? 'manual' : n.source,
   };
 }

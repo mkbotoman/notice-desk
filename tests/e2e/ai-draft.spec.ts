@@ -29,30 +29,40 @@ async function openComposer(page: Page) {
 }
 
 test.describe('AI draft assist', () => {
-  test('no AI button on the untouched template; it follows edits and restoring', async ({
+  test('the AI button is always there, with an optional note on what should change', async ({
     page,
   }) => {
     await openComposer(page);
     await expect(compose(page).getByText('Standard template · no AI')).toBeVisible();
-    await expect(aiButton(page)).toHaveCount(0);
-
-    const subject = compose(page).getByLabel('Subject');
-    const original = await subject.inputValue();
-    await subject.fill(`${original} please`);
     await expect(aiButton(page)).toBeVisible();
+    await expect(compose(page).getByLabel('What should change?')).toBeVisible();
     await expect(
-      compose(page).getByText(/Sends the case facts .* and your text to the AI/),
+      compose(page).getByText(/Sends the case facts .* your text and your note to the AI/),
     ).toBeVisible();
 
-    await subject.fill(original);
-    await expect(aiButton(page)).toHaveCount(0);
-
-    const body = compose(page).getByLabel('Message');
-    const originalBody = await body.inputValue();
-    await body.fill(`${originalBody}\nExtra line.`);
+    await compose(page).getByLabel('Subject').fill('Edited subject');
     await expect(aiButton(page)).toBeVisible();
-    await body.fill(originalBody);
-    await expect(aiButton(page)).toHaveCount(0);
+  });
+
+  test('the note goes with the request, and is optional', async ({ page }) => {
+    const sent: Record<string, unknown>[] = [];
+    await page.route('**/api/ai/draft', (route) => {
+      sent.push(route.request().postDataJSON());
+      return route.fulfill({
+        json: { source: 'ai', subject: AI_SUBJECT, body: AI_BODY, model: 'stub' },
+      });
+    });
+    await openComposer(page);
+    await aiButton(page).click();
+    await expect(panel(page)).toBeVisible();
+    expect(sent[0]).not.toHaveProperty('instruction');
+    expect(sent[0]).toMatchObject({ tone: 'formal' });
+
+    await panel(page).getByRole('button', { name: 'Discard' }).click();
+    await compose(page).getByLabel('What should change?').fill('make it shorter');
+    await aiButton(page).click();
+    await expect(panel(page)).toBeVisible();
+    expect(sent[1]).toMatchObject({ instruction: 'make it shorter' });
   });
 
   test('a stubbed draft is shown, only applied on request, and marks the sent notification', async ({

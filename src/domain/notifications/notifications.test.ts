@@ -16,9 +16,11 @@ import {
   filterNotifications,
   recipientKey,
   renderForCase,
+  renderNotification,
   sendDraft,
 } from './compose';
 import {
+  audienceFor,
   propertyContactRecipient,
   propertyPeople,
   greetingName,
@@ -244,10 +246,11 @@ describe('triggers against the fixture at its data date', () => {
     const stage = byKey.get('EV-stage')!;
     expect(stage.trigger).toBe('stage_changed');
     expect(stage.recipientPersonaId).toBe('pm-dan-whitfield');
-    expect(stage.body).toContain('moved from Notice to Cure to Default');
+    expect(stage.body).toContain('Please pass the message below on to');
+    expect(stage.body).toContain('Dear ');
 
     expect(byKey.get('EV-owner')!.recipientPersonaId).toBe('pm-priya-shah');
-    expect(byKey.get('EV-owner')!.body).toContain('now with Asset Management');
+    expect(byKey.get('EV-owner')!.body).toContain('now being handled by Asset Management');
     // Handing a case back to Legal still tells the property's own manager, not Legal.
     expect(byKey.get('EV-owner-legal')!.recipientPersonaId).toBe('pm-dan-whitfield');
     expect(byKey.has('EV-import')).toBe(false);
@@ -395,7 +398,7 @@ describe('templates', () => {
     expect(fields).toMatchObject({
       tenant: 'Brightside Fitness LLC',
       where: 'Harbor Commons, Suite 110',
-      amount: '$18,450',
+      amount: '$18,450.00',
       deadline: 'Mon, Oct 19, 2026',
       deadlineShort: 'Mon, Oct 19',
       caseLink: '/cases/N-77',
@@ -420,6 +423,93 @@ describe('templates', () => {
       expect(text(id)).toBe(out);
     }
     expect(text('blank')).toBe('\n');
+  });
+
+  it('writes every template for the tenant when the reader is a property manager', () => {
+    const pm = { personaId: 'pm-dan-whitfield', label: 'Dan Whitfield · Property manager' };
+    for (const id of TEMPLATE_IDS.filter((t) => t !== 'blank')) {
+      const { subject, body } = renderForCase(id, c, pm, run());
+      expect(subject).toContain('For Brightside Fitness LLC, Harbor Commons, Suite 110');
+      expect(body).toContain('Please pass the message below on to Brightside Fitness LLC.');
+      expect(body).toContain('Dear Brightside Fitness LLC,');
+      expect(body).toContain('Sincerely,\nMeridian Peak Equity\n\nEnd of message.');
+      expect(body).toContain('/cases/N-77');
+      expect(`${subject}${body}`).not.toMatch(/Gary|Guarantor|Secret|\n\s*[-*#]/);
+    }
+    expect(renderForCase('blank', c, pm, run())).toEqual({ subject: '', body: '' });
+    const maya = personaRecipient(personas.find((p) => p.kind === 'legal')!);
+    expect(renderForCase('stage_changed', c, maya, run()).body).not.toContain('Dear ');
+  });
+
+  it('chooses the wording from who the recipient is', () => {
+    const legal = personas.find((p) => p.kind === 'legal')!;
+    expect(audienceFor(legal.id, personas)).toBe('internal');
+    expect(audienceFor('pm-dan-whitfield', personas)).toBe('property');
+    expect(audienceFor(null, personas)).toBe('property');
+  });
+
+  it('only mentions a balance in tenant wording when there is one', () => {
+    const none = buildMergeFields(c, {
+      tenant: undefined,
+      property: undefined,
+      lease: undefined,
+      coi: undefined,
+    });
+    expect(none.balanceSentence).toBe('');
+    const owed = buildMergeFields(c, {
+      tenant: undefined,
+      property: undefined,
+      lease: refs.leaseById.get('L-001'),
+      coi: undefined,
+    });
+    expect(owed.balanceSentence).toBe(' The outstanding balance is $18,450.00.');
+  });
+
+  it('re-renders an automatic draft for another reader from its recipe', () => {
+    const events = [
+      makeEvent({
+        id: 'EV-re',
+        caseId: 'N-001',
+        type: 'stage_changed',
+        payload: { from: 'notice_to_cure', to: 'default' },
+      }),
+    ];
+    const [draft] = evaluateTriggers(input({ eventsByCase: eventsOf(events) })).filter(
+      (d) => d.dedupeKey === 'EV-re',
+    );
+    expect(draft.recipe).toEqual({
+      template: 'stage_changed',
+      stage: 'default',
+      previousStage: 'notice_to_cure',
+    });
+    const target = input({ eventsByCase: eventsOf(events) }).cases.find((x) => x.id === 'N-001')!;
+    const maya = personaRecipient(personas.find((p) => p.kind === 'legal')!);
+    const internal = renderNotification(draft, target, maya, run())!;
+    expect(internal.body).toContain('moved from Notice to Cure to Default');
+    const pm = { personaId: draft.recipientPersonaId, label: draft.recipientLabel };
+    expect(renderNotification(draft, target, pm, run())!.body).toBe(draft.body);
+    expect(renderNotification({ ...draft, recipe: undefined }, target, pm, run())).toBeNull();
+  });
+
+  it('lets a draft change who it is addressed to', () => {
+    const n = buildManualNotification({
+      id: 'NF-m',
+      caseId: 'N-77',
+      recipient: { personaId: null, label: 'Choose' },
+      subject: 'S',
+      body: 'B',
+      template: { rendered: { subject: 'S', body: 'B' }, id: 'owner_changed' },
+      status: 'draft',
+      now: NOW,
+    });
+    expect(n.recipe).toEqual({ template: 'owner_changed' });
+    const moved = editDraft(n, {
+      subject: 'S',
+      body: 'B',
+      recipient: { personaId: 'pm-dan-whitfield', label: 'Dan' },
+    });
+    expect(moved).toMatchObject({ recipientPersonaId: 'pm-dan-whitfield', recipientLabel: 'Dan' });
+    expect(editDraft(n, { subject: 'S', body: 'B' }).recipientLabel).toBe('Choose');
   });
 
   it('never includes guarantor data or notes, and tolerates missing data', () => {
@@ -477,7 +567,7 @@ describe('templates', () => {
   it('fills a case with its own cure deadline and balance', () => {
     const { body } = renderForCase('deadline_approaching', seed.cases[0], recipient, run());
     expect(body).toContain('Tue, Oct 13, 2026');
-    expect(body).toContain('$18,450');
+    expect(body).toContain('$18,450.00');
   });
 });
 
@@ -490,7 +580,7 @@ describe('composing and the outbox lifecycle', () => {
       recipient: { personaId: 'maya', label: 'Maya · Legal' },
       subject: 'S',
       body: 'B',
-      template: { rendered },
+      template: { rendered, id: 'stage_changed' as const },
       status: 'draft',
       now: NOW,
       ...over,

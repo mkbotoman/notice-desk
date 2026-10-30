@@ -29,3 +29,9 @@ export type Mode =
 
 /** "N-001 · Brightside Fitness LLC · Harbor Commons" for a case id. */
 export type CaseLabeler = (caseId: string) => string;
+
+export const AUDIENCE_HINT = {
+  internal: 'Notice Desk email to Legal: the internal wording.',
+  property:
+    'Email to the property manager, with a message for the tenant that they can pass on. Change To to switch wording.',
+} as const;

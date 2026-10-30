@@ -1,5 +1,6 @@
 import { personaOptionLabel } from '@/lib/persona/personas';
 import type { Persona, Property } from '../types';
+import type { Audience } from './templates';
 
 export interface Recipient {
   personaId: string | null;
@@ -53,4 +54,12 @@ export function greetingName(
 ): string | null {
   const persona = personas.find((p) => p.id === personaId);
   return persona ? persona.label.split(' ')[0] : null;
+}
+
+/**
+ * Maya (Legal) gets the internal Notice Desk email. Anyone else, or nobody chosen yet, gets the
+ * version written for the tenant, which the property manager passes on.
+ */
+export function audienceFor(personaId: string | null, personas: readonly Persona[]): Audience {
+  return personas.find((p) => p.id === personaId)?.kind === 'legal' ? 'internal' : 'property';
 }

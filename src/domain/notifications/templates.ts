@@ -1,4 +1,5 @@
 import { STAGE_LABELS, formatCents, longDate, weekdayDate } from '@/lib/format';
+import { TEMPLATE_IDS, type TemplateId } from '../types';
 import type {
   Case,
   CoiStatus,
@@ -25,6 +26,10 @@ export interface MergeFields {
   stage: string;
   previousStage: string | null;
   stageGuidance: string;
+  /** What the tenant is told about this stage, in their language. */
+  tenantGuidance: string;
+  /** " The outstanding balance is $X." or nothing when there is no balance to speak of. */
+  balanceSentence: string;
   owner: string;
   deadline: string | null;
   deadlineShort: string | null;
@@ -39,15 +44,7 @@ export interface Rendered {
   body: string;
 }
 
-export const TEMPLATE_IDS = [
-  'deadline_approaching',
-  'deadline_passed',
-  'stage_changed',
-  'owner_changed',
-  'coi_expiring',
-  'blank',
-] as const;
-export type TemplateId = (typeof TEMPLATE_IDS)[number];
+export { TEMPLATE_IDS, type TemplateId };
 
 const STAGE_GUIDANCE: Record<Stage, string> = {
   non_compliant: 'No notice has gone out yet. Legal will decide whether to send a Notice to Cure.',
@@ -58,6 +55,19 @@ const STAGE_GUIDANCE: Record<Stage, string> = {
   closed: 'The case is closed. No further action is needed.',
 };
 
+const TENANT_STAGE_GUIDANCE: Record<Stage, string> = {
+  non_compliant:
+    'We have noticed an issue at your premises that needs to be addressed. We will be in touch with the details.',
+  notice_to_cure:
+    'We have issued a formal Notice to Cure. It sets out what needs to be resolved and by when.',
+  default:
+    'The cure period has ended without the matter being resolved. Our legal team is reviewing the next steps and will be in touch.',
+  collections:
+    'The outstanding balance has been referred to a collections agency, which will contact you directly.',
+  cured: 'Thank you for resolving this matter. No further action is needed.',
+  closed: 'This matter is now closed. No further action is needed.',
+};
+
 const OWNER_NAMES: Record<Team, string> = { legal: 'Legal', asset_management: 'Asset Management' };
 
 const hi = (f: MergeFields) => (f.recipientName ? `Hi ${f.recipientName},` : 'Hi,');
@@ -65,12 +75,42 @@ const close = (f: MergeFields) => `Case ${f.caseId}: ${f.caseLink}\n\nThanks,\nN
 const deadlineOf = (f: MergeFields) => f.deadline ?? 'not set';
 const shortOf = (f: MergeFields) => f.deadlineShort ?? 'not set';
 
+/** Who is reading: Maya (the internal Notice Desk email) or the tenant, through the property manager. */
+export type Audience = 'internal' | 'property';
+
 export interface Template {
   id: TemplateId;
   label: string;
   trigger: NotificationTrigger;
+  /** The Notice Desk email to Maya. The wording the app has always used. */
   render: (f: MergeFields) => Rendered;
+  /** Written for the tenant, in an email to the property manager who passes it on. */
+  renderForProperty: (f: MergeFields) => Rendered;
 }
+
+/** The email to the property manager: a short note, then the message for the tenant. */
+const forTenant = (f: MergeFields, topic: string, tenantBody: string): Rendered => ({
+  subject: `For ${f.tenant}, ${f.where}: ${topic}`,
+  body: `${hi(f)}
+
+Please pass the message below on to ${f.tenant}.
+
+Message for the tenant:
+
+Dear ${f.tenant},
+
+${tenantBody}
+
+Sincerely,
+Meridian Peak Equity
+
+End of message.
+
+Case ${f.caseId}: ${f.caseLink}
+
+Thanks,
+Notice Desk`,
+});
 
 export const TEMPLATES: readonly Template[] = [
   {
@@ -87,6 +127,14 @@ Please confirm before then whether the tenant has paid or been in touch. If noth
 
 ${close(f)}`,
     }),
+    renderForProperty: (f) =>
+      forTenant(
+        f,
+        `cure deadline ${shortOf(f)}`,
+        `This is a reminder about the notice we sent for ${f.where}. The cure period ends on ${deadlineOf(f)}.${f.balanceSentence}
+
+If you have already resolved this, please let us know so we can update our records. If not, please contact us before ${shortOf(f)} so we can talk it through.`,
+      ),
   },
   {
     id: 'deadline_passed',
@@ -98,10 +146,18 @@ ${close(f)}`,
 
 The cure deadline for ${f.tenant} at ${f.where} was ${deadlineOf(f)} and the case is still in Notice to Cure. The AR balance is ${f.amount}.
 
-Please check whether the tenant has cured and let Legal know. If not, Legal will review moving the case to Default.
+Please check whether the tenant has cured. If not, consider moving the case to Default.
 
 ${close(f)}`,
     }),
+    renderForProperty: (f) =>
+      forTenant(
+        f,
+        'cure deadline passed',
+        `The cure period in our notice for ${f.where} ended on ${deadlineOf(f)}, and our records show the matter has not yet been resolved.${f.balanceSentence}
+
+Please contact us as soon as possible so we can discuss next steps.`,
+      ),
   },
   {
     id: 'stage_changed',
@@ -117,6 +173,14 @@ ${f.stageGuidance}
 
 ${close(f)}`,
     }),
+    renderForProperty: (f) =>
+      forTenant(
+        f,
+        'an update on your account',
+        `We are writing to update you on ${f.where}. ${f.tenantGuidance}${f.balanceSentence}
+
+If you have any questions, please contact us.`,
+      ),
   },
   {
     id: 'owner_changed',
@@ -128,10 +192,16 @@ ${close(f)}`,
 
 The case for ${f.tenant} at ${f.where} is now with ${f.owner}, currently in ${f.stage}. The AR balance is ${f.amount}.
 
-The next step is with ${f.owner}.
+Please review the case; the next step is yours.
 
 ${close(f)}`,
     }),
+    renderForProperty: (f) =>
+      forTenant(
+        f,
+        'who is handling your account',
+        `Your account for ${f.where} is now being handled by ${f.owner}. If you have any questions about it, please contact us and we will point you to the right person.`,
+      ),
   },
   {
     id: 'coi_expiring',
@@ -147,14 +217,32 @@ Please ask the tenant for a renewed certificate.
 
 ${close(f)}`,
     }),
+    renderForProperty: (f) =>
+      forTenant(
+        f,
+        'your insurance certificate',
+        `Our records show that the certificate of insurance for ${f.where} is ${f.coiStatus} (expiry ${f.coiExpiry}).
+
+Please send us an updated certificate as soon as you can so that your coverage stays on file.`,
+      ),
   },
-  { id: 'blank', label: 'Blank', trigger: 'manual', render: () => ({ subject: '', body: '' }) },
+  {
+    id: 'blank',
+    label: 'Blank',
+    trigger: 'manual',
+    render: () => ({ subject: '', body: '' }),
+    renderForProperty: () => ({ subject: '', body: '' }),
+  },
 ];
 
-export function renderTemplate(id: TemplateId, fields: MergeFields): Rendered {
+export function renderTemplate(
+  id: TemplateId,
+  fields: MergeFields,
+  audience: Audience = 'internal',
+): Rendered {
   const template = TEMPLATES.find((t) => t.id === id);
   if (!template) throw new Error(`Unknown template ${id}`);
-  return template.render(fields);
+  return audience === 'internal' ? template.render(fields) : template.renderForProperty(fields);
 }
 
 export interface FieldSources {
@@ -193,6 +281,9 @@ export function buildMergeFields(
     stage: STAGE_LABELS[stage],
     previousStage: options.previousStage ? STAGE_LABELS[options.previousStage] : null,
     stageGuidance: STAGE_GUIDANCE[stage],
+    tenantGuidance: TENANT_STAGE_GUIDANCE[stage],
+    balanceSentence:
+      balance !== null && balance > 0 ? ` The outstanding balance is ${formatCents(balance)}.` : '',
     owner: OWNER_NAMES[options.owner ?? c.owner],
     deadline: deadline ? longDate(deadline) : null,
     deadlineShort: deadline ? weekdayDate(deadline) : null,

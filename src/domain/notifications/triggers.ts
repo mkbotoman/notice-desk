@@ -9,13 +9,14 @@ import type {
   ISODateTime,
   Lease,
   Notification,
+  NotificationRecipe,
   NotificationTrigger,
   Persona,
   Property,
   Tenant,
 } from '../types';
 import { businessDaysUntil } from './business-days';
-import { greetingName, propertyContactRecipient, type Recipient } from './recipients';
+import { audienceFor, greetingName, propertyContactRecipient, type Recipient } from './recipients';
 import {
   buildMergeFields,
   renderTemplate,
@@ -169,7 +170,21 @@ function renderCandidate(
     { ...sources, coi: cand.coi ?? sources.coi },
     { ...cand.options, recipientName: greetingName(cand.recipient.personaId, input.personas) },
   );
-  return { ...renderTemplate(cand.templateId, fields), fields };
+  const audience = audienceFor(cand.recipient.personaId, input.personas);
+  return { ...renderTemplate(cand.templateId, fields, audience), fields };
+}
+
+/** What a draft needs to be re-rendered later, for a different reader. */
+function recipeFor(cand: Candidate): NotificationRecipe {
+  const { stage, previousStage, owner, deadline } = cand.options;
+  return {
+    template: cand.templateId,
+    ...(stage ? { stage } : {}),
+    ...(previousStage ? { previousStage } : {}),
+    ...(owner ? { owner } : {}),
+    ...(deadline ? { deadline } : {}),
+    ...(cand.coi ? { coi: cand.coi } : {}),
+  };
 }
 
 /**
@@ -200,6 +215,7 @@ export function evaluateTriggers(input: TriggerInput): Notification[] {
       source: 'template',
       status: 'draft',
       createdAt: input.now,
+      recipe: recipeFor(cand),
     });
   }
   return drafts;

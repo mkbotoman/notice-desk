@@ -49,3 +49,10 @@ One line each, tagged with the workstream ID, e.g. `- [WS-1B] ...`. Feeds the sh
 - [WS-4A] Verified against the real gateway: ten consecutive narrative requests on `google/gemini-2.5-flash` all passed the output checks. Two real problems surfaced and were fixed: "thinking" models use a large part of the output budget on hidden reasoning, so the budget is 4,000 tokens and a reply cut off by the limit is rejected (the text is never shown); and the narrative must end like a sentence. The browser tests use a deliberately unusable model so they never call, or spend, real credit.
 - [Tenant trend] "Trends for individual tenants" is a per-tenant view built from what the data has: notices by month sent, work done on the tenant's cases in the app by week, days since each notice, and live balance by lease. It appears on the Analytics page (with a tenant picker) and as a Trend section on each tenant's page, limited to what the viewing persona may see. There is no stage history or balance history in the data, so there is no trend of a tenant's balance or stages over time; the page says so.
 - [Overview] Every overview card links to the case list it counts (overdue, due this week, open, waiting on Legal, waiting on Asset Mgmt), and each property in the rollup links to that property's cases. The overview now shows both courts for every persona.
+
+## Outbox: two emails, one To dropdown
+
+- The To field decides which email it is. Maya (Legal) gets the internal Notice Desk email, with the wording the app has always used. Anyone else gets an email to the property manager that contains a message for the tenant to pass on: polite and factual, no legal advice, no threats.
+- Automatic drafts default to the property manager's version; choosing Maya as the recipient switches the wording. Each automatic draft keeps a `recipe` (template, stage, deadline, certificate details) so switching To says the same thing for the new reader. Edited text is kept when To changes.
+- "Draft with AI" is always shown, with an optional "What should change?" note (300 characters, redacted, sent as data).
+- Amounts always show cents ($18,450.00).

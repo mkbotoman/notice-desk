@@ -10,7 +10,7 @@ import {
   defaultTemplate,
   renderForCase,
 } from '@/domain/notifications/compose';
-import { personaRecipient, propertyPeople } from '@/domain/notifications/recipients';
+import { audienceFor, personaRecipient, propertyPeople } from '@/domain/notifications/recipients';
 import { TEMPLATES, type TemplateId } from '@/domain/notifications/templates';
 import type { NotificationRefs } from '@/domain/notifications/triggers';
 import { openCases } from '@/domain/selectors';
@@ -24,7 +24,14 @@ import { useStore, useStoreState } from '@/store/react';
 import { useCaseActions } from '@/store/use-case-actions';
 import { AiAssist } from './ai-assist';
 import { NO_EMAIL_NOTE } from './notification-detail';
-import { CONTROL, FIELD_LABEL, TEXTAREA, newManualId, type CaseLabeler } from './shared';
+import {
+  AUDIENCE_HINT,
+  CONTROL,
+  FIELD_LABEL,
+  TEXTAREA,
+  newManualId,
+  type CaseLabeler,
+} from './shared';
 
 interface Text {
   subject: string;
@@ -90,10 +97,10 @@ export function Composer({
   const edited =
     edit !== null && (edit.subject !== rendered.subject || edit.body !== rendered.body);
   const aiAssisted = edited && edit?.ai === true;
-  const canAssist = edited && (text.subject.trim() !== '' || text.body.trim() !== '');
+  const audience = audienceFor(recipient.personaId, personas);
   const typed = (next: Partial<Text>): Edit => ({ ...text, ...next, ai: aiAssisted });
 
-  const buildAiRequest = () => {
+  const buildAiRequest = (instruction: string) => {
     if (!c) throw new Error('No case');
     return buildDraftRequest({
       facts: caseFacts(c, {
@@ -102,10 +109,11 @@ export function Composer({
         lease: c.leaseId ? lookups.leaseById.get(c.leaseId) : undefined,
       }),
       recipientRole: recipientRole(personas.find((p) => p.id === recipient.personaId)),
-      tone: 'internal',
+      tone: audience === 'internal' ? 'internal' : 'formal',
       template: templateId,
       subject: text.subject,
       body: text.body,
+      instruction,
     });
   };
 
@@ -121,7 +129,7 @@ export function Composer({
         recipient,
         subject: text.subject,
         body: text.body,
-        template: templateId === 'blank' ? null : { rendered },
+        template: templateId === 'blank' ? null : { rendered, id: templateId },
         status,
         now: new Date().toISOString(),
       });
@@ -207,7 +215,10 @@ export function Composer({
             aria-label="To"
             className={CONTROL}
             value={recipient.personaId ?? ''}
-            onChange={(e) => setRecipientOverride(e.target.value)}
+            onChange={(e) => {
+              setRecipientOverride(e.target.value);
+              setEdit(null);
+            }}
           >
             {recipient.personaId === null ? <option value="">Choose a recipient</option> : null}
             {atProperty.length > 0 ? (
@@ -229,6 +240,9 @@ export function Composer({
           </select>
         </label>
       </div>
+      {recipient.personaId === null ? null : (
+        <p className="text-[13px] text-muted-foreground">{AUDIENCE_HINT[audience]}</p>
+      )}
 
       <label className="flex flex-col gap-1.5">
         <span className={FIELD_LABEL}>Subject</span>
@@ -250,9 +264,7 @@ export function Composer({
         />
       </label>
 
-      {canAssist ? (
-        <AiAssist build={buildAiRequest} onUse={(draft) => setEdit({ ...draft, ai: true })} />
-      ) : null}
+      <AiAssist build={buildAiRequest} onUse={(draft) => setEdit({ ...draft, ai: true })} />
 
       {edited ? (
         <div className="flex justify-end">

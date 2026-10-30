@@ -3,12 +3,12 @@ import type { ChipTone } from '@/components/ui/chip';
 import type { CaseDeadlineStatus } from '@/domain/deadline';
 import type { Cents, ISODate, IssueType, Stage, Team } from '@/domain/types';
 
-/** "$21,900", or "$21,900.50" when there are cents. Null shows as an em dash. */
+/** Always with cents: "$21,900.00", "$21,900.50". Null shows as an em dash. */
 export function formatCents(cents: Cents | null): string {
   if (cents === null) return '—';
   const dollars = Math.abs(cents) / 100;
   const text = dollars.toLocaleString('en-US', {
-    minimumFractionDigits: cents % 100 === 0 ? 0 : 2,
+    minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
   return `${cents < 0 ? '-' : ''}$${text}`;

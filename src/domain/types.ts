@@ -185,6 +185,29 @@ export type CaseEvent = CaseEventBase &
     | { type: 'notification_dismissed'; payload: { notificationId: string } }
   );
 
+export const TEMPLATE_IDS = [
+  'deadline_approaching',
+  'deadline_passed',
+  'stage_changed',
+  'owner_changed',
+  'coi_expiring',
+  'blank',
+] as const;
+export type TemplateId = (typeof TEMPLATE_IDS)[number];
+
+/**
+ * What a draft was made from, so it can be written again for a different reader: Maya gets the
+ * internal Notice Desk email, anyone else gets the version written for the tenant.
+ */
+export interface NotificationRecipe {
+  template: TemplateId;
+  stage?: Stage;
+  previousStage?: Stage;
+  owner?: Team;
+  deadline?: ISODate;
+  coi?: { status: CoiStatus; expiresOn: ISODate | null };
+}
+
 export const NOTIFICATION_TRIGGERS = [
   'deadline_approaching',
   'deadline_passed',
@@ -219,6 +242,8 @@ export interface Notification {
   status: NotificationStatus;
   createdAt: ISODateTime;
   sentAt?: ISODateTime;
+  /** Absent on notifications saved before drafts could be rewritten for another reader. */
+  recipe?: NotificationRecipe;
 }
 
 export const DQ_SEVERITIES = ['error', 'warning', 'info'] as const;

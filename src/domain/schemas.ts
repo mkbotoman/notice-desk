@@ -18,6 +18,7 @@ import {
   PROPERTY_TYPES,
   STAGES,
   TEAMS,
+  TEMPLATE_IDS,
 } from './types';
 
 const id = z.string().min(1);
@@ -172,6 +173,15 @@ export const CaseEventSchema = z.discriminatedUnion('type', [
   }),
 ]);
 
+export const NotificationRecipeSchema = z.strictObject({
+  template: z.enum(TEMPLATE_IDS),
+  stage: StageSchema.optional(),
+  previousStage: StageSchema.optional(),
+  owner: TeamSchema.optional(),
+  deadline: isoDate.optional(),
+  coi: z.strictObject({ status: z.enum(COI_STATUSES), expiresOn: isoDate.nullable() }).optional(),
+});
+
 export const NotificationSchema = z.strictObject({
   id,
   caseId: id,
@@ -185,6 +195,7 @@ export const NotificationSchema = z.strictObject({
   status: z.enum(NOTIFICATION_STATUSES),
   createdAt: isoDateTime,
   sentAt: isoDateTime.optional(),
+  recipe: NotificationRecipeSchema.optional(),
 });
 
 export const DataQualityIssueSchema = z.strictObject({

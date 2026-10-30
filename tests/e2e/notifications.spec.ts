@@ -34,7 +34,7 @@ test.describe('outbox', () => {
     await expect(compose.getByLabel('Case', { exact: true })).toHaveValue('N-001');
     await expect(compose.getByLabel('Subject')).toHaveValue(/Brightside Fitness/);
     const body = compose.getByLabel('Message');
-    await expect(body).toHaveValue(/Notice to Cure for Brightside Fitness/);
+    await expect(body).toHaveValue(/Please pass the message below on to Brightside Fitness/);
     await expect(body).toHaveValue(/\/cases\/N-001/);
     await expect(compose.getByText('Standard template · no AI')).toBeVisible();
     await expect(compose.getByText(/no email leaves Notice Desk/)).toBeVisible();
@@ -42,7 +42,24 @@ test.describe('outbox', () => {
     await body.fill('Typed freely');
     await expect(compose.getByText('Edited by you')).toBeVisible();
     await compose.getByRole('button', { name: 'Reset to template' }).click();
+    await expect(body).toHaveValue(/Please pass the message below on to Brightside Fitness/);
+  });
+
+  test('the To dropdown picks which email it is: property manager or Maya', async ({ page }) => {
+    await signIn(page, '/outbox?compose=N-001');
+    const compose = page.getByRole('region', { name: 'Compose' });
+    const to = compose.getByLabel('To', { exact: true });
+    const body = compose.getByLabel('Message');
+    await expect(body).toHaveValue(/Dear Brightside Fitness LLC,/);
+
+    await to.selectOption('maya');
+    await expect(body).not.toHaveValue(/Dear Brightside/);
+    await expect(body).toHaveValue(/Hi Maya,/);
     await expect(body).toHaveValue(/Notice to Cure for Brightside Fitness/);
+    await expect(compose.getByLabel('Subject')).not.toHaveValue(/^For /);
+
+    await to.selectOption({ index: 0 });
+    await expect(body).toHaveValue(/Please pass the message below on to/);
   });
 
   test('edit a draft, send it, see it under Sent and in the case log, after a reload', async ({
