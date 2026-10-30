@@ -320,7 +320,7 @@ describe('triggers against the fixture at its data date', () => {
   });
 
   it('drafts a COI notice for a case whose lease has no property', () => {
-    const cases = [makeCase({ id: 'np', leaseId: 'L-9', propertyId: null })];
+    const cases = [makeCase({ id: 'np', leaseId: 'L-9', propertyId: null, stage: 'closed' })];
     const coi: CoiRecord = {
       tenantId: 'T-9',
       propertyId: null,
