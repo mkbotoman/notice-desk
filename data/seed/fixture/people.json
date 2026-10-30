@@ -1,0 +1,30 @@
+[
+  {
+    "id": "PER-lena-park",
+    "name": "Lena Park",
+    "roles": [
+      "asset_manager"
+    ]
+  },
+  {
+    "id": "PER-omar-reyes",
+    "name": "Omar Reyes",
+    "roles": [
+      "asset_manager"
+    ]
+  },
+  {
+    "id": "PER-priya-shah",
+    "name": "Priya Shah",
+    "roles": [
+      "property_manager"
+    ]
+  },
+  {
+    "id": "PER-dan-whitfield",
+    "name": "Dan Whitfield",
+    "roles": [
+      "property_manager"
+    ]
+  }
+]

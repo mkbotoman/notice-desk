@@ -1,0 +1,41 @@
+[
+  {
+    "id": "T-01",
+    "displayName": "Brightside Fitness LLC",
+    "nameVariants": [
+      "Brightside Fitness, L.L.C."
+    ]
+  },
+  {
+    "id": "T-02",
+    "displayName": "Coastal Coffee Co",
+    "nameVariants": []
+  },
+  {
+    "id": "T-03",
+    "displayName": "Pacific Parts Inc",
+    "nameVariants": [
+      "Pacific Parts, Incorporated"
+    ]
+  },
+  {
+    "id": "T-04",
+    "displayName": "Delta Dental Lab",
+    "nameVariants": []
+  },
+  {
+    "id": "T-05",
+    "displayName": "Summit Legal Group",
+    "nameVariants": []
+  },
+  {
+    "id": "T-06",
+    "displayName": "Harbor Print Shop",
+    "nameVariants": []
+  },
+  {
+    "id": "T-07",
+    "displayName": "Sunrise Bakery",
+    "nameVariants": []
+  }
+]

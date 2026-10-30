@@ -1,0 +1,166 @@
+[
+  {
+    "id": "N-001",
+    "leaseId": "L-001",
+    "tenantId": "T-01",
+    "propertyId": "P-01",
+    "stage": "notice_to_cure",
+    "issueType": "monetary",
+    "dateSent": "2026-09-28",
+    "curePeriod": {
+      "kind": "days",
+      "n": 10,
+      "unit": "business"
+    },
+    "owner": "legal",
+    "amountOwedAtNotice": 1845000,
+    "legalFees": null,
+    "lenderNoticeRequired": false,
+    "courtCaseNo": null,
+    "guarantorName": null,
+    "hasGuarantor": true
+  },
+  {
+    "id": "N-002",
+    "leaseId": "L-002",
+    "tenantId": "T-01",
+    "propertyId": "P-03",
+    "stage": "non_compliant",
+    "issueType": "insurance",
+    "dateSent": null,
+    "curePeriod": {
+      "kind": "none"
+    },
+    "owner": "legal",
+    "amountOwedAtNotice": null,
+    "legalFees": null,
+    "lenderNoticeRequired": null,
+    "courtCaseNo": null,
+    "guarantorName": null,
+    "hasGuarantor": false
+  },
+  {
+    "id": "N-003",
+    "leaseId": "L-003",
+    "tenantId": "T-02",
+    "propertyId": "P-01",
+    "stage": "collections",
+    "issueType": "monetary",
+    "dateSent": "2026-06-15",
+    "curePeriod": {
+      "kind": "days",
+      "n": 30,
+      "unit": "calendar"
+    },
+    "owner": "legal",
+    "amountOwedAtNotice": 1500000,
+    "legalFees": 425000,
+    "lenderNoticeRequired": true,
+    "courtCaseNo": "LB-2026-0441",
+    "guarantorName": null,
+    "hasGuarantor": true
+  },
+  {
+    "id": "N-004",
+    "leaseId": "L-004",
+    "tenantId": "T-03",
+    "propertyId": "P-02",
+    "stage": "notice_to_cure",
+    "issueType": "monetary",
+    "dateSent": "2026-10-09",
+    "curePeriod": {
+      "kind": "days",
+      "n": 10,
+      "unit": "calendar"
+    },
+    "owner": "asset_management",
+    "amountOwedAtNotice": 2200000,
+    "legalFees": null,
+    "lenderNoticeRequired": false,
+    "courtCaseNo": null,
+    "guarantorName": null,
+    "hasGuarantor": false
+  },
+  {
+    "id": "N-005",
+    "leaseId": "L-005",
+    "tenantId": "T-04",
+    "propertyId": "P-02",
+    "stage": "cured",
+    "issueType": "insurance",
+    "dateSent": "2026-08-20",
+    "curePeriod": {
+      "kind": "days",
+      "n": 15,
+      "unit": "calendar"
+    },
+    "owner": "legal",
+    "amountOwedAtNotice": null,
+    "legalFees": null,
+    "lenderNoticeRequired": null,
+    "courtCaseNo": null,
+    "guarantorName": null,
+    "hasGuarantor": false
+  },
+  {
+    "id": "N-006",
+    "leaseId": "L-007",
+    "tenantId": "T-06",
+    "propertyId": "P-03",
+    "stage": "default",
+    "issueType": "monetary",
+    "dateSent": "2026-08-01",
+    "curePeriod": {
+      "kind": "days",
+      "n": 10,
+      "unit": "business"
+    },
+    "owner": "legal",
+    "amountOwedAtNotice": 1200000,
+    "legalFees": 90000,
+    "lenderNoticeRequired": false,
+    "courtCaseNo": null,
+    "guarantorName": null,
+    "hasGuarantor": true
+  },
+  {
+    "id": "N-007",
+    "leaseId": "L-005",
+    "tenantId": "T-04",
+    "propertyId": "P-02",
+    "stage": "closed",
+    "issueType": "other_lease_term",
+    "dateSent": "2026-03-02",
+    "curePeriod": {
+      "kind": "days",
+      "n": 30,
+      "unit": "calendar"
+    },
+    "owner": "legal",
+    "amountOwedAtNotice": null,
+    "legalFees": null,
+    "lenderNoticeRequired": null,
+    "courtCaseNo": null,
+    "guarantorName": null,
+    "hasGuarantor": false
+  },
+  {
+    "id": "N-008",
+    "leaseId": "L-008",
+    "tenantId": "T-07",
+    "propertyId": "P-02",
+    "stage": "notice_to_cure",
+    "issueType": "monetary",
+    "dateSent": "2026-10-01",
+    "curePeriod": {
+      "kind": "unknown"
+    },
+    "owner": "asset_management",
+    "amountOwedAtNotice": 650000,
+    "legalFees": null,
+    "lenderNoticeRequired": false,
+    "courtCaseNo": null,
+    "guarantorName": null,
+    "hasGuarantor": false
+  }
+]

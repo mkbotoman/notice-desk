@@ -1,0 +1,92 @@
+[
+  {
+    "id": "EV-N-001-1",
+    "caseId": "N-001",
+    "at": "2026-09-28T00:00:00.000Z",
+    "effectiveDate": "2026-09-28",
+    "actorPersonaId": "import",
+    "type": "imported_note",
+    "payload": {},
+    "note": "Notice to cure sent by certified mail."
+  },
+  {
+    "id": "EV-N-001-2",
+    "caseId": "N-001",
+    "at": "2026-10-05T00:00:00.000Z",
+    "effectiveDate": "2026-10-05",
+    "actorPersonaId": "import",
+    "type": "imported_note",
+    "payload": {},
+    "note": "Tenant promised payment by end of week; nothing received."
+  },
+  {
+    "id": "EV-N-003-1",
+    "caseId": "N-003",
+    "at": "2026-06-15T00:00:00.000Z",
+    "effectiveDate": "2026-06-15",
+    "actorPersonaId": "import",
+    "type": "imported_note",
+    "payload": {},
+    "note": "Notice sent; lease terminated for non-payment."
+  },
+  {
+    "id": "EV-N-003-2",
+    "caseId": "N-003",
+    "at": "2026-08-10T00:00:00.000Z",
+    "effectiveDate": "2026-08-10",
+    "actorPersonaId": "import",
+    "type": "imported_note",
+    "payload": {},
+    "note": "Referred to collections agency."
+  },
+  {
+    "id": "EV-N-004-1",
+    "caseId": "N-004",
+    "at": "2026-10-09T00:00:00.000Z",
+    "effectiveDate": "2026-10-09",
+    "actorPersonaId": "import",
+    "type": "imported_note",
+    "payload": {},
+    "note": "Notice sent; asset manager to confirm payment plan with tenant."
+  },
+  {
+    "id": "EV-N-005-1",
+    "caseId": "N-005",
+    "at": "2026-09-02T00:00:00.000Z",
+    "effectiveDate": "2026-09-02",
+    "actorPersonaId": "import",
+    "type": "imported_note",
+    "payload": {},
+    "note": "Tenant provided a current certificate of insurance."
+  },
+  {
+    "id": "EV-N-006-1",
+    "caseId": "N-006",
+    "at": "2026-08-01T00:00:00.000Z",
+    "effectiveDate": "2026-08-01",
+    "actorPersonaId": "import",
+    "type": "imported_note",
+    "payload": {},
+    "note": "Notice sent."
+  },
+  {
+    "id": "EV-N-006-2",
+    "caseId": "N-006",
+    "at": "2026-08-18T00:00:00.000Z",
+    "effectiveDate": "2026-08-18",
+    "actorPersonaId": "import",
+    "type": "imported_note",
+    "payload": {},
+    "note": "Cure period expired with no payment; moved to default."
+  },
+  {
+    "id": "EV-N-007-1",
+    "caseId": "N-007",
+    "at": "2026-04-20T00:00:00.000Z",
+    "effectiveDate": "2026-04-20",
+    "actorPersonaId": "import",
+    "type": "imported_note",
+    "payload": {},
+    "note": "Signage removed; case closed."
+  }
+]

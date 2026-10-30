@@ -1,0 +1,46 @@
+[
+  {
+    "id": "P-01",
+    "name": "Harbor Commons",
+    "aliases": [
+      "Harbor Cmns"
+    ],
+    "type": "retail",
+    "city": "Long Beach",
+    "state": "CA",
+    "market": "South Bay",
+    "fund": "Meridian Peak Fund I",
+    "assetManagerId": "PER-lena-park",
+    "propertyManagerId": "PER-priya-shah",
+    "sqFt": 84000,
+    "acquiredDate": "2019-04-12"
+  },
+  {
+    "id": "P-02",
+    "name": "Westgate Industrial",
+    "aliases": [],
+    "type": "industrial",
+    "city": "Ontario",
+    "state": "CA",
+    "market": "Inland Empire",
+    "fund": "Meridian Peak Fund I",
+    "assetManagerId": "PER-lena-park",
+    "propertyManagerId": "PER-dan-whitfield",
+    "sqFt": 210000,
+    "acquiredDate": "2020-09-30"
+  },
+  {
+    "id": "P-03",
+    "name": "Civic Tower",
+    "aliases": [],
+    "type": "office",
+    "city": "Irvine",
+    "state": "CA",
+    "market": "Orange County",
+    "fund": "Meridian Peak Fund I",
+    "assetManagerId": "PER-omar-reyes",
+    "propertyManagerId": "PER-dan-whitfield",
+    "sqFt": 132000,
+    "acquiredDate": "2018-01-22"
+  }
+]

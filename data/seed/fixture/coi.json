@@ -1,0 +1,74 @@
+[
+  {
+    "tenantId": "T-01",
+    "propertyId": "P-01",
+    "leaseIds": [
+      "L-001"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-03-31"
+  },
+  {
+    "tenantId": "T-01",
+    "propertyId": "P-03",
+    "leaseIds": [
+      "L-002"
+    ],
+    "status": "expired",
+    "expiresOn": "2026-09-30"
+  },
+  {
+    "tenantId": "T-02",
+    "propertyId": "P-01",
+    "leaseIds": [
+      "L-003"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-01-15"
+  },
+  {
+    "tenantId": "T-03",
+    "propertyId": "P-02",
+    "leaseIds": [
+      "L-004"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-02-28"
+  },
+  {
+    "tenantId": "T-04",
+    "propertyId": "P-02",
+    "leaseIds": [
+      "L-005"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-09-01"
+  },
+  {
+    "tenantId": "T-05",
+    "propertyId": "P-03",
+    "leaseIds": [
+      "L-006"
+    ],
+    "status": "expiring",
+    "expiresOn": "2026-11-05"
+  },
+  {
+    "tenantId": "T-06",
+    "propertyId": "P-03",
+    "leaseIds": [
+      "L-007"
+    ],
+    "status": "missing",
+    "expiresOn": null
+  },
+  {
+    "tenantId": "T-07",
+    "propertyId": "P-02",
+    "leaseIds": [
+      "L-008"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-04-30"
+  }
+]
