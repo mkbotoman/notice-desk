@@ -1,12 +1,17 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Guard } from '@/components/shell/guard';
 import { PageHeader } from '@/components/shell/page-header';
 import { EmptyState, LoadingState } from '@/components/shell/states';
 import { Stat } from '@/components/ui/stat';
-import { buildAnalytics, type Analytics, type WorkloadRow } from '@/domain/analytics';
+import {
+  buildAnalytics,
+  tenantChoices,
+  type Analytics,
+  type WorkloadRow,
+} from '@/domain/analytics';
 import { formatCents, longDate, STAGE_LABELS, TEAM_LABELS } from '@/lib/format';
 import { useAsOf, usePersona } from '@/lib/persona/context';
 import { useLookups } from '@/store/lookups';
@@ -14,6 +19,7 @@ import { useStoreState } from '@/store/react';
 import { BarList, type BarRow } from './bar-list';
 import { ChartCard } from './chart-card';
 import { coverageText, monthLabel, percent, plural, weekLabel } from './format';
+import { TenantTrend } from './tenant-trend';
 import { ActivityBars, MonthlyBars } from './time-charts';
 
 const workloadRows = (rows: WorkloadRow[]): BarRow[] =>
@@ -346,6 +352,56 @@ function TenantSection({ data }: { data: Analytics }) {
   );
 }
 
+/** Pick one tenant and see their own trend. */
+function OneTenantSection() {
+  const { persona } = usePersona();
+  const { cases } = useStoreState();
+  const { tenantById } = useLookups();
+  const choices = useMemo(
+    () => tenantChoices(cases, persona, tenantById),
+    [cases, persona, tenantById],
+  );
+  const [picked, setPicked] = useState<string | null>(null);
+  const selected = choices.some((c) => c.id === picked) ? picked : (choices[0]?.id ?? null);
+
+  return (
+    <section aria-labelledby="one-tenant-title" className="flex flex-col gap-4">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div className="flex flex-col gap-1">
+          <h2 id="one-tenant-title" className="text-lg font-bold text-navy-deep">
+            One tenant
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Pick a tenant to see their notices, the work done on their cases and what they owe.
+          </p>
+        </div>
+        {choices.length > 0 ? (
+          <div className="flex flex-wrap items-center gap-3">
+            <select
+              aria-label="Tenant to show"
+              value={selected ?? ''}
+              onChange={(e) => setPicked(e.target.value)}
+              className="min-h-10 max-w-full rounded-lg border border-input bg-card px-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+            >
+              {choices.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name} ({plural(c.cases, 'case')})
+                </option>
+              ))}
+            </select>
+            {selected ? (
+              <Link href={`/tenants/${selected}`} className="text-sm font-semibold text-navy">
+                Open tenant page
+              </Link>
+            ) : null}
+          </div>
+        ) : null}
+      </div>
+      {selected ? <TenantTrend tenantId={selected} /> : null}
+    </section>
+  );
+}
+
 function AnalyticsBody() {
   const { persona } = usePersona();
   const { asOf } = useAsOf();
@@ -418,6 +474,7 @@ function AnalyticsBody() {
           </div>
           <TeamSection data={data} />
           <TenantSection data={data} />
+          <OneTenantSection />
         </>
       )}
     </div>

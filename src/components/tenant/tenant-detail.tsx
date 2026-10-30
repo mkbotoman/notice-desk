@@ -6,6 +6,7 @@ import { StageChip } from '@/components/case/case-chips';
 import { Guard } from '@/components/shell/guard';
 import { PageHeader } from '@/components/shell/page-header';
 import { EmptyState, LoadingState } from '@/components/shell/states';
+import { TenantTrend } from '@/components/analytics/tenant-trend';
 import { Chip } from '@/components/ui/chip';
 import { Stat } from '@/components/ui/stat';
 import { can } from '@/domain/permissions';
@@ -241,6 +242,13 @@ export function TenantDetail({ id }: { id: string }) {
               ))}
             </ol>
           )}
+        </section>
+
+        <section aria-labelledby="trend-title" className="flex flex-col gap-3">
+          <h2 id="trend-title" className="text-base font-bold text-navy-deep">
+            Trend
+          </h2>
+          <TenantTrend tenantId={id} />
         </section>
       </Guard>
     </>

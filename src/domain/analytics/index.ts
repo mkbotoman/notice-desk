@@ -25,6 +25,7 @@ import { repeatTenants, topTenantsByAr, topTenantsByCases } from './tenants';
 
 export * from './team';
 export * from './tenants';
+export * from './tenant-trend';
 
 export const TOP_N = 10;
 

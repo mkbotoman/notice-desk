@@ -5,18 +5,18 @@ A cold read of `CIRE CTO Candidate Pack.pdf` against the running app (checked on
 
 ## The problem (sections 1 to 4)
 
-| Brief                                                                     | Status  | Where                                                                                       |
-| ------------------------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------- |
-| Cure dates are worked out by hand                                         | done    | Calculated deadline with the rule shown, business days skip weekends and federal holidays   |
-| Asset managers can't tell if a case is waiting on them or Legal           | done    | "Waiting on" chip on every row, the inbox, stat cards                                       |
-| One tenant, several leases, each at a different stage                     | done    | Tenant page: a card per lease with its own stage                                            |
-| Amounts owed drift from the accounting system                             | done    | Live balance shown beside the amount at notice, "Changed since notice"                      |
-| Teams chase each other for updates                                        | done    | Add update (Legal and asset managers), notifications, the inbox                             |
-| Maya: see what's overdue or due this week                                 | done    | Case list groups and stat cards (8 overdue, 4 due this week at the data date)               |
-| Maya: move cases forward, keep a clean history                            | done    | Stage moves (case page, list rows, inbox rows), activity log                                |
-| Lena: which of her tenants are in trouble, what's waiting on her          | done    | Inbox: "Waiting on you" and "In trouble"                                                    |
-| Monday morning: under a minute to see overdue, due this week, whose court | partial | The case list answers it; the home page is an overview with a property rollup, not the list |
-| Read-only access for a founder or property manager in their area          | done    | Founder (all), property managers (own properties), no action buttons                        |
+| Brief                                                                     | Status | Where                                                                                                                                       |
+| ------------------------------------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| Cure dates are worked out by hand                                         | done   | Calculated deadline with the rule shown, business days skip weekends and federal holidays                                                   |
+| Asset managers can't tell if a case is waiting on them or Legal           | done   | "Waiting on" chip on every row, the inbox, stat cards                                                                                       |
+| One tenant, several leases, each at a different stage                     | done   | Tenant page: a card per lease with its own stage                                                                                            |
+| Amounts owed drift from the accounting system                             | done   | Live balance shown beside the amount at notice, "Changed since notice"                                                                      |
+| Teams chase each other for updates                                        | done   | Add update (Legal and asset managers), notifications, the inbox                                                                             |
+| Maya: see what's overdue or due this week                                 | done   | Case list groups and stat cards (8 overdue, 4 due this week at the data date)                                                               |
+| Maya: move cases forward, keep a clean history                            | done   | Stage moves (case page, list rows, inbox rows), activity log                                                                                |
+| Lena: which of her tenants are in trouble, what's waiting on her          | done   | Inbox: "Waiting on you" and "In trouble"                                                                                                    |
+| Monday morning: under a minute to see overdue, due this week, whose court | done   | The overview shows overdue, due this week, open, waiting on Legal and waiting on Asset Mgmt, and each card opens the matching filtered list |
+| Read-only access for a founder or property manager in their area          | done   | Founder (all), property managers (own properties), no action buttons                                                                        |
 
 ## How a case moves (section 5)
 
