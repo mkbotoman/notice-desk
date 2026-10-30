@@ -92,7 +92,7 @@ export function PersonaSwitcher() {
 export function PersonaChip() {
   const { persona } = usePersona();
   return (
-    <Chip tone="navy" data-testid="persona-chip">
+    <Chip tone="navy" data-testid="persona-chip" className="max-w-full whitespace-normal">
       Viewing as {describePersona(persona)}
     </Chip>
   );

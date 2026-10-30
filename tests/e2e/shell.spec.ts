@@ -94,7 +94,9 @@ test.describe('shell and personas', () => {
   });
 
   test('applies ?as= from a link and removes it from the address bar', async ({ page }) => {
-    await signIn(page, '/?as=am-lena-brooks');
+    await page.goto('/?as=am-lena-brooks');
+    await page.getByLabel('Password').fill(E2E_PASSWORD);
+    await page.getByRole('button', { name: 'Enter' }).click();
     await expect(page.getByLabel('Viewing as')).toHaveValue('am-lena-brooks');
     await expect(page).toHaveURL(/\/$/);
   });
@@ -159,7 +161,9 @@ test.describe('small screens', () => {
   });
 
   test('has no horizontal scroll with the longest persona name selected', async ({ page }) => {
-    await signIn(page, '/?as=am-lena-brooks');
+    await page.goto('/?as=am-lena-brooks');
+    await page.getByLabel('Password').fill(E2E_PASSWORD);
+    await page.getByRole('button', { name: 'Enter' }).click();
     await expect(page.getByLabel('Viewing as')).toHaveValue('am-lena-brooks');
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
