@@ -1,0 +1,375 @@
+[
+  {
+    "id": "T-alpine-animal-hospital",
+    "displayName": "Alpine Animal Hospital",
+    "nameVariants": []
+  },
+  {
+    "id": "T-arroyo-architects",
+    "displayName": "Arroyo Architects",
+    "nameVariants": []
+  },
+  {
+    "id": "T-aspen-chiropractic",
+    "displayName": "Aspen Chiropractic",
+    "nameVariants": []
+  },
+  {
+    "id": "T-atlas-fitness",
+    "displayName": "Atlas Fitness",
+    "nameVariants": []
+  },
+  {
+    "id": "T-basin-engineering",
+    "displayName": "Basin Engineering",
+    "nameVariants": []
+  },
+  {
+    "id": "T-blue-mesa-grill",
+    "displayName": "Blue Mesa Grill",
+    "nameVariants": []
+  },
+  {
+    "id": "T-bluebird-daycare",
+    "displayName": "Bluebird Daycare",
+    "nameVariants": []
+  },
+  {
+    "id": "T-bright-smiles-ortho",
+    "displayName": "Bright Smiles Ortho",
+    "nameVariants": []
+  },
+  {
+    "id": "T-brightside-fitness",
+    "displayName": "Brightside Fitness LLC",
+    "nameVariants": [
+      "BrightSide Fitness",
+      "Brightside Fitness, LLC"
+    ]
+  },
+  {
+    "id": "T-brightway-learning",
+    "displayName": "Brightway Learning",
+    "nameVariants": []
+  },
+  {
+    "id": "T-cascade-cleaners",
+    "displayName": "Cascade Cleaners",
+    "nameVariants": []
+  },
+  {
+    "id": "T-clearview-optometry",
+    "displayName": "Clearview Optometry",
+    "nameVariants": []
+  },
+  {
+    "id": "T-coastal-car-wash",
+    "displayName": "Coastal Car Wash",
+    "nameVariants": []
+  },
+  {
+    "id": "T-cobalt-gaming-lounge",
+    "displayName": "Cobalt Gaming Lounge",
+    "nameVariants": []
+  },
+  {
+    "id": "T-copper-kettle-cafe",
+    "displayName": "Copper Kettle Cafe",
+    "nameVariants": []
+  },
+  {
+    "id": "T-copper-state-electric",
+    "displayName": "Copper State Electric",
+    "nameVariants": []
+  },
+  {
+    "id": "T-cornerstone-title",
+    "displayName": "Cornerstone Title",
+    "nameVariants": []
+  },
+  {
+    "id": "T-crescent-cardiology",
+    "displayName": "Crescent Cardiology",
+    "nameVariants": []
+  },
+  {
+    "id": "T-desert-rose-salon",
+    "displayName": "Desert Rose Salon",
+    "nameVariants": []
+  },
+  {
+    "id": "T-driftwood-books",
+    "displayName": "Driftwood Books",
+    "nameVariants": []
+  },
+  {
+    "id": "T-echo-vape-lounge",
+    "displayName": "Echo Vape Lounge",
+    "nameVariants": []
+  },
+  {
+    "id": "T-evergreen-florist",
+    "displayName": "Evergreen Florist",
+    "nameVariants": []
+  },
+  {
+    "id": "T-fresh-fork-market",
+    "displayName": "Fresh Fork Market",
+    "nameVariants": []
+  },
+  {
+    "id": "T-frontier-feed",
+    "displayName": "Frontier Feed",
+    "nameVariants": []
+  },
+  {
+    "id": "T-golden-spoon-yogurt",
+    "displayName": "Golden Spoon Yogurt",
+    "nameVariants": []
+  },
+  {
+    "id": "T-granary-brewing",
+    "displayName": "Granary Brewing",
+    "nameVariants": []
+  },
+  {
+    "id": "T-granite-supply",
+    "displayName": "Granite Supply Co",
+    "nameVariants": []
+  },
+  {
+    "id": "T-harvest-table-kitchen",
+    "displayName": "Harvest Table Kitchen",
+    "nameVariants": []
+  },
+  {
+    "id": "T-hearthstone-pizza",
+    "displayName": "Hearthstone Pizza",
+    "nameVariants": []
+  },
+  {
+    "id": "T-highland-insurance-agency",
+    "displayName": "Highland Insurance Agency",
+    "nameVariants": []
+  },
+  {
+    "id": "T-horizon-staffing",
+    "displayName": "Horizon Staffing",
+    "nameVariants": []
+  },
+  {
+    "id": "T-iron-horse-bbq",
+    "displayName": "Iron Horse BBQ",
+    "nameVariants": []
+  },
+  {
+    "id": "T-juniper-kids-dental",
+    "displayName": "Juniper Kids Dental",
+    "nameVariants": []
+  },
+  {
+    "id": "T-kestrel-software",
+    "displayName": "Kestrel Software",
+    "nameVariants": []
+  },
+  {
+    "id": "T-keystone-tax-services",
+    "displayName": "Keystone Tax Services",
+    "nameVariants": []
+  },
+  {
+    "id": "T-lotus-thai",
+    "displayName": "Lotus Thai",
+    "nameVariants": []
+  },
+  {
+    "id": "T-lucky-paws-pet-supply",
+    "displayName": "Lucky Paws Pet Supply",
+    "nameVariants": []
+  },
+  {
+    "id": "T-lumen-yoga",
+    "displayName": "Lumen Yoga",
+    "nameVariants": []
+  },
+  {
+    "id": "T-maple-leaf-bakery",
+    "displayName": "Maple Leaf Bakery",
+    "nameVariants": []
+  },
+  {
+    "id": "T-moonbeam-ice-cream",
+    "displayName": "Moonbeam Ice Cream",
+    "nameVariants": []
+  },
+  {
+    "id": "T-mountain-mattress",
+    "displayName": "Mountain Mattress",
+    "nameVariants": []
+  },
+  {
+    "id": "T-nomad-tea-house",
+    "displayName": "Nomad Tea House",
+    "nameVariants": []
+  },
+  {
+    "id": "T-northstar-insurance",
+    "displayName": "Northstar Insurance",
+    "nameVariants": []
+  },
+  {
+    "id": "T-oak-and-barrel-wine-bar",
+    "displayName": "Oak and Barrel Wine Bar",
+    "nameVariants": []
+  },
+  {
+    "id": "T-pacific-pho",
+    "displayName": "Pacific Pho",
+    "nameVariants": []
+  },
+  {
+    "id": "T-peak-physical-therapy",
+    "displayName": "Peak Physical Therapy",
+    "nameVariants": []
+  },
+  {
+    "id": "T-pinecone-coffee",
+    "displayName": "Pinecone Coffee Co",
+    "nameVariants": []
+  },
+  {
+    "id": "T-pioneer-packaging",
+    "displayName": "Pioneer Packaging",
+    "nameVariants": []
+  },
+  {
+    "id": "T-ponderosa-hardware",
+    "displayName": "Ponderosa Hardware",
+    "nameVariants": []
+  },
+  {
+    "id": "T-prairie-credit-union",
+    "displayName": "Prairie Credit Union",
+    "nameVariants": []
+  },
+  {
+    "id": "T-quickfix-phone-repair",
+    "displayName": "Quickfix Phone Repair",
+    "nameVariants": []
+  },
+  {
+    "id": "T-rapid-print-shop",
+    "displayName": "Rapid Print Shop",
+    "nameVariants": []
+  },
+  {
+    "id": "T-red-rock-tacos",
+    "displayName": "Red Rock Tacos",
+    "nameVariants": []
+  },
+  {
+    "id": "T-ridgeline-outfitters",
+    "displayName": "Ridgeline Outfitters",
+    "nameVariants": []
+  },
+  {
+    "id": "T-riverbend-pharmacy",
+    "displayName": "Riverbend Pharmacy",
+    "nameVariants": []
+  },
+  {
+    "id": "T-saguaro-smoke-shop",
+    "displayName": "Saguaro Smoke Shop",
+    "nameVariants": []
+  },
+  {
+    "id": "T-sapphire-massage",
+    "displayName": "Sapphire Massage",
+    "nameVariants": []
+  },
+  {
+    "id": "T-silver-sage-spa",
+    "displayName": "Silver Sage Spa",
+    "nameVariants": []
+  },
+  {
+    "id": "T-silverline-logistics",
+    "displayName": "Silverline Logistics",
+    "nameVariants": []
+  },
+  {
+    "id": "T-silverstone-vapor",
+    "displayName": "Silverstone Vapor",
+    "nameVariants": []
+  },
+  {
+    "id": "T-starlight-cinemas",
+    "displayName": "Starlight Cinemas",
+    "nameVariants": []
+  },
+  {
+    "id": "T-sterling-jewelers-west",
+    "displayName": "Sterling Jewelers West",
+    "nameVariants": []
+  },
+  {
+    "id": "T-summit-legal-group",
+    "displayName": "Summit Legal Group",
+    "nameVariants": []
+  },
+  {
+    "id": "T-summit-wireless",
+    "displayName": "Summit Wireless",
+    "nameVariants": []
+  },
+  {
+    "id": "T-sunrise-dental",
+    "displayName": "Sunrise Dental",
+    "nameVariants": []
+  },
+  {
+    "id": "T-thunderbird-martial-arts",
+    "displayName": "Thunderbird Martial Arts",
+    "nameVariants": []
+  },
+  {
+    "id": "T-tidewater-seafood",
+    "displayName": "Tidewater Seafood",
+    "nameVariants": []
+  },
+  {
+    "id": "T-trailhead-bikes",
+    "displayName": "Trailhead Bikes",
+    "nameVariants": []
+  },
+  {
+    "id": "T-tumbleweed-treats",
+    "displayName": "Tumbleweed Treats",
+    "nameVariants": []
+  },
+  {
+    "id": "T-urban-threads",
+    "displayName": "Urban Threads",
+    "nameVariants": []
+  },
+  {
+    "id": "T-velvet-nail-lounge",
+    "displayName": "Velvet Nail Lounge",
+    "nameVariants": []
+  },
+  {
+    "id": "T-vista-vision-care",
+    "displayName": "Vista Vision Care",
+    "nameVariants": []
+  },
+  {
+    "id": "T-westwind-freight",
+    "displayName": "Westwind Freight",
+    "nameVariants": []
+  },
+  {
+    "id": "T-willow-pediatrics",
+    "displayName": "Willow Pediatrics",
+    "nameVariants": []
+  }
+]

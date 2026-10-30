@@ -42,7 +42,7 @@ default asOf (`meta.dataAsOf`).
 - `type_of_default`: Monetary 30, Insurance 5, **Breach 2**.
 - `owner`: Legal 25, **AM 12**.
 - `date_sent`: ISO; blank on 5 rows, all Non-Compliant. Range 2026-02-12 to 2026-10-12.
-- `cure_period`: "5 business days" 8, "10 business days" 7, "15 days" 5, "10 days" 5, "5 days" 3, "30 days" 1, "No cure date" 3, blank 5 (the same 5 Non-Compliant rows). **15 values give a day count with no unit.**
+- `cure_period`: "5 business days" 8, "10 business days" 7, "15 days" 5, "10 days" 5, "5 days" 3, "30 days" 1, "No cure date" 3, blank 5 (the same 5 Non-Compliant rows). **14 values give a day count with no unit.**
 - **`lender_notice`** is three-valued: "No" 26, "Yes, notice only" 6, "Yes, consent & notice" 5.
 - **`legal_fees` is text, not money:** "Yes" 10, "Yes, Section 18.4" 6, "Yes, Section 11.1" 5, "Lease does not permit legal fees" 6, "LL indemnified against damages from default" 5; blank 5.
 - `amount_owed`: 28 numeric, 7 blank, 2 the text "Pending". Every numeric value equals the lease `ar_balance` exactly: no drift in this extract.

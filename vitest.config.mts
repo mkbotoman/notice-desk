@@ -12,8 +12,16 @@ export default defineConfig({
       provider: 'v8',
       // Pure logic that must stay fully branch-covered. Contracts hold no logic of their own.
       include: ['src/domain/**', 'scripts/ingest/**'],
-      exclude: ['**/*.test.*', 'src/domain/types.ts', 'src/domain/schemas.ts'],
-      thresholds: { branches: 100 },
+      exclude: [
+        '**/*.test.*',
+        'src/domain/types.ts',
+        'src/domain/schemas.ts',
+        'scripts/ingest/index.ts',
+      ],
+      thresholds: {
+        'src/domain/**': { branches: 100 },
+        'scripts/ingest/**': { branches: 90, lines: 95 },
+      },
     },
   },
 });

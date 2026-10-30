@@ -1,0 +1,1528 @@
+[
+  {
+    "tenantId": "T-alpine-animal-hospital",
+    "propertyId": "P-012",
+    "leaseIds": [
+      "L-0157"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-04-15"
+  },
+  {
+    "tenantId": "T-alpine-animal-hospital",
+    "propertyId": "P-015",
+    "leaseIds": [
+      "L-0227"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-05-13"
+  },
+  {
+    "tenantId": "T-arroyo-architects",
+    "propertyId": "P-007",
+    "leaseIds": [
+      "L-0238"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-04-09"
+  },
+  {
+    "tenantId": "T-arroyo-architects",
+    "propertyId": "P-014",
+    "leaseIds": [
+      "L-0168"
+    ],
+    "status": "non_compliant",
+    "expiresOn": "2027-02-01"
+  },
+  {
+    "tenantId": "T-aspen-chiropractic",
+    "propertyId": "P-019",
+    "leaseIds": [
+      "L-0132"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-06-20"
+  },
+  {
+    "tenantId": "T-aspen-chiropractic",
+    "propertyId": "P-021",
+    "leaseIds": [
+      "L-0202"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-07-22"
+  },
+  {
+    "tenantId": "T-atlas-fitness",
+    "propertyId": "P-006",
+    "leaseIds": [
+      "L-0173"
+    ],
+    "status": "expired",
+    "expiresOn": "2026-09-12"
+  },
+  {
+    "tenantId": "T-atlas-fitness",
+    "propertyId": "P-008",
+    "leaseIds": [
+      "L-0243"
+    ],
+    "status": "valid",
+    "expiresOn": "2026-12-31"
+  },
+  {
+    "tenantId": "T-atlas-fitness",
+    "propertyId": "P-015",
+    "leaseIds": [
+      "L-0103"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-05-27"
+  },
+  {
+    "tenantId": "T-basin-engineering",
+    "propertyId": "P-001",
+    "leaseIds": [
+      "L-0167"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-06-13"
+  },
+  {
+    "tenantId": "T-basin-engineering",
+    "propertyId": "P-008",
+    "leaseIds": [
+      "L-0237"
+    ],
+    "status": "non_compliant",
+    "expiresOn": "2027-02-12"
+  },
+  {
+    "tenantId": "T-blue-mesa-grill",
+    "propertyId": "P-001",
+    "leaseIds": [
+      "L-0104"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-06-09"
+  },
+  {
+    "tenantId": "T-blue-mesa-grill",
+    "propertyId": "P-010",
+    "leaseIds": [
+      "L-0174"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-06-10"
+  },
+  {
+    "tenantId": "T-blue-mesa-grill",
+    "propertyId": "P-011",
+    "leaseIds": [
+      "L-0244"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-05-16"
+  },
+  {
+    "tenantId": "T-bluebird-daycare",
+    "propertyId": "P-015",
+    "leaseIds": [
+      "L-0201"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-02-25"
+  },
+  {
+    "tenantId": "T-bluebird-daycare",
+    "propertyId": "P-017",
+    "leaseIds": [
+      "L-0131"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-02-23"
+  },
+  {
+    "tenantId": "T-bright-smiles-ortho",
+    "propertyId": "P-001",
+    "leaseIds": [
+      "L-0226"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-09-03"
+  },
+  {
+    "tenantId": "T-bright-smiles-ortho",
+    "propertyId": "P-011",
+    "leaseIds": [
+      "L-0156"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-02-27"
+  },
+  {
+    "tenantId": "T-brightside-fitness",
+    "propertyId": "P-002",
+    "leaseIds": [
+      "L-0267"
+    ],
+    "status": "missing",
+    "expiresOn": null
+  },
+  {
+    "tenantId": "T-brightside-fitness",
+    "propertyId": "P-007",
+    "leaseIds": [
+      "L-0268"
+    ],
+    "status": "missing",
+    "expiresOn": null
+  },
+  {
+    "tenantId": "T-brightside-fitness",
+    "propertyId": "P-015",
+    "leaseIds": [
+      "L-0269"
+    ],
+    "status": "missing",
+    "expiresOn": null
+  },
+  {
+    "tenantId": "T-brightway-learning",
+    "propertyId": "P-017",
+    "leaseIds": [
+      "L-0186",
+      "L-0256"
+    ],
+    "status": "non_compliant",
+    "expiresOn": "2026-12-24"
+  },
+  {
+    "tenantId": "T-brightway-learning",
+    "propertyId": "P-021",
+    "leaseIds": [
+      "L-0116"
+    ],
+    "status": "non_compliant",
+    "expiresOn": "2026-11-28"
+  },
+  {
+    "tenantId": "T-cascade-cleaners",
+    "propertyId": "P-003",
+    "leaseIds": [
+      "L-0194"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-07-29"
+  },
+  {
+    "tenantId": "T-cascade-cleaners",
+    "propertyId": "P-005",
+    "leaseIds": [
+      "L-0124"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-07-11"
+  },
+  {
+    "tenantId": "T-cascade-cleaners",
+    "propertyId": "P-019",
+    "leaseIds": [
+      "L-0264"
+    ],
+    "status": "missing",
+    "expiresOn": null
+  },
+  {
+    "tenantId": "T-clearview-optometry",
+    "propertyId": "P-006",
+    "leaseIds": [
+      "L-0122"
+    ],
+    "status": "expired",
+    "expiresOn": "2026-09-18"
+  },
+  {
+    "tenantId": "T-clearview-optometry",
+    "propertyId": "P-018",
+    "leaseIds": [
+      "L-0262"
+    ],
+    "status": "missing",
+    "expiresOn": null
+  },
+  {
+    "tenantId": "T-clearview-optometry",
+    "propertyId": "P-021",
+    "leaseIds": [
+      "L-0192"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-09-03"
+  },
+  {
+    "tenantId": "T-coastal-car-wash",
+    "propertyId": "P-005",
+    "leaseIds": [
+      "L-0225"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-02-28"
+  },
+  {
+    "tenantId": "T-coastal-car-wash",
+    "propertyId": "P-006",
+    "leaseIds": [
+      "L-0155"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-01-05"
+  },
+  {
+    "tenantId": "T-cobalt-gaming-lounge",
+    "propertyId": "P-003",
+    "leaseIds": [
+      "L-0162"
+    ],
+    "status": "valid",
+    "expiresOn": "2026-12-20"
+  },
+  {
+    "tenantId": "T-cobalt-gaming-lounge",
+    "propertyId": "P-009",
+    "leaseIds": [
+      "L-0232"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-04-26"
+  },
+  {
+    "tenantId": "T-copper-kettle-cafe",
+    "propertyId": "P-001",
+    "leaseIds": [
+      "L-0270"
+    ],
+    "status": "missing",
+    "expiresOn": null
+  },
+  {
+    "tenantId": "T-copper-kettle-cafe",
+    "propertyId": "P-009",
+    "leaseIds": [
+      "L-0271"
+    ],
+    "status": "missing",
+    "expiresOn": null
+  },
+  {
+    "tenantId": "T-copper-kettle-cafe",
+    "propertyId": "P-012",
+    "leaseIds": [
+      "L-0272"
+    ],
+    "status": "missing",
+    "expiresOn": null
+  },
+  {
+    "tenantId": "T-copper-state-electric",
+    "propertyId": "P-006",
+    "leaseIds": [
+      "L-0130"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-05-28"
+  },
+  {
+    "tenantId": "T-copper-state-electric",
+    "propertyId": "P-014",
+    "leaseIds": [
+      "L-0200"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-06-04"
+  },
+  {
+    "tenantId": "T-cornerstone-title",
+    "propertyId": "P-001",
+    "leaseIds": [
+      "L-0185"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-09-04"
+  },
+  {
+    "tenantId": "T-cornerstone-title",
+    "propertyId": "P-004",
+    "leaseIds": [
+      "L-0255"
+    ],
+    "status": "missing",
+    "expiresOn": null
+  },
+  {
+    "tenantId": "T-cornerstone-title",
+    "propertyId": "P-005",
+    "leaseIds": [
+      "L-0115"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-04-14"
+  },
+  {
+    "tenantId": "T-crescent-cardiology",
+    "propertyId": "P-001",
+    "leaseIds": [
+      "L-0151"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-08-10"
+  },
+  {
+    "tenantId": "T-crescent-cardiology",
+    "propertyId": "P-021",
+    "leaseIds": [
+      "L-0221"
+    ],
+    "status": "expired",
+    "expiresOn": "2026-09-02"
+  },
+  {
+    "tenantId": "T-desert-rose-salon",
+    "propertyId": "P-003",
+    "leaseIds": [
+      "L-0249"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-07-23"
+  },
+  {
+    "tenantId": "T-desert-rose-salon",
+    "propertyId": "P-005",
+    "leaseIds": [
+      "L-0109"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-04-01"
+  },
+  {
+    "tenantId": "T-desert-rose-salon",
+    "propertyId": "P-009",
+    "leaseIds": [
+      "L-0179"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-09-10"
+  },
+  {
+    "tenantId": "T-driftwood-books",
+    "propertyId": "P-004",
+    "leaseIds": [
+      "L-0170"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-02-10"
+  },
+  {
+    "tenantId": "T-driftwood-books",
+    "propertyId": "P-011",
+    "leaseIds": [
+      "L-0240"
+    ],
+    "status": "expiring",
+    "expiresOn": "2026-10-20"
+  },
+  {
+    "tenantId": "T-echo-vape-lounge",
+    "propertyId": "P-006",
+    "leaseIds": [
+      "L-0144"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-08-05"
+  },
+  {
+    "tenantId": "T-echo-vape-lounge",
+    "propertyId": "P-008",
+    "leaseIds": [
+      "L-0214"
+    ],
+    "status": "expired",
+    "expiresOn": "2026-08-22"
+  },
+  {
+    "tenantId": "T-evergreen-florist",
+    "propertyId": "P-004",
+    "leaseIds": [
+      "L-0134"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-06-20"
+  },
+  {
+    "tenantId": "T-evergreen-florist",
+    "propertyId": "P-016",
+    "leaseIds": [
+      "L-0204"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-06-02"
+  },
+  {
+    "tenantId": "T-fresh-fork-market",
+    "propertyId": "P-006",
+    "leaseIds": [
+      "L-0203"
+    ],
+    "status": "valid",
+    "expiresOn": "2026-12-21"
+  },
+  {
+    "tenantId": "T-fresh-fork-market",
+    "propertyId": "P-021",
+    "leaseIds": [
+      "L-0133"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-05-21"
+  },
+  {
+    "tenantId": "T-frontier-feed",
+    "propertyId": "P-002",
+    "leaseIds": [
+      "L-0159"
+    ],
+    "status": "valid",
+    "expiresOn": "2026-12-23"
+  },
+  {
+    "tenantId": "T-frontier-feed",
+    "propertyId": "P-008",
+    "leaseIds": [
+      "L-0229"
+    ],
+    "status": "expiring",
+    "expiresOn": "2026-10-18"
+  },
+  {
+    "tenantId": "T-golden-spoon-yogurt",
+    "propertyId": "P-003",
+    "leaseIds": [
+      "L-0176"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-01-12"
+  },
+  {
+    "tenantId": "T-golden-spoon-yogurt",
+    "propertyId": "P-006",
+    "leaseIds": [
+      "L-0106"
+    ],
+    "status": "expired",
+    "expiresOn": "2026-07-26"
+  },
+  {
+    "tenantId": "T-golden-spoon-yogurt",
+    "propertyId": "P-007",
+    "leaseIds": [
+      "L-0246"
+    ],
+    "status": "expiring",
+    "expiresOn": "2026-10-28"
+  },
+  {
+    "tenantId": "T-granary-brewing",
+    "propertyId": "P-010",
+    "leaseIds": [
+      "L-0150"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-01-25"
+  },
+  {
+    "tenantId": "T-granary-brewing",
+    "propertyId": "P-018",
+    "leaseIds": [
+      "L-0220"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-06-06"
+  },
+  {
+    "tenantId": "T-granite-supply",
+    "propertyId": "P-015",
+    "leaseIds": [
+      "L-0198"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-08-26"
+  },
+  {
+    "tenantId": "T-granite-supply",
+    "propertyId": "P-016",
+    "leaseIds": [
+      "L-0128"
+    ],
+    "status": "valid",
+    "expiresOn": "2026-12-03"
+  },
+  {
+    "tenantId": "T-harvest-table-kitchen",
+    "propertyId": "P-007",
+    "leaseIds": [
+      "L-0112"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-04-30"
+  },
+  {
+    "tenantId": "T-harvest-table-kitchen",
+    "propertyId": "P-008",
+    "leaseIds": [
+      "L-0182"
+    ],
+    "status": "valid",
+    "expiresOn": "2026-11-29"
+  },
+  {
+    "tenantId": "T-harvest-table-kitchen",
+    "propertyId": "P-014",
+    "leaseIds": [
+      "L-0252"
+    ],
+    "status": "non_compliant",
+    "expiresOn": "2026-12-09"
+  },
+  {
+    "tenantId": "T-hearthstone-pizza",
+    "propertyId": "P-014",
+    "leaseIds": [
+      "L-0153"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-03-19"
+  },
+  {
+    "tenantId": "T-hearthstone-pizza",
+    "propertyId": "P-019",
+    "leaseIds": [
+      "L-0223"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-09-09"
+  },
+  {
+    "tenantId": "T-highland-insurance-agency",
+    "propertyId": "P-001",
+    "leaseIds": [
+      "L-0239"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-06-14"
+  },
+  {
+    "tenantId": "T-highland-insurance-agency",
+    "propertyId": "P-010",
+    "leaseIds": [
+      "L-0169"
+    ],
+    "status": "expiring",
+    "expiresOn": "2026-11-13"
+  },
+  {
+    "tenantId": "T-horizon-staffing",
+    "propertyId": "P-004",
+    "leaseIds": [
+      "L-0141"
+    ],
+    "status": "expiring",
+    "expiresOn": "2026-10-17"
+  },
+  {
+    "tenantId": "T-horizon-staffing",
+    "propertyId": "P-011",
+    "leaseIds": [
+      "L-0211"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-07-18"
+  },
+  {
+    "tenantId": "T-iron-horse-bbq",
+    "propertyId": "P-002",
+    "leaseIds": [
+      "L-0191"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-05-12"
+  },
+  {
+    "tenantId": "T-iron-horse-bbq",
+    "propertyId": "P-007",
+    "leaseIds": [
+      "L-0121",
+      "L-0261"
+    ],
+    "status": "valid",
+    "expiresOn": "2026-12-25"
+  },
+  {
+    "tenantId": "T-juniper-kids-dental",
+    "propertyId": "P-012",
+    "leaseIds": [
+      "L-0117"
+    ],
+    "status": "expiring",
+    "expiresOn": "2026-10-25"
+  },
+  {
+    "tenantId": "T-juniper-kids-dental",
+    "propertyId": "P-018",
+    "leaseIds": [
+      "L-0257"
+    ],
+    "status": "missing",
+    "expiresOn": null
+  },
+  {
+    "tenantId": "T-juniper-kids-dental",
+    "propertyId": "P-021",
+    "leaseIds": [
+      "L-0187"
+    ],
+    "status": "expiring",
+    "expiresOn": "2026-11-10"
+  },
+  {
+    "tenantId": "T-kestrel-software",
+    "propertyId": "P-008",
+    "leaseIds": [
+      "L-0165"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-04-15"
+  },
+  {
+    "tenantId": "T-kestrel-software",
+    "propertyId": "P-009",
+    "leaseIds": [
+      "L-0235"
+    ],
+    "status": "valid",
+    "expiresOn": "2026-12-20"
+  },
+  {
+    "tenantId": "T-keystone-tax-services",
+    "propertyId": "P-011",
+    "leaseIds": [
+      "L-0147"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-09-01"
+  },
+  {
+    "tenantId": "T-keystone-tax-services",
+    "propertyId": "P-012",
+    "leaseIds": [
+      "L-0217"
+    ],
+    "status": "expiring",
+    "expiresOn": "2026-10-20"
+  },
+  {
+    "tenantId": "T-lotus-thai",
+    "propertyId": "P-009",
+    "leaseIds": [
+      "L-0228"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-04-13"
+  },
+  {
+    "tenantId": "T-lotus-thai",
+    "propertyId": "P-021",
+    "leaseIds": [
+      "L-0158"
+    ],
+    "status": "valid",
+    "expiresOn": "2026-12-21"
+  },
+  {
+    "tenantId": "T-lucky-paws-pet-supply",
+    "propertyId": "P-006",
+    "leaseIds": [
+      "L-0110"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-03-13"
+  },
+  {
+    "tenantId": "T-lucky-paws-pet-supply",
+    "propertyId": "P-012",
+    "leaseIds": [
+      "L-0180"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-07-13"
+  },
+  {
+    "tenantId": "T-lucky-paws-pet-supply",
+    "propertyId": "P-015",
+    "leaseIds": [
+      "L-0250"
+    ],
+    "status": "expired",
+    "expiresOn": "2026-07-17"
+  },
+  {
+    "tenantId": "T-lumen-yoga",
+    "propertyId": "P-017",
+    "leaseIds": [
+      "L-0135"
+    ],
+    "status": "expired",
+    "expiresOn": "2026-10-10"
+  },
+  {
+    "tenantId": "T-lumen-yoga",
+    "propertyId": "P-018",
+    "leaseIds": [
+      "L-0205"
+    ],
+    "status": "expiring",
+    "expiresOn": "2026-11-11"
+  },
+  {
+    "tenantId": "T-maple-leaf-bakery",
+    "propertyId": "P-002",
+    "leaseIds": [
+      "L-0260"
+    ],
+    "status": "missing",
+    "expiresOn": null
+  },
+  {
+    "tenantId": "T-maple-leaf-bakery",
+    "propertyId": "P-009",
+    "leaseIds": [
+      "L-0120"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-07-18"
+  },
+  {
+    "tenantId": "T-maple-leaf-bakery",
+    "propertyId": "P-019",
+    "leaseIds": [
+      "L-0190"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-08-25"
+  },
+  {
+    "tenantId": "T-moonbeam-ice-cream",
+    "propertyId": "P-004",
+    "leaseIds": [
+      "L-0149"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-09-04"
+  },
+  {
+    "tenantId": "T-moonbeam-ice-cream",
+    "propertyId": "P-013",
+    "leaseIds": [
+      "L-0219"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-08-22"
+  },
+  {
+    "tenantId": "T-mountain-mattress",
+    "propertyId": "P-001",
+    "leaseIds": [
+      "L-0143"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-01-24"
+  },
+  {
+    "tenantId": "T-mountain-mattress",
+    "propertyId": "P-003",
+    "leaseIds": [
+      "L-0213"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-07-15"
+  },
+  {
+    "tenantId": "T-nomad-tea-house",
+    "propertyId": "P-001",
+    "leaseIds": [
+      "L-0123"
+    ],
+    "status": "expiring",
+    "expiresOn": "2026-11-08"
+  },
+  {
+    "tenantId": "T-nomad-tea-house",
+    "propertyId": "P-012",
+    "leaseIds": [
+      "L-0193",
+      "L-0263"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-04-13"
+  },
+  {
+    "tenantId": "T-northstar-insurance",
+    "propertyId": "P-005",
+    "leaseIds": [
+      "L-0245"
+    ],
+    "status": "expired",
+    "expiresOn": "2026-10-04"
+  },
+  {
+    "tenantId": "T-northstar-insurance",
+    "propertyId": "P-008",
+    "leaseIds": [
+      "L-0175"
+    ],
+    "status": "non_compliant",
+    "expiresOn": "2026-12-14"
+  },
+  {
+    "tenantId": "T-northstar-insurance",
+    "propertyId": "P-013",
+    "leaseIds": [
+      "L-0105"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-06-09"
+  },
+  {
+    "tenantId": "T-oak-and-barrel-wine-bar",
+    "propertyId": "P-007",
+    "leaseIds": [
+      "L-0139"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-03-27"
+  },
+  {
+    "tenantId": "T-oak-and-barrel-wine-bar",
+    "propertyId": "P-014",
+    "leaseIds": [
+      "L-0209"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-06-03"
+  },
+  {
+    "tenantId": "T-pacific-pho",
+    "propertyId": "P-006",
+    "leaseIds": [
+      "L-0145"
+    ],
+    "status": "non_compliant",
+    "expiresOn": "2027-03-08"
+  },
+  {
+    "tenantId": "T-pacific-pho",
+    "propertyId": "P-015",
+    "leaseIds": [
+      "L-0215"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-07-31"
+  },
+  {
+    "tenantId": "T-peak-physical-therapy",
+    "propertyId": "P-004",
+    "leaseIds": [
+      "L-0177"
+    ],
+    "status": "expiring",
+    "expiresOn": "2026-11-10"
+  },
+  {
+    "tenantId": "T-peak-physical-therapy",
+    "propertyId": "P-016",
+    "leaseIds": [
+      "L-0247"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-06-29"
+  },
+  {
+    "tenantId": "T-peak-physical-therapy",
+    "propertyId": "P-019",
+    "leaseIds": [
+      "L-0107"
+    ],
+    "status": "expired",
+    "expiresOn": "2026-10-11"
+  },
+  {
+    "tenantId": "T-pinecone-coffee",
+    "propertyId": "P-003",
+    "leaseIds": [
+      "L-0102"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-06-22"
+  },
+  {
+    "tenantId": "T-pinecone-coffee",
+    "propertyId": "P-011",
+    "leaseIds": [
+      "L-0172"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-08-12"
+  },
+  {
+    "tenantId": "T-pinecone-coffee",
+    "propertyId": "P-016",
+    "leaseIds": [
+      "L-0242"
+    ],
+    "status": "non_compliant",
+    "expiresOn": "2027-04-25"
+  },
+  {
+    "tenantId": "T-pioneer-packaging",
+    "propertyId": "P-009",
+    "leaseIds": [
+      "L-0129"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-05-02"
+  },
+  {
+    "tenantId": "T-pioneer-packaging",
+    "propertyId": "P-020",
+    "leaseIds": [
+      "L-0199"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-03-13"
+  },
+  {
+    "tenantId": "T-ponderosa-hardware",
+    "propertyId": "P-001",
+    "leaseIds": [
+      "L-0224"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-04-10"
+  },
+  {
+    "tenantId": "T-ponderosa-hardware",
+    "propertyId": "P-010",
+    "leaseIds": [
+      "L-0154"
+    ],
+    "status": "expiring",
+    "expiresOn": "2026-11-13"
+  },
+  {
+    "tenantId": "T-prairie-credit-union",
+    "propertyId": "P-012",
+    "leaseIds": [
+      "L-0207"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-06-26"
+  },
+  {
+    "tenantId": "T-prairie-credit-union",
+    "propertyId": "P-016",
+    "leaseIds": [
+      "L-0137"
+    ],
+    "status": "expiring",
+    "expiresOn": "2026-11-07"
+  },
+  {
+    "tenantId": "T-quickfix-phone-repair",
+    "propertyId": "P-012",
+    "leaseIds": [
+      "L-0210"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-08-23"
+  },
+  {
+    "tenantId": "T-quickfix-phone-repair",
+    "propertyId": "P-015",
+    "leaseIds": [
+      "L-0140"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-01-21"
+  },
+  {
+    "tenantId": "T-rapid-print-shop",
+    "propertyId": "P-007",
+    "leaseIds": [
+      "L-0231"
+    ],
+    "status": "expiring",
+    "expiresOn": "2026-10-22"
+  },
+  {
+    "tenantId": "T-rapid-print-shop",
+    "propertyId": "P-020",
+    "leaseIds": [
+      "L-0161"
+    ],
+    "status": "non_compliant",
+    "expiresOn": "2027-01-01"
+  },
+  {
+    "tenantId": "T-red-rock-tacos",
+    "propertyId": "P-006",
+    "leaseIds": [
+      "L-0125"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-02-08"
+  },
+  {
+    "tenantId": "T-red-rock-tacos",
+    "propertyId": "P-017",
+    "leaseIds": [
+      "L-0195"
+    ],
+    "status": "expiring",
+    "expiresOn": "2026-10-27"
+  },
+  {
+    "tenantId": "T-red-rock-tacos",
+    "propertyId": "P-018",
+    "leaseIds": [
+      "L-0265"
+    ],
+    "status": "missing",
+    "expiresOn": null
+  },
+  {
+    "tenantId": "T-ridgeline-outfitters",
+    "propertyId": "P-005",
+    "leaseIds": [
+      "L-0253"
+    ],
+    "status": "missing",
+    "expiresOn": null
+  },
+  {
+    "tenantId": "T-ridgeline-outfitters",
+    "propertyId": "P-012",
+    "leaseIds": [
+      "L-0113",
+      "L-0183"
+    ],
+    "status": "expired",
+    "expiresOn": "2026-08-12"
+  },
+  {
+    "tenantId": "T-riverbend-pharmacy",
+    "propertyId": "P-011",
+    "leaseIds": [
+      "L-0259"
+    ],
+    "status": "missing",
+    "expiresOn": null
+  },
+  {
+    "tenantId": "T-riverbend-pharmacy",
+    "propertyId": "P-013",
+    "leaseIds": [
+      "L-0189"
+    ],
+    "status": "valid",
+    "expiresOn": "2026-12-31"
+  },
+  {
+    "tenantId": "T-riverbend-pharmacy",
+    "propertyId": "P-015",
+    "leaseIds": [
+      "L-0119"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-04-05"
+  },
+  {
+    "tenantId": "T-saguaro-smoke-shop",
+    "propertyId": "P-010",
+    "leaseIds": [
+      "L-0258"
+    ],
+    "status": "missing",
+    "expiresOn": null
+  },
+  {
+    "tenantId": "T-saguaro-smoke-shop",
+    "propertyId": "P-014",
+    "leaseIds": [
+      "L-0188"
+    ],
+    "status": "expiring",
+    "expiresOn": "2026-10-28"
+  },
+  {
+    "tenantId": "T-saguaro-smoke-shop",
+    "propertyId": "P-018",
+    "leaseIds": [
+      "L-0118"
+    ],
+    "status": "valid",
+    "expiresOn": "2026-12-01"
+  },
+  {
+    "tenantId": "T-sapphire-massage",
+    "propertyId": "P-006",
+    "leaseIds": [
+      "L-0146"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-02-28"
+  },
+  {
+    "tenantId": "T-sapphire-massage",
+    "propertyId": "P-011",
+    "leaseIds": [
+      "L-0216"
+    ],
+    "status": "expiring",
+    "expiresOn": "2026-10-21"
+  },
+  {
+    "tenantId": "T-silver-sage-spa",
+    "propertyId": "P-009",
+    "leaseIds": [
+      "L-0160"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-09-09"
+  },
+  {
+    "tenantId": "T-silver-sage-spa",
+    "propertyId": "P-019",
+    "leaseIds": [
+      "L-0230"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-08-08"
+  },
+  {
+    "tenantId": "T-silverline-logistics",
+    "propertyId": "P-001",
+    "leaseIds": [
+      "L-0266"
+    ],
+    "status": "missing",
+    "expiresOn": null
+  },
+  {
+    "tenantId": "T-silverline-logistics",
+    "propertyId": "P-009",
+    "leaseIds": [
+      "L-0126"
+    ],
+    "status": "non_compliant",
+    "expiresOn": "2027-01-09"
+  },
+  {
+    "tenantId": "T-silverline-logistics",
+    "propertyId": "P-013",
+    "leaseIds": [
+      "L-0196"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-07-31"
+  },
+  {
+    "tenantId": "T-silverstone-vapor",
+    "propertyId": null,
+    "leaseIds": [
+      "L-0273"
+    ],
+    "status": "missing",
+    "expiresOn": null
+  },
+  {
+    "tenantId": "T-starlight-cinemas",
+    "propertyId": "P-013",
+    "leaseIds": [
+      "L-0136",
+      "L-0206"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-03-12"
+  },
+  {
+    "tenantId": "T-sterling-jewelers-west",
+    "propertyId": "P-004",
+    "leaseIds": [
+      "L-0212"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-04-18"
+  },
+  {
+    "tenantId": "T-sterling-jewelers-west",
+    "propertyId": "P-014",
+    "leaseIds": [
+      "L-0142"
+    ],
+    "status": "non_compliant",
+    "expiresOn": "2027-01-14"
+  },
+  {
+    "tenantId": "T-summit-legal-group",
+    "propertyId": "P-001",
+    "leaseIds": [
+      "L-0166"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-05-10"
+  },
+  {
+    "tenantId": "T-summit-legal-group",
+    "propertyId": "P-015",
+    "leaseIds": [
+      "L-0236"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-04-29"
+  },
+  {
+    "tenantId": "T-summit-wireless",
+    "propertyId": "P-006",
+    "leaseIds": [
+      "L-0111"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-07-04"
+  },
+  {
+    "tenantId": "T-summit-wireless",
+    "propertyId": "P-018",
+    "leaseIds": [
+      "L-0251"
+    ],
+    "status": "expiring",
+    "expiresOn": "2026-10-29"
+  },
+  {
+    "tenantId": "T-summit-wireless",
+    "propertyId": "P-019",
+    "leaseIds": [
+      "L-0181"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-05-09"
+  },
+  {
+    "tenantId": "T-sunrise-dental",
+    "propertyId": "P-014",
+    "leaseIds": [
+      "L-0241"
+    ],
+    "status": "expired",
+    "expiresOn": "2026-09-20"
+  },
+  {
+    "tenantId": "T-sunrise-dental",
+    "propertyId": "P-015",
+    "leaseIds": [
+      "L-0101"
+    ],
+    "status": "valid",
+    "expiresOn": "2026-12-06"
+  },
+  {
+    "tenantId": "T-sunrise-dental",
+    "propertyId": "P-017",
+    "leaseIds": [
+      "L-0171"
+    ],
+    "status": "expired",
+    "expiresOn": "2026-08-26"
+  },
+  {
+    "tenantId": "T-thunderbird-martial-arts",
+    "propertyId": "P-012",
+    "leaseIds": [
+      "L-0233"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-06-07"
+  },
+  {
+    "tenantId": "T-thunderbird-martial-arts",
+    "propertyId": "P-018",
+    "leaseIds": [
+      "L-0163"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-09-03"
+  },
+  {
+    "tenantId": "T-tidewater-seafood",
+    "propertyId": "P-003",
+    "leaseIds": [
+      "L-0208"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-04-06"
+  },
+  {
+    "tenantId": "T-tidewater-seafood",
+    "propertyId": "P-007",
+    "leaseIds": [
+      "L-0138"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-02-06"
+  },
+  {
+    "tenantId": "T-trailhead-bikes",
+    "propertyId": "P-001",
+    "leaseIds": [
+      "L-0148"
+    ],
+    "status": "expired",
+    "expiresOn": "2026-09-26"
+  },
+  {
+    "tenantId": "T-trailhead-bikes",
+    "propertyId": "P-017",
+    "leaseIds": [
+      "L-0218"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-02-03"
+  },
+  {
+    "tenantId": "T-tumbleweed-treats",
+    "propertyId": null,
+    "leaseIds": [
+      "L-0274"
+    ],
+    "status": "missing",
+    "expiresOn": null
+  },
+  {
+    "tenantId": "T-urban-threads",
+    "propertyId": "P-008",
+    "leaseIds": [
+      "L-0248"
+    ],
+    "status": "valid",
+    "expiresOn": "2026-12-12"
+  },
+  {
+    "tenantId": "T-urban-threads",
+    "propertyId": "P-009",
+    "leaseIds": [
+      "L-0178"
+    ],
+    "status": "valid",
+    "expiresOn": "2026-12-24"
+  },
+  {
+    "tenantId": "T-urban-threads",
+    "propertyId": "P-015",
+    "leaseIds": [
+      "L-0108"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-04-12"
+  },
+  {
+    "tenantId": "T-velvet-nail-lounge",
+    "propertyId": "P-004",
+    "leaseIds": [
+      "L-0114"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-02-17"
+  },
+  {
+    "tenantId": "T-velvet-nail-lounge",
+    "propertyId": "P-009",
+    "leaseIds": [
+      "L-0184"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-07-27"
+  },
+  {
+    "tenantId": "T-velvet-nail-lounge",
+    "propertyId": "P-015",
+    "leaseIds": [
+      "L-0254"
+    ],
+    "status": "missing",
+    "expiresOn": null
+  },
+  {
+    "tenantId": "T-vista-vision-care",
+    "propertyId": "P-002",
+    "leaseIds": [
+      "L-0152"
+    ],
+    "status": "non_compliant",
+    "expiresOn": "2026-11-13"
+  },
+  {
+    "tenantId": "T-vista-vision-care",
+    "propertyId": "P-019",
+    "leaseIds": [
+      "L-0222"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-06-12"
+  },
+  {
+    "tenantId": "T-westwind-freight",
+    "propertyId": "P-006",
+    "leaseIds": [
+      "L-0127"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-01-25"
+  },
+  {
+    "tenantId": "T-westwind-freight",
+    "propertyId": "P-018",
+    "leaseIds": [
+      "L-0197"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-02-09"
+  },
+  {
+    "tenantId": "T-willow-pediatrics",
+    "propertyId": "P-003",
+    "leaseIds": [
+      "L-0234"
+    ],
+    "status": "expired",
+    "expiresOn": "2026-08-19"
+  },
+  {
+    "tenantId": "T-willow-pediatrics",
+    "propertyId": "P-019",
+    "leaseIds": [
+      "L-0164"
+    ],
+    "status": "valid",
+    "expiresOn": "2027-05-17"
+  }
+]

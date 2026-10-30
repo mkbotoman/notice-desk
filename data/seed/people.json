@@ -1,0 +1,51 @@
+[
+  {
+    "id": "PER-grace-lin",
+    "name": "Grace Lin",
+    "roles": [
+      "asset_manager"
+    ]
+  },
+  {
+    "id": "PER-lena-brooks",
+    "name": "Lena Brooks",
+    "roles": [
+      "asset_manager"
+    ]
+  },
+  {
+    "id": "PER-leo-ward",
+    "name": "Leo Ward",
+    "roles": [
+      "property_manager"
+    ]
+  },
+  {
+    "id": "PER-nina-foster",
+    "name": "Nina Foster",
+    "roles": [
+      "property_manager"
+    ]
+  },
+  {
+    "id": "PER-rosa-alvarez",
+    "name": "Rosa Alvarez",
+    "roles": [
+      "property_manager"
+    ]
+  },
+  {
+    "id": "PER-tom-reyes",
+    "name": "Tom Reyes",
+    "roles": [
+      "asset_manager"
+    ]
+  },
+  {
+    "id": "PER-victor-hughes",
+    "name": "Victor Hughes",
+    "roles": [
+      "property_manager"
+    ]
+  }
+]
