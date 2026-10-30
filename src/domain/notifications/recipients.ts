@@ -57,9 +57,9 @@ export function greetingName(
 }
 
 /**
- * Maya (Legal) gets the internal Notice Desk email. Anyone else, or nobody chosen yet, gets the
- * version written for the tenant, which the property manager passes on.
+ * The wording follows who is reading. Nobody chosen yet reads the version for the tenant, which
+ * is what automatic drafts to the property's property manager use.
  */
 export function audienceFor(personaId: string | null, personas: readonly Persona[]): Audience {
-  return personas.find((p) => p.id === personaId)?.kind === 'legal' ? 'internal' : 'property';
+  return personas.find((p) => p.id === personaId)?.kind ?? 'property_manager';
 }

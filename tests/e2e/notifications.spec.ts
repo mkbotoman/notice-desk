@@ -58,8 +58,34 @@ test.describe('outbox', () => {
     await expect(body).toHaveValue(/Notice to Cure for Brightside Fitness/);
     await expect(compose.getByLabel('Subject')).not.toHaveValue(/^For /);
 
+    await to.selectOption('am-lena-brooks');
+    await expect(body).toHaveValue(/Please ask the property manager/);
+    await expect(body).not.toHaveValue(/Dear Brightside/);
+
+    await to.selectOption('founder');
+    await expect(body).toHaveValue(/Heads-up:/);
+
     await to.selectOption({ index: 0 });
     await expect(body).toHaveValue(/Please pass the message below on to/);
+  });
+
+  test('an automatic draft changes its message when To changes, until you edit it', async ({
+    page,
+  }) => {
+    await signIn(page, '/outbox');
+    await settledDrafts(page);
+    await page.getByRole('list', { name: 'Notification list' }).getByRole('button').first().click();
+    const draft = page.getByRole('region', { name: 'Draft' });
+    const body = draft.getByLabel('Message');
+    await expect(body).toHaveValue(/Please pass the message below on to/);
+
+    await draft.getByLabel('To', { exact: true }).selectOption('maya');
+    await expect(body).not.toHaveValue(/Dear /);
+    await expect(body).toHaveValue(/Hi Maya,/);
+
+    await body.fill('My own words');
+    await draft.getByLabel('To', { exact: true }).selectOption('founder');
+    await expect(body).toHaveValue('My own words');
   });
 
   test('edit a draft, send it, see it under Sent and in the case log, after a reload', async ({

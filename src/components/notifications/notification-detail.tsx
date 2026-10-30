@@ -81,7 +81,7 @@ export function NotificationDetail({
   const [recipientId, setRecipientId] = useState<string | null>(n.recipientPersonaId);
   const [error, setError] = useState<string | null>(null);
   const lookups = useLookups();
-  const { cases } = useStoreState();
+  const { cases, eventsByCase } = useStoreState();
   const { personas } = usePersona();
   const { asOf } = useAsOf();
   const refs = useMemo(() => ({ ...lookups, coi: store.getSeed().coi }), [lookups, store]);
@@ -132,7 +132,12 @@ export function NotificationDetail({
     setRecipientId(id);
     const next = personas.find((p) => p.id === id);
     if (!c || !next || !untouched) return;
-    const text = renderNotification(n, c, personaRecipient(next), { asOf, refs, personas });
+    const text = renderNotification(n, c, personaRecipient(next), {
+      asOf,
+      refs,
+      personas,
+      events: eventsByCase.get(n.caseId),
+    });
     if (text) {
       setSubject(text.subject);
       setBody(text.body);
@@ -150,7 +155,7 @@ export function NotificationDetail({
         lease: c.leaseId ? lookups.leaseById.get(c.leaseId) : undefined,
       }),
       recipientRole: recipientRole(personas.find((p) => p.id === recipient.personaId)),
-      tone: audience === 'internal' ? 'internal' : 'formal',
+      tone: audience === 'property_manager' ? 'formal' : 'internal',
       template: n.trigger === 'manual' ? 'blank' : n.trigger,
       subject,
       body,

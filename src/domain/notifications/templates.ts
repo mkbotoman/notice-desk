@@ -1,6 +1,7 @@
 import { STAGE_LABELS, formatCents, longDate, weekdayDate } from '@/lib/format';
 import { TEMPLATE_IDS, type TemplateId } from '../types';
 import type {
+  PersonaKind,
   Case,
   CoiStatus,
   ISODate,
@@ -28,6 +29,8 @@ export interface MergeFields {
   stageGuidance: string;
   /** What the tenant is told about this stage, in their language. */
   tenantGuidance: string;
+  /** What the tenant's message is about, for its subject line. */
+  tenantTopic: string;
   /** " The outstanding balance is $X." or nothing when there is no balance to speak of. */
   balanceSentence: string;
   owner: string;
@@ -68,6 +71,15 @@ const TENANT_STAGE_GUIDANCE: Record<Stage, string> = {
   closed: 'This matter is now closed. No further action is needed.',
 };
 
+const TENANT_STAGE_TOPIC: Record<Stage, string> = {
+  non_compliant: 'an issue at your premises',
+  notice_to_cure: 'your Notice to Cure',
+  default: 'your lease is now in default',
+  collections: 'your balance has gone to collections',
+  cured: 'this matter is resolved',
+  closed: 'this matter is closed',
+};
+
 const OWNER_NAMES: Record<Team, string> = { legal: 'Legal', asset_management: 'Asset Management' };
 
 const hi = (f: MergeFields) => (f.recipientName ? `Hi ${f.recipientName},` : 'Hi,');
@@ -75,8 +87,12 @@ const close = (f: MergeFields) => `Case ${f.caseId}: ${f.caseLink}\n\nThanks,\nN
 const deadlineOf = (f: MergeFields) => f.deadline ?? 'not set';
 const shortOf = (f: MergeFields) => f.deadlineShort ?? 'not set';
 
-/** Who is reading: Maya (the internal Notice Desk email) or the tenant, through the property manager. */
-export type Audience = 'internal' | 'property';
+/**
+ * Who is reading. Legal (Maya) gets the Notice Desk wording the app has always used; a property
+ * manager gets a message for the tenant to pass on; an asset manager gets what is theirs to do;
+ * the Founder gets a short heads-up.
+ */
+export type Audience = PersonaKind;
 
 export interface Template {
   id: TemplateId;
@@ -176,7 +192,7 @@ ${close(f)}`,
     renderForProperty: (f) =>
       forTenant(
         f,
-        'an update on your account',
+        f.tenantTopic,
         `We are writing to update you on ${f.where}. ${f.tenantGuidance}${f.balanceSentence}
 
 If you have any questions, please contact us.`,
@@ -235,14 +251,87 @@ Please send us an updated certificate as soon as you can so that your coverage s
   },
 ];
 
+const note = (f: MergeFields, subject: string, paragraphs: string[]): Rendered => ({
+  subject: `${f.tenant}, ${f.where}: ${subject}`,
+  body: `${hi(f)}\n\n${paragraphs.join('\n\n')}\n\n${close(f)}`,
+});
+
+const withAssetManagement = (f: MergeFields) => f.owner === OWNER_NAMES.asset_management;
+
+/** An asset manager: what changed, and what is theirs to do about it. */
+const ASSET_MANAGER_COPY: Record<TemplateId, (f: MergeFields) => Rendered> = {
+  deadline_approaching: (f) =>
+    note(f, `cure deadline ${shortOf(f)}`, [
+      `The Notice to Cure for ${f.tenant} at ${f.where} expires on ${deadlineOf(f)}. The AR balance is ${f.amount}.`,
+      'Please ask the property manager to reach the tenant before then. If the tenant has paid or agreed a plan, add an update to the case so Legal sees it.',
+    ]),
+  deadline_passed: (f) =>
+    note(f, `cure deadline passed ${shortOf(f)}`, [
+      `The cure deadline for ${f.tenant} at ${f.where} was ${deadlineOf(f)} and the case is still in Notice to Cure. The AR balance is ${f.amount}.`,
+      'If the tenant has paid or been in touch, add an update to the case now. Otherwise Legal will decide whether to move the case to Default.',
+    ]),
+  stage_changed: (f) =>
+    note(f, `now ${f.stage}`, [
+      `The case for ${f.tenant} at ${f.where} ${f.previousStage ? `moved from ${f.previousStage} to ${f.stage}` : `is now in ${f.stage}`}. The AR balance is ${f.amount}.`,
+      `${f.stageGuidance} The case is with ${f.owner}.`,
+    ]),
+  owner_changed: (f) =>
+    note(f, `now with ${f.owner}`, [
+      `The case for ${f.tenant} at ${f.where} is now with ${f.owner}, currently in ${f.stage}. The AR balance is ${f.amount}.`,
+      withAssetManagement(f)
+        ? 'It is with you now. Please review it, add an update, and hand it back to Legal when it is ready for them.'
+        : 'It is back with Legal. Nothing is needed from you unless the tenant gets in touch.',
+    ]),
+  coi_expiring: (f) =>
+    note(f, `insurance certificate ${f.coiStatus}`, [
+      `The insurance certificate for ${f.tenant} at ${f.where} is ${f.coiStatus} (expiry ${f.coiExpiry}).`,
+      'Please ask the property manager to collect a renewed certificate from the tenant.',
+    ]),
+  blank: () => ({ subject: '', body: '' }),
+};
+
+/** The Founder: a short heads-up with the numbers, and nothing to action. */
+const FOUNDER_COPY: Record<TemplateId, (f: MergeFields) => Rendered> = {
+  deadline_approaching: (f) =>
+    note(f, `cure deadline ${shortOf(f)}`, [
+      `Heads-up: the Notice to Cure for ${f.tenant} at ${f.where} expires on ${deadlineOf(f)}, with ${f.amount} outstanding. The case is with ${f.owner}.`,
+    ]),
+  deadline_passed: (f) =>
+    note(f, `cure deadline passed ${shortOf(f)}`, [
+      `Heads-up: the cure deadline for ${f.tenant} at ${f.where} passed on ${deadlineOf(f)} and the case is still in Notice to Cure, with ${f.amount} outstanding. It is with ${f.owner}.`,
+    ]),
+  stage_changed: (f) =>
+    note(f, `now ${f.stage}`, [
+      `Heads-up: ${f.tenant} at ${f.where} ${f.previousStage ? `moved from ${f.previousStage} to ${f.stage}` : `is now in ${f.stage}`}, with ${f.amount} outstanding. It is with ${f.owner}.`,
+    ]),
+  owner_changed: (f) =>
+    note(f, `now with ${f.owner}`, [
+      `Heads-up: ${f.tenant} at ${f.where} is now with ${f.owner}, in ${f.stage}, with ${f.amount} outstanding.`,
+    ]),
+  coi_expiring: (f) =>
+    note(f, `insurance certificate ${f.coiStatus}`, [
+      `Heads-up: the insurance certificate for ${f.tenant} at ${f.where} is ${f.coiStatus} (expiry ${f.coiExpiry}).`,
+    ]),
+  blank: () => ({ subject: '', body: '' }),
+};
+
 export function renderTemplate(
   id: TemplateId,
   fields: MergeFields,
-  audience: Audience = 'internal',
+  audience: Audience = 'legal',
 ): Rendered {
   const template = TEMPLATES.find((t) => t.id === id);
   if (!template) throw new Error(`Unknown template ${id}`);
-  return audience === 'internal' ? template.render(fields) : template.renderForProperty(fields);
+  switch (audience) {
+    case 'legal':
+      return template.render(fields);
+    case 'property_manager':
+      return template.renderForProperty(fields);
+    case 'asset_manager':
+      return ASSET_MANAGER_COPY[id](fields);
+    case 'founder':
+      return FOUNDER_COPY[id](fields);
+  }
 }
 
 export interface FieldSources {
@@ -282,6 +371,7 @@ export function buildMergeFields(
     previousStage: options.previousStage ? STAGE_LABELS[options.previousStage] : null,
     stageGuidance: STAGE_GUIDANCE[stage],
     tenantGuidance: TENANT_STAGE_GUIDANCE[stage],
+    tenantTopic: TENANT_STAGE_TOPIC[stage],
     balanceSentence:
       balance !== null && balance > 0 ? ` The outstanding balance is ${formatCents(balance)}.` : '',
     owner: OWNER_NAMES[options.owner ?? c.owner],

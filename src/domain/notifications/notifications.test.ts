@@ -441,11 +441,57 @@ describe('templates', () => {
     expect(renderForCase('stage_changed', c, maya, run()).body).not.toContain('Dear ');
   });
 
+  const sources = () => ({
+    tenant: refs.tenantById.get('T-01'),
+    property: refs.propertyById.get('P-01'),
+    lease: refs.leaseById.get('L-001'),
+    coi: undefined,
+  });
+
+  it('says what is theirs to do for an asset manager, and just the news for the Founder', () => {
+    const am = { personaId: 'am-lena-park', label: 'Lena Park' };
+    const founder = { personaId: 'founder', label: 'Founder' };
+    const toAm = (id: (typeof TEMPLATE_IDS)[number]) => renderForCase(id, c, am, run());
+    const toFounder = (id: (typeof TEMPLATE_IDS)[number]) => renderForCase(id, c, founder, run());
+    for (const id of TEMPLATE_IDS.filter((t) => t !== 'blank')) {
+      for (const out of [toAm(id), toFounder(id)]) {
+        expect(`${out.subject}${out.body}`).toContain('Brightside Fitness LLC');
+        expect(out.body).not.toContain('Dear ');
+        expect(out.body).toContain('/cases/N-77');
+      }
+      expect(toAm(id).body).not.toBe(
+        renderForCase(id, c, personaRecipient(personas.find((p) => p.kind === 'legal')!), run())
+          .body,
+      );
+      expect(toFounder(id).body).toContain('Heads-up');
+    }
+    expect(toAm('deadline_approaching').body).toContain('ask the property manager');
+    expect(toAm('coi_expiring').body).toContain('renewed certificate');
+    expect(toAm('deadline_passed').body).toContain('add an update');
+    expect(toAm('stage_changed').body).toContain('is now in');
+    expect(toFounder('stage_changed').body).toContain('is now in');
+    const moved = buildMergeFields(c, sources(), { previousStage: 'non_compliant' });
+    expect(renderTemplate('stage_changed', moved, 'asset_manager').body).toContain('moved from');
+    expect(renderTemplate('stage_changed', moved, 'founder').body).toContain('moved from');
+    expect(toAm('owner_changed').body).toContain('back with Legal');
+    expect(renderForCase('blank', c, am, run())).toEqual({ subject: '', body: '' });
+    expect(renderForCase('blank', c, founder, run())).toEqual({ subject: '', body: '' });
+    const toAmOwner = renderForCase(
+      'owner_changed',
+      { ...c, owner: 'asset_management' },
+      am,
+      run(),
+    );
+    expect(toAmOwner.body).toContain('hand it back to Legal');
+  });
+
   it('chooses the wording from who the recipient is', () => {
     const legal = personas.find((p) => p.kind === 'legal')!;
-    expect(audienceFor(legal.id, personas)).toBe('internal');
-    expect(audienceFor('pm-dan-whitfield', personas)).toBe('property');
-    expect(audienceFor(null, personas)).toBe('property');
+    expect(audienceFor(legal.id, personas)).toBe('legal');
+    expect(audienceFor('am-lena-park', personas)).toBe('asset_manager');
+    expect(audienceFor('pm-dan-whitfield', personas)).toBe('property_manager');
+    expect(audienceFor('founder', personas)).toBe('founder');
+    expect(audienceFor(null, personas)).toBe('property_manager');
   });
 
   it('only mentions a balance in tenant wording when there is one', () => {
@@ -488,7 +534,34 @@ describe('templates', () => {
     expect(internal.body).toContain('moved from Notice to Cure to Default');
     const pm = { personaId: draft.recipientPersonaId, label: draft.recipientLabel };
     expect(renderNotification(draft, target, pm, run())!.body).toBe(draft.body);
-    expect(renderNotification({ ...draft, recipe: undefined }, target, pm, run())).toBeNull();
+    expect(
+      renderNotification({ ...draft, trigger: 'manual', recipe: undefined }, target, pm, run()),
+    ).toBeNull();
+
+    // A draft saved before recipes existed is rebuilt from the event that raised it.
+    const old = { ...draft, recipe: undefined };
+    const rebuilt = renderNotification(old, target, maya, { ...run(), events });
+    expect(rebuilt!.body).toContain('moved from Notice to Cure to Default');
+    expect(renderNotification(old, target, maya, run())!.body).toContain('Hi Maya');
+    const ownerEvent = makeEvent({
+      id: 'EV-own',
+      caseId: 'N-001',
+      type: 'owner_changed',
+      payload: { from: 'legal', to: 'asset_management' },
+    });
+    const ownerDraft = {
+      ...draft,
+      trigger: 'owner_changed' as const,
+      dedupeKey: 'EV-own',
+      recipe: undefined,
+    };
+    expect(
+      renderNotification(ownerDraft, target, maya, { ...run(), events: [ownerEvent] })!.body,
+    ).toContain('now with Asset Management');
+    const deadlineDraft = { ...draft, trigger: 'deadline_passed' as const, recipe: undefined };
+    expect(renderNotification(deadlineDraft, target, maya, run())!.subject).toContain(
+      'deadline passed',
+    );
   });
 
   it('lets a draft change who it is addressed to', () => {

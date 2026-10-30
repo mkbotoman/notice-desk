@@ -109,7 +109,7 @@ export function Composer({
         lease: c.leaseId ? lookups.leaseById.get(c.leaseId) : undefined,
       }),
       recipientRole: recipientRole(personas.find((p) => p.id === recipient.personaId)),
-      tone: audience === 'internal' ? 'internal' : 'formal',
+      tone: audience === 'property_manager' ? 'formal' : 'internal',
       template: templateId,
       subject: text.subject,
       body: text.body,

@@ -1,5 +1,6 @@
 import type {
   Case,
+  CaseEvent,
   ISODate,
   ISODateTime,
   Notification,
@@ -46,14 +47,32 @@ export function renderForCase(
   return renderTemplate(templateId, fields, audienceFor(recipient.personaId, input.personas));
 }
 
-/** An automatic draft's text for a given recipient; null for a notification with no recipe. */
+/**
+ * What an automatic draft was about. Drafts saved before recipes existed have none, so it is
+ * rebuilt from the trigger and the case event that raised it.
+ */
+function recipeOf(n: Notification, events: readonly CaseEvent[]): NotificationRecipe | null {
+  if (n.recipe) return n.recipe;
+  if (n.trigger === 'manual') return null;
+  const event = events.find((e) => e.id === n.dedupeKey);
+  if (n.trigger === 'stage_changed' && event?.type === 'stage_changed') {
+    return { template: n.trigger, stage: event.payload.to, previousStage: event.payload.from };
+  }
+  if (n.trigger === 'owner_changed' && event?.type === 'owner_changed') {
+    return { template: n.trigger, owner: event.payload.to };
+  }
+  return { template: n.trigger };
+}
+
+/** A draft's text for a given recipient; null for a notification that cannot be re-rendered. */
 export function renderNotification(
   n: Notification,
   c: Case,
   recipient: Recipient,
-  input: RenderInput,
+  input: RenderInput & { events?: readonly CaseEvent[] },
 ): Rendered | null {
-  return n.recipe ? renderForCase(n.recipe.template, c, recipient, input, n.recipe) : null;
+  const recipe = recipeOf(n, input.events ?? []);
+  return recipe ? renderForCase(recipe.template, c, recipient, input, recipe) : null;
 }
 
 /** The template that fits where the case is: overdue, due soon, or just its stage. */

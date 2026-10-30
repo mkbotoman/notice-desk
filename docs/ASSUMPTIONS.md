@@ -56,3 +56,5 @@ One line each, tagged with the workstream ID, e.g. `- [WS-1B] ...`. Feeds the sh
 - Automatic drafts default to the property manager's version; choosing Maya as the recipient switches the wording. Each automatic draft keeps a `recipe` (template, stage, deadline, certificate details) so switching To says the same thing for the new reader. Edited text is kept when To changes.
 - "Draft with AI" is always shown, with an optional "What should change?" note (300 characters, redacted, sent as data).
 - Amounts always show cents ($18,450.00).
+- The wording follows who reads it, with four versions: Legal (the original Notice Desk wording), the property manager (a message for the tenant to pass on), the asset manager (what changed and what is theirs to do) and the Founder (a short heads-up with the numbers). Each is specific to the change: the stage it moved to and from, the new owner, the deadline, the certificate status.
+- Drafts saved before recipes existed are rebuilt from the trigger and the case event that raised them, so switching To works on them too.
