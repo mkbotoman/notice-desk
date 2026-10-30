@@ -4,6 +4,20 @@ import { signIn } from './helpers';
 const log = (page: Page) => page.getByRole('list', { name: 'Case log' });
 const tab = (page: Page, name: string | RegExp) => page.getByRole('tab', { name });
 
+/**
+ * The number on the Drafts tab once the app's own automatic drafts have appeared (they are raised
+ * just after the page loads, so an immediate read could see zero).
+ */
+async function settledDrafts(page: Page): Promise<number> {
+  const read = async () =>
+    Number(((await tab(page, /Drafts/).innerText()).match(/\d+/) ?? ['0'])[0]);
+  await expect.poll(read).toBeGreaterThan(0);
+  return read();
+}
+
+const draftsTab = (page: Page, n: number) =>
+  expect(tab(page, /Drafts/)).toHaveText(new RegExp(`Drafts\\s*${n}$`));
+
 /** Saves a manual draft for `caseId` through the composer and returns once it is listed. */
 async function draftFor(page: Page, caseId: string, subject: string) {
   await page.goto(`/outbox?compose=${caseId}`);
@@ -35,8 +49,9 @@ test.describe('outbox', () => {
     page,
   }) => {
     await signIn(page, '/outbox');
+    const before = await settledDrafts(page);
     await draftFor(page, 'N-001', 'E2E first draft');
-    await expect(tab(page, /Drafts/)).toContainText('1');
+    await draftsTab(page, before + 1);
 
     const draft = page.getByRole('region', { name: 'Draft' });
     await draft.getByLabel('Subject').fill('E2E edited subject');
@@ -47,7 +62,7 @@ test.describe('outbox', () => {
 
     await draft.getByRole('button', { name: 'Send' }).click();
     await expect(tab(page, /Sent/)).toContainText('1');
-    await expect(tab(page, /Drafts/)).toContainText('0');
+    await draftsTab(page, before);
     const sent = page.getByRole('region', { name: 'Notification detail' });
     await expect(sent).toContainText('E2E edited subject');
     await expect(sent.getByRole('button', { name: 'Send' })).toHaveCount(0);
@@ -69,13 +84,14 @@ test.describe('outbox', () => {
 
   test('dismiss a draft; it moves to Dismissed and stays read-only', async ({ page }) => {
     await signIn(page, '/outbox');
+    const before = await settledDrafts(page);
     await draftFor(page, 'N-001', 'E2E to dismiss');
     await page
       .getByRole('region', { name: 'Draft' })
       .getByRole('button', { name: 'Dismiss' })
       .click();
     await expect(tab(page, /Dismissed/)).toContainText('1');
-    await expect(tab(page, /Drafts/)).toContainText('0');
+    await draftsTab(page, before);
     await expect(page.getByRole('region', { name: 'Notification detail' })).toContainText(
       'Dismissed',
     );

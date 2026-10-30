@@ -9,6 +9,7 @@ import { UrlParamSync, useIsClient, usePersona } from '@/lib/persona/context';
 import { navFor, type NavItem } from '@/lib/persona/personas';
 import { cn } from '@/lib/utils';
 import { useStoreState } from '@/store/react';
+import { useAutoNotifications } from '@/components/notifications/use-auto-notifications';
 import { LoadingState } from './states';
 import { ResetDemoButton } from './reset-demo';
 
@@ -72,6 +73,8 @@ function NavLinks({ items, onNavigate }: { items: NavItem[]; onNavigate?: () => 
 /** Sidebar on wide screens, a bar with a menu button on narrow ones. */
 export function Shell({ children }: { children: ReactNode }) {
   const isClient = useIsClient();
+  // Deadline and insurance notifications are raised app-wide, whichever page is open.
+  useAutoNotifications();
   const { persona } = usePersona();
   const [menuOpen, setMenuOpen] = useState(false);
   const items = navFor(persona);

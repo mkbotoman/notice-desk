@@ -126,6 +126,7 @@ export function ownerButtonLabel(persona: Persona, to: Team): string {
 
 export function actorLabel(actorPersonaId: string, personas: readonly Persona[]): string {
   if (actorPersonaId === 'import') return "Imported from Legal's sheet";
+  if (actorPersonaId === 'system') return 'Notice Desk (automatic)';
   const persona = personas.find((p) => p.id === actorPersonaId);
   return persona ? personaOptionLabel(persona) : 'Unknown person';
 }
