@@ -1,8 +1,9 @@
 import { z } from 'zod';
 import type { SummaryCase, WeekSummary } from '@/domain/summary/types';
-import { ISSUE_LABELS, STAGE_LABELS, formatCents, shortDate, weekdayDate } from '@/lib/format';
+import { ISSUE_LABELS, STAGE_LABELS, formatCents, shortDate } from '@/lib/format';
 import type { Generator } from './gateway';
-import { unexpectedNumbers } from './numbers';
+import { cleanFact } from '@/lib/redact';
+import { introducesLink, unexpectedFigures } from './numbers';
 
 /**
  * The narrative's whole view of the world. Allowlist: counts, and per case the tenant, property,
@@ -17,7 +18,7 @@ const MAX_TEXT = 120;
 const MAX_CHARS = 900;
 const MAX_SENTENCES = 6;
 
-const text = z.string().max(MAX_TEXT);
+const text = z.string().max(MAX_TEXT).transform(cleanFact);
 const date = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
 const count = z.number().int().min(0).max(100_000);
 const OWNER_TEAMS = ['Legal', 'Asset Management'] as const;
@@ -146,13 +147,24 @@ export function buildNarrativePrompt(payload: NarrativePayload): {
 const WINDOW_DAYS = '7';
 
 function sourcesFor(payload: NarrativePayload): string[] {
-  const rendered = [payload.asOf, payload.weekStart].flatMap((d) => [shortDate(d), weekdayDate(d)]);
-  const dated = [...payload.newCases, ...payload.stageChanges, ...payload.curedOrClosed];
-  const cases = [...payload.overdue, ...payload.dueSoon, ...dated];
-  const dates = [...dated.map((r) => r.date), ...cases.flatMap((r) => r.deadline ?? [])].flatMap(
-    (d) => [shortDate(d), weekdayDate(d)],
-  );
-  return [JSON.stringify(payload), WINDOW_DAYS, ...rendered, ...dates];
+  return [JSON.stringify(payload), WINDOW_DAYS];
+}
+
+function datesIn(payload: NarrativePayload): string[] {
+  const rows = [
+    ...payload.overdue,
+    ...payload.dueSoon,
+    ...payload.newCases,
+    ...payload.stageChanges,
+    ...payload.curedOrClosed,
+  ];
+  return [
+    payload.asOf,
+    payload.weekStart,
+    ...rows
+      .flatMap((r) => ['date' in r ? r.date : null, r.deadline])
+      .filter((d): d is string => typeof d === 'string'),
+  ];
 }
 
 const MARKDOWN = /[*#`|[\]<>]/;
@@ -176,9 +188,10 @@ export function checkNarrative(value: string, payload: NarrativePayload): Narrat
   if (META.test(trimmed)) return { ok: false, reason: 'not a summary' };
   const sentences = sentenceCount(trimmed);
   if (sentences < 1 || sentences > MAX_SENTENCES) return { ok: false, reason: 'sentence count' };
-  if (unexpectedNumbers(trimmed, sourcesFor(payload)).length > 0) {
+  if (unexpectedFigures(trimmed, sourcesFor(payload), datesIn(payload)).length > 0) {
     return { ok: false, reason: 'unknown figure' };
   }
+  if (introducesLink(trimmed, sourcesFor(payload))) return { ok: false, reason: 'link' };
   return { ok: true };
 }
 

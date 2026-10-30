@@ -19,11 +19,10 @@ import {
   sendDraft,
 } from './compose';
 import {
-  assetManagerRecipient,
+  propertyContactRecipient,
+  propertyPeople,
   greetingName,
-  legalRecipient,
   personaRecipient,
-  teamRecipient,
 } from './recipients';
 import {
   TEMPLATES,
@@ -90,28 +89,35 @@ describe('business days', () => {
 describe('recipients', () => {
   const property = (over: Partial<Property> = {}) => ({ ...seed.properties[0], ...over });
 
-  it('finds Legal, falling back to an unresolved label', () => {
-    expect(legalRecipient(personas)).toEqual({
-      personaId: 'maya',
-      label: 'Maya · Legal',
-    });
-    expect(legalRecipient([])).toEqual({ personaId: null, label: 'Legal' });
+  it("finds the property's property manager, falling back to the asset manager", () => {
+    expect(propertyContactRecipient(property(), personas).personaId).toBe('pm-priya-shah');
+    expect(
+      propertyContactRecipient(property({ propertyManagerId: null }), personas).personaId,
+    ).toBe('am-lena-park');
   });
 
-  it('finds the property asset manager and explains when it cannot', () => {
-    expect(assetManagerRecipient(property(), personas).personaId).toBe('am-lena-park');
-    expect(assetManagerRecipient(undefined, personas)).toEqual({
+  it('is never Legal or the viewer, and explains when nobody is assigned', () => {
+    expect(propertyContactRecipient(undefined, personas)).toEqual({
       personaId: null,
-      label: 'Asset manager (property unknown)',
+      label: 'Property manager (property unknown)',
     });
-    const none = assetManagerRecipient(property({ assetManagerId: null }), personas);
+    const none = propertyContactRecipient(
+      property({ propertyManagerId: null, assetManagerId: null }),
+      personas,
+    );
     expect(none.personaId).toBeNull();
     expect(none.label).toContain('none assigned');
   });
 
-  it('routes by team', () => {
-    expect(teamRecipient('legal', property(), personas).personaId).toBe('maya');
-    expect(teamRecipient('asset_management', property(), personas).personaId).toBe('am-lena-park');
+  it('lists the people at a property for the recipient picker', () => {
+    expect(propertyPeople(property(), personas).map((p) => p.id)).toEqual([
+      'pm-priya-shah',
+      'am-lena-park',
+    ]);
+    expect(propertyPeople(property({ assetManagerId: null }), personas).map((p) => p.id)).toEqual([
+      'pm-priya-shah',
+    ]);
+    expect(propertyPeople(undefined, personas)).toEqual([]);
   });
 
   it('greets by first name, or not at all', () => {
@@ -125,9 +131,9 @@ describe('triggers against the fixture at its data date', () => {
   it('fires deadline passed, deadline approaching and COI once each', () => {
     const drafts = evaluateTriggers(input());
     expect(drafts.map((d) => [d.trigger, d.caseId, d.recipientPersonaId])).toEqual([
-      ['deadline_passed', 'N-001', 'maya'],
-      ['deadline_approaching', 'N-004', 'am-lena-park'],
-      ['coi_expiring', 'N-002', 'am-omar-reyes'],
+      ['deadline_passed', 'N-001', 'pm-priya-shah'],
+      ['deadline_approaching', 'N-004', 'pm-dan-whitfield'],
+      ['coi_expiring', 'N-002', 'pm-dan-whitfield'],
     ]);
     for (const d of drafts) {
       expect(d.status).toBe('draft');
@@ -237,12 +243,13 @@ describe('triggers against the fixture at its data date', () => {
 
     const stage = byKey.get('EV-stage')!;
     expect(stage.trigger).toBe('stage_changed');
-    expect(stage.recipientPersonaId).toBe('am-lena-park');
+    expect(stage.recipientPersonaId).toBe('pm-dan-whitfield');
     expect(stage.body).toContain('moved from Notice to Cure to Default');
 
-    expect(byKey.get('EV-owner')!.recipientPersonaId).toBe('am-lena-park');
+    expect(byKey.get('EV-owner')!.recipientPersonaId).toBe('pm-priya-shah');
     expect(byKey.get('EV-owner')!.body).toContain('now with Asset Management');
-    expect(byKey.get('EV-owner-legal')!.recipientPersonaId).toBe('maya');
+    // Handing a case back to Legal still tells the property's own manager, not Legal.
+    expect(byKey.get('EV-owner-legal')!.recipientPersonaId).toBe('pm-dan-whitfield');
     expect(byKey.has('EV-import')).toBe(false);
     expect(byKey.has('EV-note')).toBe(false);
     expect(evaluateTriggers({ ...run, existing: drafts })).toEqual([]);
@@ -297,7 +304,7 @@ describe('triggers against the fixture at its data date', () => {
     const [one] = run([expiring({})]);
     expect(one.caseId).toBe('B'); // the open case wins over the closed one
     expect(one.dedupeKey).toBe('coi:T-9:P-02:expiring:2026-10-30');
-    expect(one.recipientPersonaId).toBe('am-lena-park');
+    expect(one.recipientPersonaId).toBe('pm-dan-whitfield');
     expect(one.body).toContain('expiring');
 
     expect(run([expiring({})], '2026-12-01')[0].dedupeKey).toBe('coi:T-9:P-02:expired:2026-10-30');
@@ -337,7 +344,7 @@ describe('triggers against the fixture at its data date', () => {
     expect(draft.recipientPersonaId).toBeNull();
   });
 
-  it('leaves the recipient unresolved when the asset manager is unknown', () => {
+  it('leaves the recipient unresolved when the property is unknown', () => {
     const cases = [
       makeCase({
         id: 'x',
@@ -351,7 +358,7 @@ describe('triggers against the fixture at its data date', () => {
       input({ cases, eventsByCase: new Map(), refs: { ...refs, coi: [] } }),
     );
     expect(draft.recipientPersonaId).toBeNull();
-    expect(draft.recipientLabel).toBe('Asset manager (property unknown)');
+    expect(draft.recipientLabel).toBe('Property manager (property unknown)');
     expect(draft.body.startsWith('Hi,')).toBe(true);
   });
 });
@@ -624,15 +631,14 @@ describe('composer defaults', () => {
     expect(defaultTemplate(makeCase({ stage: 'default' }), asOf)).toBe('stage_changed');
   });
 
-  it('sends missed deadlines to Legal and otherwise to the case holder, else Legal', () => {
+  it("addresses a case to its property's property manager, never to whoever is viewing", () => {
     const input = { refs, personas };
     const held = makeCase({ owner: 'asset_management', propertyId: 'P-02' });
-    expect(defaultRecipient('deadline_passed', held, input).personaId).toBe('maya');
-    expect(defaultRecipient('stage_changed', held, input).personaId).toBe('am-lena-park');
-    expect(defaultRecipient('stage_changed', makeCase({ owner: 'legal' }), input).personaId).toBe(
-      'maya',
-    );
+    expect(defaultRecipient(held, input).personaId).toBe('pm-dan-whitfield');
+    expect(
+      defaultRecipient(makeCase({ owner: 'legal', propertyId: 'P-01' }), input).personaId,
+    ).toBe('pm-priya-shah');
     const orphan = makeCase({ owner: 'asset_management', propertyId: null });
-    expect(defaultRecipient('stage_changed', orphan, input).personaId).toBe('maya');
+    expect(defaultRecipient(orphan, input).personaId).toBeNull();
   });
 });

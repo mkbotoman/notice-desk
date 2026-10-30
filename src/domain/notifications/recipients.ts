@@ -1,42 +1,49 @@
 import { personaOptionLabel } from '@/lib/persona/personas';
-import type { Persona, Property, Team } from '../types';
+import type { Persona, Property } from '../types';
 
 export interface Recipient {
   personaId: string | null;
   label: string;
 }
 
-export const LEGAL_PERSONA_ID = 'maya';
-
 export function personaRecipient(persona: Persona): Recipient {
   return { personaId: persona.id, label: personaOptionLabel(persona) };
 }
 
-export function legalRecipient(personas: readonly Persona[]): Recipient {
-  const maya = personas.find((p) => p.id === LEGAL_PERSONA_ID);
-  return maya ? personaRecipient(maya) : { personaId: null, label: 'Legal' };
+function persons(property: Property | undefined, personas: readonly Persona[]) {
+  const manager = personas.find(
+    (p) => p.kind === 'property_manager' && !!property && p.personId === property.propertyManagerId,
+  );
+  const assetManager = personas.find(
+    (p) => p.kind === 'asset_manager' && !!property && p.personId === property.assetManagerId,
+  );
+  return { manager, assetManager };
 }
 
-/** The asset manager of a property, or an unresolved recipient that says why. */
-export function assetManagerRecipient(
+/**
+ * Who a notification about a case at this property is for: the property's own property manager,
+ * who deals with the tenant day to day. Falls back to the asset manager, and otherwise says
+ * plainly that nobody is assigned. It is never the person who happens to be looking at the app.
+ */
+export function propertyContactRecipient(
   property: Property | undefined,
   personas: readonly Persona[],
 ): Recipient {
-  if (!property) return { personaId: null, label: 'Asset manager (property unknown)' };
-  const found = personas.find(
-    (p) => p.kind === 'asset_manager' && p.personId === property.assetManagerId,
-  );
+  if (!property) return { personaId: null, label: 'Property manager (property unknown)' };
+  const { manager, assetManager } = persons(property, personas);
+  const found = manager ?? assetManager;
   return found
     ? personaRecipient(found)
-    : { personaId: null, label: `Asset manager (none assigned, ${property.name})` };
+    : { personaId: null, label: `Property manager (none assigned, ${property.name})` };
 }
 
-export function teamRecipient(
-  team: Team,
+/** The property's property manager and asset manager, for the top of a recipient picker. */
+export function propertyPeople(
   property: Property | undefined,
   personas: readonly Persona[],
-): Recipient {
-  return team === 'legal' ? legalRecipient(personas) : assetManagerRecipient(property, personas);
+): Persona[] {
+  const { manager, assetManager } = persons(property, personas);
+  return [manager, assetManager].filter((p): p is Persona => p !== undefined);
 }
 
 /** "Lena Park" becomes "Lena"; null when there is no named person to greet. */

@@ -15,13 +15,7 @@ import type {
   Tenant,
 } from '../types';
 import { businessDaysUntil } from './business-days';
-import {
-  greetingName,
-  legalRecipient,
-  teamRecipient,
-  assetManagerRecipient,
-  type Recipient,
-} from './recipients';
+import { greetingName, propertyContactRecipient, type Recipient } from './recipients';
 import {
   buildMergeFields,
   renderTemplate,
@@ -89,7 +83,7 @@ function deadlineCandidates(c: Case, input: TriggerInput): Candidate[] {
         c,
         trigger: 'deadline_passed',
         dedupeKey: `${c.id}:deadline_passed:${deadline}`,
-        recipient: legalRecipient(input.personas),
+        recipient: propertyContactRecipient(property, input.personas),
         templateId: 'deadline_passed',
         options,
       },
@@ -101,7 +95,7 @@ function deadlineCandidates(c: Case, input: TriggerInput): Candidate[] {
       c,
       trigger: 'deadline_approaching',
       dedupeKey: `${c.id}:deadline_approaching:${deadline}`,
-      recipient: teamRecipient(c.owner, property, input.personas),
+      recipient: propertyContactRecipient(property, input.personas),
       templateId: 'deadline_approaching',
       options,
     },
@@ -119,7 +113,7 @@ function changeCandidates(c: Case, input: TriggerInput): Candidate[] {
         c,
         trigger: 'stage_changed',
         dedupeKey: event.id,
-        recipient: assetManagerRecipient(property, input.personas),
+        recipient: propertyContactRecipient(property, input.personas),
         templateId: 'stage_changed',
         options: { stage: event.payload.to, previousStage: event.payload.from },
       });
@@ -128,7 +122,7 @@ function changeCandidates(c: Case, input: TriggerInput): Candidate[] {
         c,
         trigger: 'owner_changed',
         dedupeKey: event.id,
-        recipient: teamRecipient(event.payload.to, property, input.personas),
+        recipient: propertyContactRecipient(property, input.personas),
         templateId: 'owner_changed',
         options: { owner: event.payload.to },
       });
@@ -156,7 +150,7 @@ function coiCandidates(input: TriggerInput): Candidate[] {
       c,
       trigger: 'coi_expiring',
       dedupeKey: `coi:${record.tenantId}:${record.propertyId ?? 'none'}:${status}:${record.expiresOn ?? 'unknown'}`,
-      recipient: assetManagerRecipient(property, input.personas),
+      recipient: propertyContactRecipient(property, input.personas),
       templateId: 'coi_expiring',
       options: {},
       coi: { status, expiresOn: record.expiresOn },

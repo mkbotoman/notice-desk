@@ -3,6 +3,8 @@ import { AI_MAX_BODY_BYTES } from './config';
 import { clientKey, createLimiter, type Limiter } from './limit';
 
 const defaultLimiter = createLimiter();
+/** Every caller together: the password is shared, so a per-client limit alone isn't a spend cap. */
+const globalLimiter = createLimiter({ max: 120, windowMs: 60_000 });
 
 const json = (body: Record<string, unknown>, status: number) =>
   Response.json(body, { status, headers: { 'Cache-Control': 'no-store' } });
@@ -21,7 +23,12 @@ export function createAiRoute<T>(options: {
 }): (request: Request) => Promise<Response> {
   const limiter = options.limiter ?? defaultLimiter;
   return async (request) => {
-    if (!limiter.allow(clientKey(request))) return json({ error: 'rate_limited' }, 429);
+    if (!limiter.allow(clientKey(request)) || !globalLimiter.allow('all')) {
+      return json({ error: 'rate_limited' }, 429);
+    }
+    if (Number(request.headers.get('content-length') ?? 0) > AI_MAX_BODY_BYTES) {
+      return json({ error: 'too_large' }, 413);
+    }
 
     const raw = await request.text();
     if (new TextEncoder().encode(raw).length > AI_MAX_BODY_BYTES) {

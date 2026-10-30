@@ -104,6 +104,24 @@ test.describe('outbox', () => {
     );
   });
 
+  test("addresses notifications to the property's own manager, never to the person viewing", async ({
+    page,
+  }) => {
+    await signIn(page, '/outbox?compose=N-001');
+    const to = page.getByRole('region', { name: 'Compose' }).getByLabel('To', { exact: true });
+    await expect(to).not.toHaveValue('maya');
+    await expect(to).toHaveValue(/^pm-/);
+    // The picker offers the people at the property first.
+    await expect(to.locator('optgroup').first()).toHaveAttribute('label', 'At this property');
+
+    // Every automatic draft is for a property manager (Maya is the one looking at the outbox).
+    await page.goto('/outbox');
+    await expect(tab(page, /Drafts/)).toHaveText(/Drafts\s*22$/);
+    const list = page.getByRole('list', { name: 'Notification list' });
+    await expect(list).not.toContainText('Maya');
+    await expect(list.getByText(/Property manager/).first()).toBeVisible();
+  });
+
   test('raises each automatic draft exactly once, and previewing a later date adds none', async ({
     page,
   }) => {

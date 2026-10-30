@@ -95,6 +95,15 @@ describe('createLimiter', () => {
     expect(limiter.allow('a')).toBe(true);
   });
 
+  it('forgets keys whose requests have all expired, so spoofed keys cannot grow it forever', () => {
+    let t = 0;
+    const limiter = createLimiter({ max: 1, windowMs: 1000, now: () => t });
+    for (let i = 0; i < 1100; i += 1) limiter.allow(`spoofed-${i}`);
+    t = 5000;
+    expect(limiter.allow('fresh')).toBe(true);
+    expect(limiter.allow('spoofed-0')).toBe(true);
+  });
+
   it('reads the caller from x-forwarded-for, or shares one bucket', () => {
     const headers = (value?: string) =>
       new Request('http://x', { headers: value ? { 'x-forwarded-for': value } : {} });
@@ -141,6 +150,17 @@ describe('createAiRoute', () => {
     const res = await failing(post('{"name":"a"}'));
     expect(res.status).toBe(500);
     expect(JSON.stringify(await res.json())).not.toContain('private');
+  });
+
+  it('rejects an oversized body announced by Content-Length before reading it', async () => {
+    const res = await route()(
+      new Request('http://x/api/ai/test', {
+        method: 'POST',
+        body: '{"name":"a"}',
+        headers: { 'content-length': String(AI_MAX_BODY_BYTES + 1) },
+      }),
+    );
+    expect(res.status).toBe(413);
   });
 
   it('uses the shared limiter when none is given', async () => {

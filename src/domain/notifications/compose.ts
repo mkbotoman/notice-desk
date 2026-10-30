@@ -8,7 +8,7 @@ import type {
   Persona,
 } from '../types';
 import { caseDeadline, cureDeadline } from '../deadline';
-import { greetingName, legalRecipient, teamRecipient, type Recipient } from './recipients';
+import { greetingName, propertyContactRecipient, type Recipient } from './recipients';
 import { buildMergeFields, renderTemplate, type Rendered, type TemplateId } from './templates';
 import { sourcesFor, type NotificationRefs } from './triggers';
 
@@ -34,17 +34,13 @@ export function defaultTemplate(c: Case, asOf: ISODate): TemplateId {
   return 'stage_changed';
 }
 
-/** A missed deadline goes to Legal; everything else to whoever holds the case. */
+/** The property's property manager: never the person looking at the app. */
 export function defaultRecipient(
-  templateId: TemplateId,
   c: Case,
   input: { refs: NotificationRefs; personas: readonly Persona[] },
 ): Recipient {
-  const legal = legalRecipient(input.personas);
-  if (templateId === 'deadline_passed') return legal;
   const property = c.propertyId ? input.refs.propertyById.get(c.propertyId) : undefined;
-  const owner = teamRecipient(c.owner, property, input.personas);
-  return owner.personaId === null ? legal : owner;
+  return propertyContactRecipient(property, input.personas);
 }
 
 export interface ManualInput {

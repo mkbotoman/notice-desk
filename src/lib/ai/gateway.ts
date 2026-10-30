@@ -39,6 +39,8 @@ export function createGenerator(options: GeneratorOptions = {}): Generator {
         prompt,
         maxOutputTokens: maxOutputTokens ?? AI_MAX_OUTPUT_TOKENS,
         temperature: 0.3,
+        // One click is one billed attempt: no automatic retries.
+        maxRetries: 0,
         abortSignal: AbortSignal.timeout(timeoutMs),
       });
       const trimmed = text.trim();

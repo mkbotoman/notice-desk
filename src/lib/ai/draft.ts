@@ -3,9 +3,9 @@ import { cureDeadline } from '@/domain/deadline';
 import { TEMPLATE_IDS } from '@/domain/notifications/templates';
 import type { Case, Lease, Persona, Property, Tenant } from '@/domain/types';
 import { ISSUE_LABELS, STAGE_LABELS, formatCents } from '@/lib/format';
-import { redactPii } from '@/lib/redact';
+import { cleanFact, redactPii } from '@/lib/redact';
 import type { Generator } from './gateway';
-import { unexpectedNumbers } from './numbers';
+import { introducesLink, unexpectedFigures } from './numbers';
 
 /** Longest subject or message sent to the model. */
 export const DRAFT_SUBJECT_MAX = 200;
@@ -24,11 +24,11 @@ export const DRAFT_ROLES = ['Legal', 'asset manager', 'property manager', 'team 
  * Strict, so a new key anywhere is rejected rather than forwarded.
  */
 export const DraftFactsSchema = z.strictObject({
-  tenant: text(120).min(1),
-  property: text(120).nullable(),
-  suite: text(20).nullable(),
-  stage: text(40),
-  issueType: text(40),
+  tenant: z.string().min(1).max(120).transform(cleanFact),
+  property: z.string().max(120).transform(cleanFact).nullable(),
+  suite: z.string().max(20).transform(cleanFact).nullable(),
+  stage: z.enum(Object.values(STAGE_LABELS) as [string, ...string[]]),
+  issueType: z.enum(Object.values(ISSUE_LABELS) as [string, ...string[]]),
   dateSent: z.string().regex(ISO_DATE).nullable(),
   deadline: z.string().regex(ISO_DATE).nullable(),
   amount: z.string().regex(DOLLARS).max(20).nullable(),
@@ -203,7 +203,16 @@ export function checkDraft(reply: string, request: DraftRequest): DraftText | nu
   const sources = [...Object.values(request.facts), request.subject, request.body].filter(
     (v): v is string => typeof v === 'string',
   );
-  if (unexpectedNumbers(combined, sources).length > 0) return null;
+  if (
+    unexpectedFigures(
+      combined,
+      sources,
+      [request.facts.dateSent, request.facts.deadline].filter((d): d is string => d !== null),
+    ).length > 0
+  ) {
+    return null;
+  }
+  if (introducesLink(combined, sources)) return null;
   return { subject, body };
 }
 

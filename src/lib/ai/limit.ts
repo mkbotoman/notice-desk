@@ -15,6 +15,10 @@ export function createLimiter(
   return {
     allow(key) {
       const t = now();
+      // A spoofed key per request must not grow this map without bound.
+      if (hits.size > 1000) {
+        for (const [k, v] of hits) if (v.every((h) => t - h >= options.windowMs)) hits.delete(k);
+      }
       const recent = (hits.get(key) ?? []).filter((h) => t - h < options.windowMs);
       if (recent.length >= options.max) {
         hits.set(key, recent);

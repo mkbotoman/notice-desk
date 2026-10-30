@@ -10,7 +10,7 @@ import {
   defaultTemplate,
   renderForCase,
 } from '@/domain/notifications/compose';
-import { legalRecipient, personaRecipient } from '@/domain/notifications/recipients';
+import { personaRecipient, propertyPeople } from '@/domain/notifications/recipients';
 import { TEMPLATES, type TemplateId } from '@/domain/notifications/templates';
 import type { NotificationRefs } from '@/domain/notifications/triggers';
 import { openCases } from '@/domain/selectors';
@@ -73,13 +73,16 @@ export function Composer({
   }, [cases]);
 
   const templateId: TemplateId = templateOverride ?? (c ? defaultTemplate(c, asOf) : 'blank');
+  const caseProperty = c?.propertyId ? refs.propertyById.get(c.propertyId) : undefined;
+  const atProperty = propertyPeople(caseProperty, personas);
+  const others = personas.filter((p) => !atProperty.includes(p));
   const chosen = personas.find((p) => p.id === recipientOverride);
   const recipient =
     c && recipientOverride === null
-      ? defaultRecipient(templateId, c, { refs, personas })
+      ? defaultRecipient(c, { refs, personas })
       : chosen
         ? personaRecipient(chosen)
-        : legalRecipient(personas);
+        : { personaId: null, label: 'Choose a recipient' };
   const rendered: Text = c
     ? renderForCase(templateId, c, recipient, { asOf, refs, personas })
     : { subject: '', body: '' };
@@ -206,11 +209,23 @@ export function Composer({
             value={recipient.personaId ?? ''}
             onChange={(e) => setRecipientOverride(e.target.value)}
           >
-            {personas.map((p) => (
-              <option key={p.id} value={p.id}>
-                {personaOptionLabel(p)}
-              </option>
-            ))}
+            {recipient.personaId === null ? <option value="">Choose a recipient</option> : null}
+            {atProperty.length > 0 ? (
+              <optgroup label="At this property">
+                {atProperty.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {personaOptionLabel(p)}
+                  </option>
+                ))}
+              </optgroup>
+            ) : null}
+            <optgroup label={atProperty.length > 0 ? 'Everyone else' : 'People'}>
+              {others.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {personaOptionLabel(p)}
+                </option>
+              ))}
+            </optgroup>
           </select>
         </label>
       </div>

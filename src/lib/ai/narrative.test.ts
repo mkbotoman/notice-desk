@@ -1,3 +1,4 @@
+import { shortDate, weekdayDate } from '@/lib/format';
 import path from 'node:path';
 import { MockLanguageModelV4 } from 'ai/test';
 import { describe, expect, it, vi } from 'vitest';
@@ -181,9 +182,26 @@ describe('checkNarrative', () => {
   it('accepts a faithful paragraph, including copied dates and dollar text', () => {
     expect(checkNarrative(faithful, real)).toEqual({ ok: true });
     const row = real.overdue[0];
-    const day = `Tue, Oct ${Number(row.deadline!.slice(8))}`;
+    const day = weekdayDate(row.deadline!);
     expect(checkNarrative(`${row.tenant} has a cure date of ${day}.`, real).ok).toBe(true);
+    expect(
+      checkNarrative(`${row.tenant} has a cure date of ${shortDate(row.deadline!)}.`, real).ok,
+    ).toBe(true);
     expect(checkNarrative('The balance is $599,535.09 exactly.', real).ok).toBe(true);
+  });
+
+  it('judges dates as dates: a wrong date fails, and a count cannot borrow a number from a date', () => {
+    // The as-of date is Oct 13, so "13" appears in the data, but only as a day of the month.
+    expect(checkNarrative('There are 13 open cases. Nothing else changed.', real).ok).toBe(false);
+    expect(checkNarrative('The week ended on Oct 29. Nothing else changed.', real).ok).toBe(false);
+    expect(checkNarrative('The week ended on Oct 13. Nothing else changed.', real).ok).toBe(true);
+  });
+
+  it('rejects web and email addresses the data never contained', () => {
+    expect(checkNarrative('See https://example.com for the 30 open cases.', real).ok).toBe(false);
+    expect(checkNarrative('Write to legal@example.com about the 30 open cases.', real).ok).toBe(
+      false,
+    );
   });
 
   it.each([

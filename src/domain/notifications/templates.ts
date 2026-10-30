@@ -98,7 +98,7 @@ ${close(f)}`,
 
 The cure deadline for ${f.tenant} at ${f.where} was ${deadlineOf(f)} and the case is still in Notice to Cure. The AR balance is ${f.amount}.
 
-Please check whether the tenant has cured. If not, consider moving the case to Default.
+Please check whether the tenant has cured and let Legal know. If not, Legal will review moving the case to Default.
 
 ${close(f)}`,
     }),
@@ -128,7 +128,7 @@ ${close(f)}`,
 
 The case for ${f.tenant} at ${f.where} is now with ${f.owner}, currently in ${f.stage}. The AR balance is ${f.amount}.
 
-Please review the case; the next step is yours.
+The next step is with ${f.owner}.
 
 ${close(f)}`,
     }),
