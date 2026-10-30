@@ -46,9 +46,15 @@ describe('can', () => {
     for (const a of ACTIONS) expect(can(legal, a, caseOf({ propertyId: 'P-99' }))).toBe(true);
   });
 
-  it('gives the founder read access, guarantors, analytics and data quality only', () => {
+  it('gives the founder read access, the inbox, guarantors, analytics and data quality only', () => {
     const granted = ACTIONS.filter((a) => can(founder, a));
-    expect(granted).toEqual(['view_case', 'view_guarantor', 'view_analytics', 'view_data_quality']);
+    expect(granted).toEqual([
+      'view_case',
+      'view_inbox',
+      'view_guarantor',
+      'view_analytics',
+      'view_data_quality',
+    ]);
   });
 
   it('gives a property manager view only, and only within scope', () => {

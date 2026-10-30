@@ -8,6 +8,9 @@ import { casesInScope, openCases, waitingOnPersona } from '@/domain/selectors';
 import type { Case } from '@/domain/types';
 import { Stat } from '@/components/ui/stat';
 import { useAsOf, usePersona } from '@/lib/persona/context';
+import { troubledLeases } from '@/components/inbox/inbox-logic';
+import { TroubleTable } from '@/components/inbox/trouble-table';
+import { useLookups } from '@/store/lookups';
 import { useStore, useStoreState } from '@/store/react';
 import { PageHeader } from './page-header';
 import { EmptyState } from './states';
@@ -26,6 +29,7 @@ export function Overview() {
   const { asOf } = useAsOf();
   const { cases } = useStoreState();
   const { properties } = useStore().getSeed();
+  const { leaseById, coiByLeaseId } = useLookups();
 
   const open = openCases(casesInScope(cases, persona));
   const status = (c: Case) => caseDeadline(c, asOf).status;
@@ -57,6 +61,11 @@ export function Overview() {
     });
   }
 
+  // Property managers have no inbox, so their home page carries the "In trouble" list.
+  const trouble =
+    persona.kind === 'property_manager'
+      ? troubledLeases([...leaseById.values()], cases, coiByLeaseId, persona, asOf)
+      : null;
   const team =
     persona.team === 'legal' ? 'Legal' : persona.team === 'asset_management' ? 'you' : null;
   return (
@@ -130,6 +139,7 @@ export function Overview() {
           </table>
         </section>
       )}
+      {trouble ? <TroubleTable rows={trouble} /> : null}
       <p className="text-sm text-muted-foreground">
         <Link href="/cases" className="font-semibold text-navy">
           Go to the case list

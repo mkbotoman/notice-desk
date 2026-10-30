@@ -252,6 +252,7 @@ export interface Persona {
 
 export const ACTIONS = [
   'view_case',
+  'view_inbox',
   'edit_case',
   'advance_stage',
   'change_owner',

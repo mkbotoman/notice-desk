@@ -4,6 +4,7 @@ import type { Action, Case, Persona, PersonaKind } from './types';
 const GRANTS: Record<PersonaKind, ReadonlySet<Action>> = {
   legal: new Set<Action>([
     'view_case',
+    'view_inbox',
     'edit_case',
     'advance_stage',
     'change_owner',
@@ -13,9 +14,21 @@ const GRANTS: Record<PersonaKind, ReadonlySet<Action>> = {
     'view_analytics',
     'view_data_quality',
   ]),
-  asset_manager: new Set<Action>(['view_case', 'change_owner', 'add_update', 'view_analytics']),
+  asset_manager: new Set<Action>([
+    'view_case',
+    'view_inbox',
+    'change_owner',
+    'add_update',
+    'view_analytics',
+  ]),
   property_manager: new Set<Action>(['view_case']),
-  founder: new Set<Action>(['view_case', 'view_guarantor', 'view_analytics', 'view_data_quality']),
+  founder: new Set<Action>([
+    'view_case',
+    'view_inbox',
+    'view_guarantor',
+    'view_analytics',
+    'view_data_quality',
+  ]),
 };
 
 const SCOPED: ReadonlySet<Action> = new Set<Action>([

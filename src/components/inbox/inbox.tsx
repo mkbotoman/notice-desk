@@ -3,12 +3,29 @@
 import { Guard } from '@/components/shell/guard';
 import { PageHeader } from '@/components/shell/page-header';
 import { EmptyState, LoadingState } from '@/components/shell/states';
+import type { Persona } from '@/domain/types';
 import { useAsOf, usePersona } from '@/lib/persona/context';
 import { useLookups } from '@/store/lookups';
 import { useStoreState } from '@/store/react';
 import { groupWaiting, troubledLeases } from './inbox-logic';
 import { TroubleTable } from './trouble-table';
 import { WaitingRow } from './waiting-row';
+
+function emptyCopy(persona: Persona): { title: string; body: string } {
+  if (persona.kind === 'founder') {
+    return { title: 'Nothing is open', body: 'Every case is cured or closed.' };
+  }
+  if (persona.team === 'legal') {
+    return {
+      title: 'Nothing is waiting on Legal',
+      body: 'Every open case is with asset management or finished.',
+    };
+  }
+  return {
+    title: 'Nothing is waiting on you',
+    body: 'No open case on your properties needs something from you right now.',
+  };
+}
 
 function InboxBody() {
   const { persona } = usePersona();
@@ -21,21 +38,12 @@ function InboxBody() {
   const groups = groupWaiting(cases, persona, asOf);
   const waitingCount = groups.reduce((n, g) => n + g.cases.length, 0);
   const trouble = troubledLeases([...leaseById.values()], cases, coiByLeaseId, persona, asOf);
-  const forLegal = persona.team === 'legal';
+  const empty = emptyCopy(persona);
 
   return (
     <>
-      {persona.team === null ? (
-        <EmptyState title="Nothing is waiting on you">
-          Cases are handed to Legal or to asset managers. This view doesn&apos;t answer for either
-          team, so nothing sits in its court. The leases below are still worth a look.
-        </EmptyState>
-      ) : groups.length === 0 ? (
-        <EmptyState title={forLegal ? 'Nothing is waiting on Legal' : 'Nothing is waiting on you'}>
-          {forLegal
-            ? 'Every open case is with asset management or finished.'
-            : 'No open case on your properties needs something from you right now.'}
-        </EmptyState>
+      {groups.length === 0 ? (
+        <EmptyState title={empty.title}>{empty.body}</EmptyState>
       ) : (
         <div className="flex flex-col gap-6">
           {groups.map((g) => (
@@ -65,15 +73,15 @@ export function Inbox() {
   const { persona } = usePersona();
   const first = persona.label.split(' ')[0];
   const title =
-    persona.team === 'legal'
-      ? 'Waiting on Legal'
-      : persona.team
-        ? `Waiting on you, ${first}`
-        : 'Waiting on me';
+    persona.kind === 'founder'
+      ? 'Waiting across the portfolio'
+      : persona.team === 'legal'
+        ? 'Waiting on Legal'
+        : `Waiting on you, ${first}`;
   return (
     <>
       <PageHeader title={title} subtitle={<InboxSubtitle />} />
-      <Guard requires="add_update">
+      <Guard requires="view_inbox">
         <InboxBody />
       </Guard>
     </>
@@ -84,8 +92,10 @@ function InboxSubtitle() {
   const { persona } = usePersona();
   const { asOf } = useAsOf();
   const { cases, hydrated } = useStoreState();
-  if (!hydrated || persona.team === null) return null;
+  if (!hydrated) return null;
   const n = groupWaiting(cases, persona, asOf).reduce((sum, g) => sum + g.cases.length, 0);
+  if (persona.kind === 'founder')
+    return `${n} open ${n === 1 ? 'case' : 'cases'} with Legal or asset management`;
   const who = persona.team === 'legal' ? 'Legal' : 'you';
   return `${n} ${n === 1 ? 'case needs' : 'cases need'} something from ${who}`;
 }

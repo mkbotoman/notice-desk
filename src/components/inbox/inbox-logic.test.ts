@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Case, CoiRecord, Lease, Persona } from '@/domain/types';
+import { openCases } from '@/domain/selectors';
 import { groupWaiting, troubledLeases } from './inbox-logic';
 
 const ASOF = '2026-10-13';
@@ -90,7 +91,18 @@ describe('groupWaiting', () => {
     expect(groupWaiting(cases, legal, ASOF).flatMap((g) => g.cases.map((c) => c.id))).toEqual([
       'legal',
     ]);
-    expect(groupWaiting(cases, founder, ASOF)).toEqual([]);
+    expect(groupWaiting(cases, pm, ASOF)).toEqual([]);
+  });
+
+  it('shows the Founder every open case, whichever team it is with', () => {
+    const ids = groupWaiting(cases, founder, ASOF).flatMap((g) => g.cases.map((c) => c.id));
+    expect(ids.sort()).toEqual(
+      openCases(cases)
+        .map((c) => c.id)
+        .sort(),
+    );
+    const legalCount = groupWaiting(cases, legal, ASOF).flatMap((g) => g.cases).length;
+    expect(ids.length).toBeGreaterThan(legalCount);
   });
 });
 

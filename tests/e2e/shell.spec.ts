@@ -77,6 +77,7 @@ test.describe('shell and personas', () => {
     await page.getByLabel('Viewing as').selectOption({ label: 'Founder' });
     expect(await navNames(page)).toEqual([
       'Cases',
+      'Waiting on me',
       'Tenants',
       'Analytics',
       'Watchlist',

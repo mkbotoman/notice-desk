@@ -97,12 +97,12 @@ export interface NavItem {
 }
 
 /**
- * Nav is gated by `can()`, never by persona kind. "Waiting on me" is for anyone who can add
- * updates; the watchlist and weekly summary follow analytics access.
+ * Nav is gated by `can()`, never by persona kind. "Waiting on me" is for Legal, asset managers and
+ * the Founder (who sees everything); the watchlist and weekly summary follow analytics access.
  */
 export const NAV_ITEMS: readonly NavItem[] = [
   { href: '/cases', label: 'Cases', requires: 'view_case' },
-  { href: '/inbox', label: 'Waiting on me', requires: 'add_update' },
+  { href: '/inbox', label: 'Waiting on me', requires: 'view_inbox' },
   { href: '/tenants', label: 'Tenants', requires: 'view_case' },
   { href: '/outbox', label: 'Outbox', requires: 'send_notification' },
   { href: '/analytics', label: 'Analytics', requires: 'view_analytics' },

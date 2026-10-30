@@ -96,16 +96,25 @@ test.describe('other people', () => {
     await expect(page.getByRole('button', { name: 'Hand back to Legal' })).toHaveCount(0);
   });
 
-  for (const [id, label] of [
-    ['founder', 'Founder'],
-    ['pm-nina-foster', 'Nina Foster'],
-  ]) {
-    test(`${label} has nothing waiting and no inbox actions`, async ({ page }) => {
-      await signIn(page, `/inbox?as=${id}`);
-      await expect(page.getByText("This page isn't available in your current view")).toBeVisible();
-      await expect(page.getByRole('button', { name: 'Add update' })).toHaveCount(0);
-    });
-  }
+  test('the Founder sees every open case, read-only', async ({ page }) => {
+    await signIn(page, '/inbox?as=founder');
+    await expect(page.getByRole('heading', { name: 'Waiting across the portfolio' })).toBeVisible();
+    await expect(waitingCount(page)).toHaveText('30');
+    await expect(page.getByRole('button', { name: 'Add update' })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Hand back to Legal' })).toHaveCount(0);
+    await expect(page.getByRole('heading', { name: 'In trouble' })).toBeVisible();
+  });
+
+  test('a property manager has no inbox, but sees "In trouble" on the home page', async ({
+    page,
+  }) => {
+    await signIn(page, '/inbox?as=pm-nina-foster');
+    await expect(page.getByText("This page isn't available in your current view")).toBeVisible();
+    await page.goto('/');
+    await expect(page.getByRole('heading', { name: 'Overview' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'In trouble' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Add update' })).toHaveCount(0);
+  });
 });
 
 test.describe('small screens', () => {

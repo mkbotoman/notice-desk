@@ -96,9 +96,10 @@ describe('navFor', () => {
     ]);
   });
 
-  it('shows the founder portfolio views but no inbox or outbox', () => {
+  it('shows the founder everything except the outbox, which is for sending', () => {
     expect(navLabels('founder')).toEqual([
       'Cases',
+      'Waiting on me',
       'Tenants',
       'Analytics',
       'Watchlist',

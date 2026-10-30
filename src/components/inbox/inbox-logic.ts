@@ -1,6 +1,6 @@
 import { caseDeadline, type CaseDeadlineStatus } from '@/domain/deadline';
 import { can, inScope } from '@/domain/permissions';
-import { openCases, sortByUrgency, waitingOnPersona } from '@/domain/selectors';
+import { casesInScope, openCases, sortByUrgency, waitingOnPersona } from '@/domain/selectors';
 import { leaseSignals, type LeaseSignal } from '@/domain/watchlist';
 import type { Case, CoiRecord, ISODate, Lease, Persona } from '@/domain/types';
 
@@ -20,13 +20,23 @@ const GROUPS: { key: WaitingGroupKey; label: string; status: CaseDeadlineStatus 
   { key: 'none', label: 'No cure deadline', status: 'none' },
 ];
 
-/** The persona's cases in their team's court, most urgent first within each non-empty group. */
+/**
+ * What the inbox lists: a team's court, or for the Founder (who answers for no team and sees
+ * everything) every open case in scope.
+ */
+export function inboxCases(cases: readonly Case[], persona: Persona): Case[] {
+  return persona.kind === 'founder'
+    ? casesInScope(openCases(cases), persona)
+    : waitingOnPersona(cases, persona);
+}
+
+/** The persona's inbox, most urgent first within each non-empty group. */
 export function groupWaiting(
   cases: readonly Case[],
   persona: Persona,
   asOf: ISODate,
 ): WaitingGroup[] {
-  const sorted = sortByUrgency(waitingOnPersona(cases, persona), asOf);
+  const sorted = sortByUrgency(inboxCases(cases, persona), asOf);
   return GROUPS.map(({ key, label, status }) => ({
     key,
     label,
