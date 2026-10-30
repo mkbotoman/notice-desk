@@ -1,6 +1,16 @@
+import { MAX_CURE_DAYS } from '@/domain/cure';
 import { can } from '@/domain/permissions';
 import { allowedTransitions } from '@/domain/stage';
-import type { Case, CaseEvent, ISODate, Lease, Persona, Stage, Team } from '@/domain/types';
+import type {
+  Case,
+  CaseEvent,
+  ISODate,
+  Lease,
+  NoticeDetails,
+  Persona,
+  Stage,
+  Team,
+} from '@/domain/types';
 import type { LeaseSignal } from '@/domain/watchlist';
 
 export class PermissionError extends Error {
@@ -41,15 +51,36 @@ export function buildUpdate(c: Case, text: string, ctx: ActionContext, date?: IS
   return { ...base(c, ctx, date ?? ctx.asOf, text), type: 'note', payload: {} };
 }
 
-export function buildAdvance(c: Case, to: Stage, ctx: ActionContext, note?: string): CaseEvent {
+/** Moving to Notice to Cure needs the notice's send date and cure period; no other move takes them. */
+function checkNotice(to: Stage, notice: NoticeDetails | undefined): void {
+  if (to !== 'notice_to_cure') {
+    if (notice) throw new Error('Only a Notice to Cure carries notice details');
+    return;
+  }
+  if (!notice) throw new Error('A Notice to Cure needs a send date and a cure period');
+  const { curePeriod } = notice;
+  if (curePeriod.kind === 'unknown') throw new Error('Choose a cure period, or "No cure date"');
+  if (curePeriod.kind === 'days' && curePeriod.n > MAX_CURE_DAYS) {
+    throw new Error(`A cure period can't be longer than ${MAX_CURE_DAYS} days`);
+  }
+}
+
+export function buildAdvance(
+  c: Case,
+  to: Stage,
+  ctx: ActionContext,
+  note?: string,
+  notice?: NoticeDetails,
+): CaseEvent {
   if (!can(ctx.persona, 'advance_stage', c))
     throw new PermissionError("You can't move this case forward");
   if (!allowedTransitions(c.stage).includes(to))
     throw new Error(`Can't move from ${c.stage} to ${to}`);
+  checkNotice(to, notice);
   return {
     ...base(c, ctx, ctx.asOf, note),
     type: 'stage_changed',
-    payload: { from: c.stage, to },
+    payload: { from: c.stage, to, ...(notice ? { notice } : {}) },
   };
 }
 

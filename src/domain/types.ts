@@ -144,6 +144,12 @@ export interface Case {
   hasGuarantor: boolean;
 }
 
+/** What moving a case to Notice to Cure records: when the notice went out and how long to cure. */
+export interface NoticeDetails {
+  dateSent: ISODate;
+  curePeriod: CurePeriod;
+}
+
 export const CASE_EVENT_TYPES = [
   'case_opened',
   'imported_note',
@@ -172,7 +178,7 @@ export type CaseEvent = CaseEventBase &
     | { type: 'case_opened'; payload: Record<string, never> }
     | { type: 'imported_note'; payload: Record<string, never> }
     | { type: 'note'; payload: Record<string, never> }
-    | { type: 'stage_changed'; payload: { from: Stage; to: Stage } }
+    | { type: 'stage_changed'; payload: { from: Stage; to: Stage; notice?: NoticeDetails } }
     | { type: 'owner_changed'; payload: { from: Team; to: Team } }
     | { type: 'notification_drafted'; payload: { notificationId: string } }
     | { type: 'notification_sent'; payload: { notificationId: string } }

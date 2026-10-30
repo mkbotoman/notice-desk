@@ -96,3 +96,11 @@ path degrades to the template. Not checked by the reviewer: any live gateway cal
 The user found that the outbox addressed messages to the person viewing it. Recipients could only
 be Legal (the viewer) or an asset manager; a property manager was never possible. Fixed: the default
 is the property's own property manager, then its asset manager; never the viewer.
+
+## Requirements review note: stage moves
+
+The user re-read the brief ("move a case to its next stage ... changes survive a refresh") and
+found the app looked text-only. Stage moves existed but only on the case page, and moving a case to
+Notice to Cure never recorded a send date or cure period, so a case advanced or opened in the app
+could never get a deadline: the brief's central point. Fixed: the move now asks for both, previews
+the deadline, and is offered on the case list and the inbox as well.

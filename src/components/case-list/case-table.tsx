@@ -1,9 +1,13 @@
+'use client';
+
+import { useState } from 'react';
 import Link from 'next/link';
 import { DeadlineChip, OwnerChip, StageChip } from '@/components/case/case-chips';
+import { StageMoveButtons, StageMovePanel } from '@/components/case/stage-move';
 import { Chip } from '@/components/ui/chip';
 import { caseDeadline } from '@/domain/deadline';
 import { waitingOn } from '@/domain/stage';
-import type { Case, Cents, ISODate } from '@/domain/types';
+import type { Case, Cents, ISODate, Stage } from '@/domain/types';
 import { ISSUE_LABELS, formatCents, shortDate, weekdayDate } from '@/lib/format';
 import { cn } from '@/lib/utils';
 import type { CaseGroup, GroupKey } from './filters';
@@ -79,48 +83,74 @@ function DeadlineCell({ c, asOf }: { c: Case; asOf: ISODate }) {
   );
 }
 
-function Row({ row, group, asOf }: { row: CaseRow; group: GroupKey; asOf: ISODate }) {
+function Row({
+  row,
+  group,
+  asOf,
+  moving,
+  onMove,
+  onClose,
+}: {
+  row: CaseRow;
+  group: GroupKey;
+  asOf: ISODate;
+  moving: Stage | null;
+  onMove: (to: Stage) => void;
+  onClose: () => void;
+}) {
   const { case: c } = row;
   return (
-    <tr
-      data-testid="case-row"
-      data-group={group}
-      className={cn('border-b last:border-b-0', GROUP_STYLES[group].row)}
-    >
-      <td className="px-4 py-3 whitespace-nowrap">
-        <DeadlineCell c={c} asOf={asOf} />
-      </td>
-      <td className="px-4 py-3">
-        <Link href={`/cases/${c.id}`} className="font-semibold text-navy hover:underline">
-          {row.tenant}
-        </Link>
-        <div className="mt-0.5 text-[13px] text-muted-foreground">{row.place}</div>
-      </td>
-      <td className="px-4 py-3">
-        <StageChip stage={c.stage} />
-      </td>
-      <td className="px-4 py-3 text-gray-700">{ISSUE_LABELS[c.issueType]}</td>
-      <td className="px-4 py-3">
-        <OwnerChip owner={waitingOn(c)} />
-      </td>
-      <td className="px-4 py-3 text-right font-semibold whitespace-nowrap tabular-nums">
-        {formatCents(row.owed)}
-        {row.owedChanged ? (
-          <div className="text-xs font-medium text-warning">Changed since notice</div>
-        ) : null}
-      </td>
-      <td className="px-4 py-3">
-        {row.hasDataCheck ? (
-          row.dataCheckHref ? (
-            <Link href={row.dataCheckHref} className="rounded-full">
+    <>
+      <tr
+        data-testid="case-row"
+        data-group={group}
+        className={cn('border-b last:border-b-0', GROUP_STYLES[group].row)}
+      >
+        <td className="px-4 py-3 whitespace-nowrap">
+          <DeadlineCell c={c} asOf={asOf} />
+        </td>
+        <td className="px-4 py-3">
+          <Link href={`/cases/${c.id}`} className="font-semibold text-navy hover:underline">
+            {row.tenant}
+          </Link>
+          <div className="mt-0.5 text-[13px] text-muted-foreground">{row.place}</div>
+          <div className="mt-2">
+            <StageMoveButtons c={c} size="sm" onChoose={onMove} />
+          </div>
+        </td>
+        <td className="px-4 py-3">
+          <StageChip stage={c.stage} />
+        </td>
+        <td className="px-4 py-3 text-gray-700">{ISSUE_LABELS[c.issueType]}</td>
+        <td className="px-4 py-3">
+          <OwnerChip owner={waitingOn(c)} />
+        </td>
+        <td className="px-4 py-3 text-right font-semibold whitespace-nowrap tabular-nums">
+          {formatCents(row.owed)}
+          {row.owedChanged ? (
+            <div className="text-xs font-medium text-warning">Changed since notice</div>
+          ) : null}
+        </td>
+        <td className="px-4 py-3">
+          {row.hasDataCheck ? (
+            row.dataCheckHref ? (
+              <Link href={row.dataCheckHref} className="rounded-full">
+                <Chip tone="gray">Data check</Chip>
+              </Link>
+            ) : (
               <Chip tone="gray">Data check</Chip>
-            </Link>
-          ) : (
-            <Chip tone="gray">Data check</Chip>
-          )
-        ) : null}
-      </td>
-    </tr>
+            )
+          ) : null}
+        </td>
+      </tr>
+      {moving ? (
+        <tr className="border-b bg-background">
+          <td colSpan={7} className="px-4 py-3">
+            <StageMovePanel c={c} to={moving} onCancel={onClose} onDone={onClose} />
+          </td>
+        </tr>
+      ) : null}
+    </>
   );
 }
 
@@ -135,6 +165,7 @@ export function CaseTable({
   asOf: ISODate;
   weekEnd: ISODate;
 }) {
+  const [moving, setMoving] = useState<{ id: string; to: Stage } | null>(null);
   return (
     <div className="relative overflow-x-auto rounded-xl border bg-card">
       <table className="w-full border-collapse text-sm">
@@ -170,7 +201,17 @@ export function CaseTable({
             </tr>
             {g.cases.map((c) => {
               const row = rows.get(c.id);
-              return row ? <Row key={c.id} row={row} group={g.key} asOf={asOf} /> : null;
+              return row ? (
+                <Row
+                  key={c.id}
+                  row={row}
+                  group={g.key}
+                  asOf={asOf}
+                  moving={moving?.id === c.id ? moving.to : null}
+                  onMove={(to) => setMoving({ id: c.id, to })}
+                  onClose={() => setMoving(null)}
+                />
+              ) : null;
             })}
           </tbody>
         ))}

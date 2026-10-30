@@ -3,19 +3,20 @@
 import { useId, useState } from 'react';
 import Link from 'next/link';
 import { DeadlineChip, StageChip } from '@/components/case/case-chips';
+import { StageMovePanel, useStageMoves } from '@/components/case/stage-move';
 import { Button } from '@/components/ui/button';
 import { Chip } from '@/components/ui/chip';
 import { Input } from '@/components/ui/input';
 import { caseDeadline } from '@/domain/deadline';
 import { can } from '@/domain/permissions';
-import type { Case, CaseEvent, ISODate } from '@/domain/types';
-import { ISSUE_LABELS, shortDate } from '@/lib/format';
+import type { Case, CaseEvent, ISODate, Stage } from '@/domain/types';
+import { ADVANCE_LABELS, ISSUE_LABELS, STAGE_LABELS, shortDate } from '@/lib/format';
 import { useAsOf, usePersona } from '@/lib/persona/context';
 import { useLookups } from '@/store/lookups';
 import { useCaseActions } from '@/store/use-case-actions';
 import { isValidAsOf } from '@/lib/persona/asof';
 
-type Panel = 'update' | 'handback' | null;
+type Panel = 'update' | 'handback' | 'move' | null;
 
 const textareaClass =
   'min-h-20 w-full rounded-lg border border-input bg-transparent px-2.5 py-1.5 text-base outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:text-sm';
@@ -43,6 +44,8 @@ export function WaitingRow({ c, events }: { c: Case; events: readonly CaseEvent[
   const [note, setNote] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState<string | null>(null);
+  const [moveTo, setMoveTo] = useState<Stage | null>(null);
+  const moves = useStageMoves(c);
   const id = useId();
 
   const tenant = tenantById.get(c.tenantId)?.displayName ?? 'Unknown tenant';
@@ -131,6 +134,23 @@ export function WaitingRow({ c, events }: { c: Case; events: readonly CaseEvent[
               Hand back to Legal
             </Button>
           ) : null}
+          {moves.map((to) => (
+            <Button
+              key={to}
+              type="button"
+              size="lg"
+              variant="outline"
+              aria-expanded={panel === 'move' && moveTo === to}
+              onClick={() => {
+                setError(null);
+                setDone(null);
+                setMoveTo(to);
+                setPanel('move');
+              }}
+            >
+              {ADVANCE_LABELS[to]}
+            </Button>
+          ))}
         </div>
       </div>
 
@@ -210,6 +230,17 @@ export function WaitingRow({ c, events }: { c: Case; events: readonly CaseEvent[
             </Button>
           </div>
         </form>
+      ) : null}
+      {panel === 'move' && moveTo ? (
+        <StageMovePanel
+          c={c}
+          to={moveTo}
+          onCancel={() => setPanel(null)}
+          onDone={() => {
+            setPanel(null);
+            setDone(`Moved to ${STAGE_LABELS[moveTo]}.`);
+          }}
+        />
       ) : null}
     </article>
   );

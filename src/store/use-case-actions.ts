@@ -1,7 +1,7 @@
 'use client';
 
 import { useAsOf, usePersona } from '@/lib/persona/context';
-import type { ISODate, Lease, Stage, Team } from '@/domain/types';
+import type { ISODate, Lease, NoticeDetails, Stage, Team } from '@/domain/types';
 import type { LeaseSignal } from '@/domain/watchlist';
 import {
   buildAdvance,
@@ -32,8 +32,9 @@ export function useCaseActions() {
   return {
     addUpdate: (caseId: string, text: string, date?: ISODate) =>
       store.append(buildUpdate(withCase(caseId), text, ctx, date)),
-    advance: (caseId: string, to: Stage, note?: string) =>
-      store.append(buildAdvance(withCase(caseId), to, ctx, note)),
+    /** Moving to Notice to Cure also needs the notice's send date and cure period. */
+    advance: (caseId: string, to: Stage, note?: string, notice?: NoticeDetails) =>
+      store.append(buildAdvance(withCase(caseId), to, ctx, note, notice)),
     changeOwner: (caseId: string, to: Team, note?: string) =>
       store.append(buildOwnerChange(withCase(caseId), to, ctx, note)),
     /** Logs that a notification was drafted, sent or dismissed. The notification itself is saved with `store.upsertNotification`. */

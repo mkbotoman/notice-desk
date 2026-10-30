@@ -89,6 +89,56 @@ describe('buildAdvance', () => {
   });
 });
 
+describe('buildAdvance to Notice to Cure', () => {
+  const nonCompliant = () =>
+    makeCase({ stage: 'non_compliant', dateSent: null, curePeriod: { kind: 'none' } });
+  const notice = {
+    dateSent: '2026-10-13',
+    curePeriod: { kind: 'days', n: 10, unit: 'business' },
+  } as const;
+
+  it('records the send date and cure period on the event', () => {
+    const event = buildAdvance(
+      nonCompliant(),
+      'notice_to_cure',
+      ctx(maya),
+      'Sent by courier',
+      notice,
+    );
+    expect(CaseEventSchema.parse(event)).toEqual(event);
+    expect(event.payload).toEqual({ from: 'non_compliant', to: 'notice_to_cure', notice });
+  });
+
+  it('accepts "no cure date" as a deliberate choice', () => {
+    const event = buildAdvance(nonCompliant(), 'notice_to_cure', ctx(maya), undefined, {
+      dateSent: '2026-10-13',
+      curePeriod: { kind: 'none' },
+    });
+    expect(CaseEventSchema.parse(event).type).toBe('stage_changed');
+  });
+
+  it('refuses a missing, unknown or absurd cure period, and notice details on other moves', () => {
+    expect(() => buildAdvance(nonCompliant(), 'notice_to_cure', ctx(maya))).toThrow(
+      /needs a send date/,
+    );
+    expect(() =>
+      buildAdvance(nonCompliant(), 'notice_to_cure', ctx(maya), undefined, {
+        dateSent: '2026-10-13',
+        curePeriod: { kind: 'unknown' },
+      }),
+    ).toThrow(/Choose a cure period/);
+    expect(() =>
+      buildAdvance(nonCompliant(), 'notice_to_cure', ctx(maya), undefined, {
+        dateSent: '2026-10-13',
+        curePeriod: { kind: 'days', n: 999, unit: 'calendar' },
+      }),
+    ).toThrow(/longer than 365/);
+    expect(() => buildAdvance(makeCase(), 'default', ctx(maya), undefined, notice)).toThrow(
+      /Only a Notice to Cure/,
+    );
+  });
+});
+
 describe('buildOwnerChange', () => {
   it('lets Legal hand a case to either team', () => {
     const event = buildOwnerChange(makeCase(), 'asset_management', ctx(maya));

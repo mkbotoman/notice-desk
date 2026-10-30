@@ -5,8 +5,8 @@ import Link from 'next/link';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import type { Case, Persona, Stage, Team } from '@/domain/types';
-import { STAGE_LABELS } from '@/lib/format';
 import { cn } from '@/lib/utils';
+import { StageMovePanel } from '@/components/case/stage-move';
 import { useCaseActions } from '@/store/use-case-actions';
 import { ADVANCE_LABELS, ownerButtonLabel, teamName, type ActionAvailability } from './logic';
 
@@ -49,8 +49,7 @@ export function CaseActions({
   const confirm = () => {
     if (!pending) return;
     try {
-      if (pending.kind === 'advance') actions.advance(c.id, pending.to, note);
-      else actions.changeOwner(c.id, pending.to, note);
+      if (pending.kind === 'owner') actions.changeOwner(c.id, pending.to, note);
       setPending(null);
       setNote('');
       setError(null);
@@ -59,11 +58,7 @@ export function CaseActions({
     }
   };
 
-  const confirmText = pending
-    ? pending.kind === 'advance'
-      ? `Move this case from ${STAGE_LABELS[c.stage]} to ${STAGE_LABELS[pending.to]}?`
-      : `Hand this case to ${teamName(pending.to)}?`
-    : '';
+  const confirmText = pending?.kind === 'owner' ? `Hand this case to ${teamName(pending.to)}?` : '';
 
   return (
     <div className="flex flex-col gap-3">
@@ -97,7 +92,11 @@ export function CaseActions({
         ))}
       </div>
 
-      {pending ? (
+      {pending?.kind === 'advance' ? (
+        <StageMovePanel c={c} to={pending.to} onCancel={cancel} onDone={() => setPending(null)} />
+      ) : null}
+
+      {pending?.kind === 'owner' ? (
         <section
           aria-label="Confirm change"
           className="flex flex-col gap-3 rounded-xl border border-navy-line bg-navy-soft p-4"

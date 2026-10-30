@@ -36,14 +36,20 @@ export function applyEvent(c: Case, event: CaseEvent): Case {
   }
   switch (event.type) {
     case 'stage_changed': {
-      const { from, to } = event.payload;
+      const { from, to, notice } = event.payload;
       if (from !== c.stage) {
         throw new IllegalEventError(`Case ${c.id} is ${c.stage}, not ${from}`);
       }
       if (!TRANSITIONS[from].includes(to)) {
         throw new IllegalEventError(`Case ${c.id} cannot move from ${from} to ${to}`);
       }
-      return { ...c, stage: to };
+      if (notice && to !== 'notice_to_cure') {
+        throw new IllegalEventError(`Only a Notice to Cure carries notice details, not ${to}`);
+      }
+      // Sending the notice is what gives a case its deadline.
+      return notice
+        ? { ...c, stage: to, dateSent: notice.dateSent, curePeriod: notice.curePeriod }
+        : { ...c, stage: to };
     }
     case 'owner_changed': {
       const { from, to } = event.payload;

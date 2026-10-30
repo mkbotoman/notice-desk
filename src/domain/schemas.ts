@@ -42,6 +42,11 @@ export const CurePeriodSchema = z.discriminatedUnion('kind', [
   z.strictObject({ kind: z.literal('unknown') }),
 ]);
 
+export const NoticeDetailsSchema = z.strictObject({
+  dateSent: isoDate,
+  curePeriod: CurePeriodSchema,
+});
+
 export const PersonSchema = z.strictObject({
   id,
   name: id,
@@ -139,7 +144,11 @@ export const CaseEventSchema = z.discriminatedUnion('type', [
   z.strictObject({
     ...caseEventBase,
     type: z.literal('stage_changed'),
-    payload: z.strictObject({ from: StageSchema, to: StageSchema }),
+    payload: z.strictObject({
+      from: StageSchema,
+      to: StageSchema,
+      notice: NoticeDetailsSchema.optional(),
+    }),
   }),
   z.strictObject({
     ...caseEventBase,

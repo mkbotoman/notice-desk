@@ -44,6 +44,16 @@ export const STAGE_TONES: Record<Stage, ChipTone> = {
   closed: 'gray',
 };
 
+/** The button for each move, by the stage it leads to. */
+export const ADVANCE_LABELS: Record<Stage, string> = {
+  non_compliant: 'Move to Non-compliant',
+  notice_to_cure: 'Send Notice to Cure',
+  default: 'Move to Default',
+  collections: 'Move to Collections',
+  cured: 'Mark cured',
+  closed: 'Close case',
+};
+
 export const ISSUE_LABELS: Record<IssueType, string> = {
   monetary: 'Monetary',
   insurance: 'Insurance',

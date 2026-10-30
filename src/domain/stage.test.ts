@@ -121,3 +121,42 @@ describe('waitingOn', () => {
     expect(waitingOn(makeCase({ stage: 'cured' }))).toBeNull();
   });
 });
+
+describe('sending a notice', () => {
+  const notice = {
+    dateSent: '2026-10-13',
+    curePeriod: { kind: 'days', n: 10, unit: 'business' },
+  } as const;
+  const move = (to: Stage, withNotice = true) =>
+    makeEvent({
+      type: 'stage_changed',
+      payload: { from: 'non_compliant', to, ...(withNotice ? { notice } : {}) },
+    });
+
+  it('sets the send date and cure period when a case moves to Notice to Cure', () => {
+    const base = makeCase({ stage: 'non_compliant', dateSent: null, curePeriod: { kind: 'none' } });
+    const next = applyEvent(base, move('notice_to_cure'));
+    expect(next).toMatchObject({
+      stage: 'notice_to_cure',
+      dateSent: '2026-10-13',
+      curePeriod: notice.curePeriod,
+    });
+    expect(base.dateSent).toBeNull();
+  });
+
+  it('leaves the dates alone when no notice details are given', () => {
+    const base = makeCase({ stage: 'non_compliant', dateSent: null, curePeriod: { kind: 'none' } });
+    expect(applyEvent(base, move('notice_to_cure', false))).toMatchObject({
+      dateSent: null,
+      curePeriod: { kind: 'none' },
+    });
+  });
+
+  it('refuses notice details on any other move', () => {
+    const e = makeEvent({
+      type: 'stage_changed',
+      payload: { from: 'notice_to_cure', to: 'default', notice },
+    });
+    expect(() => applyEvent(makeCase(), e)).toThrow(/Only a Notice to Cure/);
+  });
+});

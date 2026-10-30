@@ -86,14 +86,7 @@ export const COI_TONES: Record<CoiStatus, ChipTone> = {
   unknown: 'gray',
 };
 
-export const ADVANCE_LABELS: Record<Stage, string> = {
-  non_compliant: 'Move to Non-compliant',
-  notice_to_cure: 'Move to Notice to Cure',
-  default: 'Move to Default',
-  collections: 'Move to Collections',
-  cured: 'Mark cured',
-  closed: 'Close case',
-};
+export { ADVANCE_LABELS } from '@/lib/format';
 
 export interface ActionAvailability {
   advanceTo: readonly Stage[];
