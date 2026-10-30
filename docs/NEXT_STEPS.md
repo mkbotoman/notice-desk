@@ -13,6 +13,14 @@ Left out so the app doesn't invent numbers. Each needs a data source first.
 - **"Default since Oct 9" / "Opened Oct 26" lines** on the case list. Cases carry no date for when they changed stage or opened. Needs stage-change dates captured from now on (the app records them for new changes) or an import of history.
 - **Lease term and a due-date chip** on tenant lease cards, and an **AR column** in the inbox's "In trouble" table. Cheap once the case pages settle; skipped to avoid divergent wording.
 
+## Left out of M3
+
+- **Notifications:** log a dismissal as an event (needs a new event type); draft insurance notices for a tenant with no case (needs a nullable case on a notification, or an insurance-specific event); an "external tenant letter" recipient; template "Insert" chips. "Refine with AI" comes with M4.
+- **Watchlist:** a "Dismiss" button with a reason (needs somewhere to store it), and an asset-manager column.
+- **Analytics:** a property filter and "last 8 weeks" / "last 12 months" windows from the mock; a shared chart-colour token in `globals.css` (single-series bars use the brand navy, which is darker than the chart guidance prefers).
+- **Weekly summary:** the AI paragraph and "Regenerate" (M4), a week selector (the as-of date sets the week), and a "handed over this week" section from owner-change events.
+- **Structure:** `src/domain/summary` imports formatting from `src/lib`, and the watchlist imports from the case-list and tenant folders; move the shared pieces into `src/lib` when convenient.
+
 ## Open review items
 
 From `docs/REVIEW.md`; none block use.
