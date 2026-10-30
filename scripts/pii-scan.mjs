@@ -8,6 +8,9 @@ import { fileURLToPath } from 'node:url';
 // \b\d{3}-?\d{2}-?\d{4}\b, minus values embedded in a longer token or a decimal
 // (SVG path coordinates like 0.000116771 otherwise match).
 export const SSN_PATTERN = /(?<![\w.])\d{3}-?\d{2}-?\d{4}(?!\w|\.\d)/;
+// Minified code is full of bare nine-digit runs inside lookup tables, so built JS is only checked
+// for the dashed form. Source, seed data and rendered HTML/RSC payloads get the full pattern.
+export const DASHED_SSN_PATTERN = /(?<![\w.])\d{3}-\d{2}-\d{4}(?!\w|\.\d)/;
 
 const SKIP_EXTENSIONS = new Set([
   '.png',
@@ -23,10 +26,11 @@ const SKIP_FILES = new Set(['pnpm-lock.yaml']);
 const MAX_BYTES = 5_000_000;
 
 /** 1-based line numbers of lines matching the SSN pattern. */
-export function findSsnLines(text) {
+export function findSsnLines(text, { dashedOnly = false } = {}) {
+  const pattern = dashedOnly ? DASHED_SSN_PATTERN : SSN_PATTERN;
   const lines = [];
   text.split('\n').forEach((line, i) => {
-    if (SSN_PATTERN.test(line)) lines.push(i + 1);
+    if (pattern.test(line)) lines.push(i + 1);
   });
   return lines;
 }
@@ -62,7 +66,8 @@ export function scan(root, allowlist = []) {
     if (SKIP_EXTENSIONS.has(path.extname(file).toLowerCase())) continue;
     const full = path.join(root, file);
     if (!existsSync(full) || statSync(full).size > MAX_BYTES) continue;
-    const lines = findSsnLines(readFileSync(full, 'utf8'));
+    const builtCode = file.startsWith('.next/') && /\.(m?js|cjs|map)$/.test(file);
+    const lines = findSsnLines(readFileSync(full, 'utf8'), { dashedOnly: builtCode });
     if (lines.length) hits.push({ file, lines });
   }
   return hits;

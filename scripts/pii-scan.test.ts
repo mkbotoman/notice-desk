@@ -22,6 +22,11 @@ describe('findSsnLines', () => {
     expect(findSsnLines(`key ab${bare}cd and x${bare}`)).toEqual([]);
   });
 
+  it('with dashedOnly, flags only the dashed form', () => {
+    expect(findSsnLines(`x ${dashed} y\nz ${bare}`, { dashedOnly: true })).toEqual([1]);
+    expect(findSsnLines(`a:${bare}<b`, { dashedOnly: true })).toEqual([]);
+  });
+
   it('ignores phone numbers, longer digit runs and short numbers', () => {
     expect(findSsnLines('call 310-555-1234 or 1234567890 or 12345')).toEqual([]);
   });
