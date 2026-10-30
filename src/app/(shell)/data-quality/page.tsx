@@ -1,5 +1,5 @@
-import { RouteStub } from '@/components/shell/route-stub';
+import { DataQualityPage } from '@/components/data-quality/data-quality-page';
 
 export default function Page() {
-  return <RouteStub title="Data quality" requires="view_data_quality" />;
+  return <DataQualityPage />;
 }
