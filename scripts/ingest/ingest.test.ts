@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
 import type { DataQualityIssue } from '@/domain/types';
 import { ingest, REQUIRED_COLUMNS, type IngestResult, type RawCsv } from './ingest';
 
@@ -645,11 +645,14 @@ const haveRaw = ['properties', 'leases', 'notices', 'coi_status'].every((n) =>
 );
 
 describe.skipIf(!haveRaw)('the real CSVs (local only: data/raw is gitignored)', () => {
-  const result = ingest({
-    properties: readFileSync(raw('properties.csv'), 'utf8'),
-    leases: readFileSync(raw('leases.csv'), 'utf8'),
-    notices: readFileSync(raw('notices.csv'), 'utf8'),
-    coi: readFileSync(raw('coi_status.csv'), 'utf8'),
+  let result: IngestResult;
+  beforeAll(() => {
+    result = ingest({
+      properties: readFileSync(raw('properties.csv'), 'utf8'),
+      leases: readFileSync(raw('leases.csv'), 'utf8'),
+      notices: readFileSync(raw('notices.csv'), 'utf8'),
+      coi: readFileSync(raw('coi_status.csv'), 'utf8'),
+    });
   });
 
   it('ingest with zero schema errors and the counts the profile found', () => {
