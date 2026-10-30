@@ -1,5 +1,5 @@
-import { RouteStub } from '@/components/shell/route-stub';
+import { Watchlist } from '@/components/watchlist/watchlist';
 
 export default function Page() {
-  return <RouteStub title="Watchlist" requires="view_analytics" />;
+  return <Watchlist />;
 }
