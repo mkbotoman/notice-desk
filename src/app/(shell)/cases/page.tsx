@@ -1,5 +1,11 @@
-import { RouteStub } from '@/components/shell/route-stub';
+import { Suspense } from 'react';
+import { CaseList } from '@/components/case-list/case-list';
+import { LoadingState } from '@/components/shell/states';
 
 export default function Page() {
-  return <RouteStub title="Cases" requires="view_case" />;
+  return (
+    <Suspense fallback={<LoadingState label="Loading cases" />}>
+      <CaseList />
+    </Suspense>
+  );
 }
