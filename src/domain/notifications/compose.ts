@@ -7,8 +7,8 @@ import type {
   NotificationTrigger,
   Persona,
 } from '../types';
-import { cureDeadline } from '../deadline';
-import { greetingName, type Recipient } from './recipients';
+import { caseDeadline, cureDeadline } from '../deadline';
+import { greetingName, legalRecipient, teamRecipient, type Recipient } from './recipients';
 import { buildMergeFields, renderTemplate, type Rendered, type TemplateId } from './templates';
 import { sourcesFor, type NotificationRefs } from './triggers';
 
@@ -24,6 +24,27 @@ export function renderForCase(
     recipientName: greetingName(recipient.personaId, input.personas),
   });
   return renderTemplate(templateId, fields);
+}
+
+/** The template that fits where the case is: overdue, due soon, or just its stage. */
+export function defaultTemplate(c: Case, asOf: ISODate): TemplateId {
+  const { status } = caseDeadline(c, asOf);
+  if (status === 'overdue') return 'deadline_passed';
+  if (status === 'due_this_week' || status === 'upcoming') return 'deadline_approaching';
+  return 'stage_changed';
+}
+
+/** A missed deadline goes to Legal; everything else to whoever holds the case. */
+export function defaultRecipient(
+  templateId: TemplateId,
+  c: Case,
+  input: { refs: NotificationRefs; personas: readonly Persona[] },
+): Recipient {
+  const legal = legalRecipient(input.personas);
+  if (templateId === 'deadline_passed') return legal;
+  const property = c.propertyId ? input.refs.propertyById.get(c.propertyId) : undefined;
+  const owner = teamRecipient(c.owner, property, input.personas);
+  return owner.personaId === null ? legal : owner;
 }
 
 export interface ManualInput {

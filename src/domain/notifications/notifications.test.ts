@@ -9,6 +9,8 @@ import { businessDaysUntil, isBusinessDay } from './business-days';
 import {
   buildManualNotification,
   countByStatus,
+  defaultRecipient,
+  defaultTemplate,
   dismissDraft,
   editDraft,
   filterNotifications,
@@ -598,5 +600,39 @@ describe('types', () => {
         }),
       ).join(),
     ).not.toMatch(/guarantor|note/i);
+  });
+});
+
+describe('composer defaults', () => {
+  const cal = (n: number) => ({ kind: 'days', n, unit: 'calendar' }) as const;
+  const asOf = '2026-10-14';
+
+  it('picks the template that fits the case', () => {
+    const sent = '2026-10-09';
+    expect(defaultTemplate(makeCase({ dateSent: sent, curePeriod: cal(1) }), asOf)).toBe(
+      'deadline_passed',
+    );
+    expect(defaultTemplate(makeCase({ dateSent: sent, curePeriod: cal(7) }), asOf)).toBe(
+      'deadline_approaching',
+    );
+    expect(defaultTemplate(makeCase({ dateSent: sent, curePeriod: cal(30) }), asOf)).toBe(
+      'deadline_approaching',
+    );
+    expect(defaultTemplate(makeCase({ curePeriod: { kind: 'unknown' } }), asOf)).toBe(
+      'stage_changed',
+    );
+    expect(defaultTemplate(makeCase({ stage: 'default' }), asOf)).toBe('stage_changed');
+  });
+
+  it('sends missed deadlines to Legal and otherwise to the case holder, else Legal', () => {
+    const input = { refs, personas };
+    const held = makeCase({ owner: 'asset_management', propertyId: 'P-02' });
+    expect(defaultRecipient('deadline_passed', held, input).personaId).toBe('maya');
+    expect(defaultRecipient('stage_changed', held, input).personaId).toBe('am-lena-park');
+    expect(defaultRecipient('stage_changed', makeCase({ owner: 'legal' }), input).personaId).toBe(
+      'maya',
+    );
+    const orphan = makeCase({ owner: 'asset_management', propertyId: null });
+    expect(defaultRecipient('stage_changed', orphan, input).personaId).toBe('maya');
   });
 });

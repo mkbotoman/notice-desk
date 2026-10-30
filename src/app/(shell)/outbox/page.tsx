@@ -1,5 +1,11 @@
-import { RouteStub } from '@/components/shell/route-stub';
+import { Suspense } from 'react';
+import { Outbox } from '@/components/notifications/outbox';
+import { LoadingState } from '@/components/shell/states';
 
 export default function Page() {
-  return <RouteStub title="Outbox" requires="send_notification" />;
+  return (
+    <Suspense fallback={<LoadingState label="Loading outbox" />}>
+      <Outbox />
+    </Suspense>
+  );
 }
