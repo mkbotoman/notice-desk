@@ -1,5 +1,5 @@
-import { RouteStub } from '@/components/shell/route-stub';
+import { AnalyticsView } from '@/components/analytics/analytics-view';
 
 export default function Page() {
-  return <RouteStub title="Analytics" requires="view_analytics" />;
+  return <AnalyticsView />;
 }
