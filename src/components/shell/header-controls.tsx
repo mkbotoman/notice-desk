@@ -71,12 +71,12 @@ export function AsOfControl() {
 export function PersonaSwitcher() {
   const { persona, personas, setPersonaId } = usePersona();
   return (
-    <label className="flex items-center gap-2 text-[13px] text-gray-600">
+    <label className="flex max-w-full items-center gap-2 text-[13px] text-gray-600">
       Viewing as
       <select
         value={persona.id}
         onChange={(e) => setPersonaId(e.target.value)}
-        className="min-h-10 rounded-lg border border-input bg-card px-3 text-sm text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+        className="min-h-10 min-w-0 flex-1 rounded-lg border border-input bg-card px-3 text-sm text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
       >
         {personas.map((p) => (
           <option key={p.id} value={p.id}>

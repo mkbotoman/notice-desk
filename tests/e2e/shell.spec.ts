@@ -158,6 +158,15 @@ test.describe('small screens', () => {
     await expect(page.getByRole('heading', { name: 'Tenants', exact: true })).toBeVisible();
   });
 
+  test('has no horizontal scroll with the longest persona name selected', async ({ page }) => {
+    await signIn(page, '/?as=am-lena-brooks');
+    await expect(page.getByLabel('Viewing as')).toHaveValue('am-lena-brooks');
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    );
+    expect(overflow).toBeLessThanOrEqual(0);
+  });
+
   test('has no horizontal scroll on the overview', async ({ page }) => {
     await page.goto('/');
     await page.getByLabel('Password').fill(E2E_PASSWORD);
