@@ -149,7 +149,8 @@ SUBJECT: <one line>
 
 <the message>`;
 
-const stripTags = (value: string) => value.replace(/<\/?(facts|subject|message|change)\s*>/gi, '');
+/** Angle brackets are removed outright, so no spelling of a closing tag can end a data block early. */
+const stripTags = (value: string) => value.replace(/[<>]/g, '');
 
 export function buildDraftPrompt(request: DraftRequest): { system: string; prompt: string } {
   const f = request.facts;

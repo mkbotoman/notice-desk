@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { OwnerChip, StageChip } from '@/components/case/case-chips';
 import { Chip, type ChipTone } from '@/components/ui/chip';
 import { waitingOn } from '@/domain/stage';
+import { STAGE_LABELS } from '@/lib/format';
 import type { SignalKind } from '@/domain/watchlist';
 import { useLookups } from '@/store/lookups';
 import type { TroubledLease } from './inbox-logic';
@@ -70,7 +71,7 @@ export function TroubleTable({ rows }: { rows: TroubledLease[] }) {
                       <div className="flex flex-wrap items-center gap-1.5">
                         <Link
                           href={`/cases/${encodeURIComponent(openCase.id)}`}
-                          aria-label={`Open case for ${tenantById.get(lease.tenantId)?.displayName ?? 'tenant'}`}
+                          aria-label={`${STAGE_LABELS[openCase.stage]}, open case for ${tenantById.get(lease.tenantId)?.displayName ?? 'tenant'}`}
                         >
                           <StageChip stage={openCase.stage} />
                         </Link>

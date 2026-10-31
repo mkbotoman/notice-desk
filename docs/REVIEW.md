@@ -104,3 +104,44 @@ found the app looked text-only. Stage moves existed but only on the case page, a
 Notice to Cure never recorded a send date or cure period, so a case advanced or opened in the app
 could never get a deadline: the brief's central point. Fixed: the move now asks for both, previews
 the deadline, and is offered on the case list and the inbox as well.
+
+## Hardening pass (M5)
+
+Four parts: a persona-by-page access grid, a privacy audit of everything the app ships, a cold
+review by the independent reviewer agent, and a keyboard and contrast pass.
+
+**Access grid** (`tests/e2e/persona-grid.spec.ts`). Four personas (Legal, Founder, an asset manager,
+a property manager) against all nine pages: each opens what it may and shows the blocked panel for
+the rest, with no script errors, and the navigation lists exactly the pages it may open. A property
+manager sees only their property's cases, an out-of-scope or unknown case reveals no tenant details,
+and only Legal and the Founder see a guarantor on a case.
+
+**Privacy audit.** `pnpm scan:ssn` (`scripts/ssn-exact-scan.mjs`) reads every guarantor SSN from the
+raw notices file and searches for each exact value, with and without dashes, in every tracked file,
+the whole built output and every commit in git history. It prints locations only, never a value, and
+skips when the raw file is not on the machine. Result: clean. The shape-based `pnpm scan:pii` stays
+in `pnpm check`. Findings, all documented rather than changed:
+
+- Guarantor names are in the seed and reach every viewer's browser (already a known limitation).
+- One guarantor in the sample data shares a name with a property manager, so hiding the guarantor
+  field would not hide that name. A real build would key people by id, not name.
+- The data-quality report holds record ids, tenant names and counts; it holds no guarantor data.
+
+**Cold review** (reviewer agent, changes since `cf7f223`). No critical or high findings.
+
+| #   | Severity | Finding                                                                                           | What was done                                                                                                                            |
+| --- | -------- | ------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Medium   | The composer threw away edits and an accepted AI draft when To changed.                           | Edits are kept and a note says so, as in the saved-draft view.                                                                           |
+| 2   | Medium   | Tenant wording named a balance for insurance cases and on cured or closed cases.                  | The balance appears only for a payment issue that is still open.                                                                         |
+| 3   | Medium   | Tenant wording could print "not set" for a missing deadline or fit the wrong stage.               | Neutral wording when there is no deadline; a warning in the composer when a deadline message is chosen for a case not in Notice to Cure. |
+| 4   | Low      | Closing-tag stripping in the AI prompt could be bypassed with spacing or Unicode.                 | All angle brackets are removed from person-supplied text.                                                                                |
+| 5   | Low      | The "What should change?" note counts as a source of figures, so a typed amount passes the guard. | By design: the sender is trusted staff and sees the result before using it. Documented in ASSUMPTIONS.                                   |
+| 6   | Low      | The To list included people who cannot see the case.                                              | Limited to people who can view the case (plus whoever is already chosen).                                                                |
+| 7   | Low      | Rebuilding a pre-recipe draft whose event is missing falls back to current values.                | Test added for the fallback. Saved drafts re-render with the current balance, not the original.                                          |
+
+**Keyboard and contrast** (`tests/e2e/accessibility.spec.ts`). axe-core (WCAG 2.1 A and AA, which
+includes colour contrast) over every page in light and dark themes as Legal, and over each other
+persona's pages. Two kinds of problem, both fixed: the property filter and the stage link in the
+inbox's trouble table had accessible names that did not contain their visible text. Keyboard:
+Tab order starts in the navigation, every stop shows a focus indicator, and the composer can be
+filled in without a mouse.

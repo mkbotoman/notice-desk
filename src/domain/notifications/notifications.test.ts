@@ -511,6 +511,27 @@ describe('templates', () => {
     expect(owed.balanceSentence).toBe(' The outstanding balance is $18,450.00.');
   });
 
+  it('leaves the balance out of tenant wording for insurance issues and finished cases', () => {
+    const lease = refs.leaseById.get('L-001');
+    const withBalance = (over: Partial<Case>, stage?: Case['stage']) =>
+      buildMergeFields(makeCase(over), { ...sources(), lease }, stage ? { stage } : {})
+        .balanceSentence;
+    expect(withBalance({ issueType: 'monetary', stage: 'notice_to_cure' })).toContain('$18,450.00');
+    expect(withBalance({ issueType: 'insurance', stage: 'notice_to_cure' })).toBe('');
+    expect(withBalance({ issueType: 'monetary', stage: 'notice_to_cure' }, 'cured')).toBe('');
+    expect(withBalance({ issueType: 'monetary', stage: 'notice_to_cure' }, 'closed')).toBe('');
+  });
+
+  it('never prints "not set" in a message for the tenant when there is no deadline', () => {
+    const pm = { personaId: 'pm-dan-whitfield', label: 'Dan Whitfield' };
+    const noDeadline = { ...c, dateSent: null };
+    for (const id of ['deadline_approaching', 'deadline_passed'] as const) {
+      const { body } = renderForCase(id, noDeadline, pm, run());
+      expect(body).not.toContain('not set');
+    }
+    expect(renderForCase('deadline_passed', noDeadline, pm, run()).body).toContain('has ended');
+  });
+
   it('re-renders an automatic draft for another reader from its recipe', () => {
     const events = [
       makeEvent({
@@ -558,6 +579,8 @@ describe('templates', () => {
     expect(
       renderNotification(ownerDraft, target, maya, { ...run(), events: [ownerEvent] })!.body,
     ).toContain('now with Asset Management');
+    const lost = { ...old, dedupeKey: 'EV-missing' };
+    expect(renderNotification(lost, target, maya, { ...run(), events })!.body).toContain('Hi Maya');
     const deadlineDraft = { ...draft, trigger: 'deadline_passed' as const, recipe: undefined };
     expect(renderNotification(deadlineDraft, target, maya, run())!.subject).toContain(
       'deadline passed',

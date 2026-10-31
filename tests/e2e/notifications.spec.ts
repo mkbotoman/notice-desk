@@ -58,7 +58,8 @@ test.describe('outbox', () => {
     await expect(body).toHaveValue(/Notice to Cure for Brightside Fitness/);
     await expect(compose.getByLabel('Subject')).not.toHaveValue(/^For /);
 
-    await to.selectOption('am-lena-brooks');
+    const am = await to.locator('option[value^="am-"]').first().getAttribute('value');
+    await to.selectOption(am!);
     await expect(body).toHaveValue(/Please ask the property manager/);
     await expect(body).not.toHaveValue(/Dear Brightside/);
 
@@ -67,6 +68,35 @@ test.describe('outbox', () => {
 
     await to.selectOption({ index: 0 });
     await expect(body).toHaveValue(/Please pass the message below on to/);
+  });
+
+  test('the composer keeps your edits when To changes, and lists only people who can see the case', async ({
+    page,
+  }) => {
+    await signIn(page, '/outbox?compose=N-001');
+    const compose = page.getByRole('region', { name: 'Compose' });
+    const to = compose.getByLabel('To', { exact: true });
+    const body = compose.getByLabel('Message');
+    await body.fill('My own words');
+    await to.selectOption('founder');
+    await expect(body).toHaveValue('My own words');
+    await expect(compose.getByText('Your edits are kept when you change To.')).toBeVisible();
+
+    const everyone = await page.getByLabel('Viewing as').locator('option').count();
+    expect(await to.locator('option').count()).toBeLessThan(everyone);
+  });
+
+  test('warns when a deadline message is chosen for a case that is not in Notice to Cure', async ({
+    page,
+  }) => {
+    await signIn(page, '/outbox?compose=N-001');
+    const compose = page.getByRole('region', { name: 'Compose' });
+    const warning = compose.getByText(/not in Notice to Cure/);
+    await compose.getByLabel('Template').selectOption('deadline_passed');
+    await expect(warning).toHaveCount(0);
+    await compose.getByLabel('Case', { exact: true }).selectOption('N-005');
+    await compose.getByLabel('Template').selectOption('deadline_passed');
+    await expect(warning).toBeVisible();
   });
 
   test('an automatic draft changes its message when To changes, until you edit it', async ({

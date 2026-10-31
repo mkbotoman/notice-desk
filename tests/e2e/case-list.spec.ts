@@ -77,7 +77,7 @@ test.describe('filters and URL state', () => {
     await page.getByRole('button', { name: 'Clear filters' }).click();
     await expect(rows(page)).toHaveCount(30);
 
-    await page.getByLabel('Property', { exact: true }).click();
+    await page.getByLabel(/^Property:/).click();
     await page.getByLabel('Harbor Commons').check();
     await page.getByLabel('Park West Plaza').check();
     await expect(page.getByText('2 properties')).toBeVisible();

@@ -81,7 +81,7 @@ export function FilterBar({
       </select>
       <details className="relative">
         <summary
-          aria-label="Property"
+          aria-label={`Property: ${propertySummary(filters.property, properties)}`}
           className={`${CONTROL} flex cursor-pointer list-none items-center gap-2 select-none`}
         >
           {propertySummary(filters.property, properties)}

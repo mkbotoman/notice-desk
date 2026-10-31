@@ -58,3 +58,6 @@ One line each, tagged with the workstream ID, e.g. `- [WS-1B] ...`. Feeds the sh
 - Amounts always show cents ($18,450.00).
 - The wording follows who reads it, with four versions: Legal (the original Notice Desk wording), the property manager (a message for the tenant to pass on), the asset manager (what changed and what is theirs to do) and the Founder (a short heads-up with the numbers). Each is specific to the change: the stage it moved to and from, the new owner, the deadline, the certificate status.
 - Drafts saved before recipes existed are rebuilt from the trigger and the case event that raised them, so switching To works on them too.
+- The optional "What should change?" note counts as the sender's own text: figures in it pass the number check. The sender is trusted staff and reads the result before using it.
+- The composer keeps typed edits when To changes (the saved-draft view already did). A saved automatic draft re-rendered for a new reader uses the current balance, not the balance at the time it was drafted.
+- The To list offers only people who can view the case.

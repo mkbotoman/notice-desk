@@ -14,7 +14,8 @@ import { audienceFor, personaRecipient, propertyPeople } from '@/domain/notifica
 import { TEMPLATES, type TemplateId } from '@/domain/notifications/templates';
 import type { NotificationRefs } from '@/domain/notifications/triggers';
 import { openCases } from '@/domain/selectors';
-import type { Notification } from '@/domain/types';
+import { can } from '@/domain/permissions';
+import type { Notification, Persona } from '@/domain/types';
 import { errorMessage } from '@/components/case-detail/case-actions';
 import { buildDraftRequest, caseFacts, recipientRole } from '@/lib/ai/draft';
 import { useAsOf, usePersona } from '@/lib/persona/context';
@@ -32,6 +33,11 @@ import {
   newManualId,
   type CaseLabeler,
 } from './shared';
+
+const DEADLINE_TEMPLATES: ReadonlySet<TemplateId> = new Set([
+  'deadline_approaching',
+  'deadline_passed',
+]);
 
 interface Text {
   subject: string;
@@ -82,7 +88,10 @@ export function Composer({
   const templateId: TemplateId = templateOverride ?? (c ? defaultTemplate(c, asOf) : 'blank');
   const caseProperty = c?.propertyId ? refs.propertyById.get(c.propertyId) : undefined;
   const atProperty = propertyPeople(caseProperty, personas);
-  const others = personas.filter((p) => !atProperty.includes(p));
+  const canSee = (p: Persona) => !c || can(p, 'view_case', c);
+  const others = personas.filter(
+    (p) => !atProperty.includes(p) && (canSee(p) || p.id === recipientOverride),
+  );
   const chosen = personas.find((p) => p.id === recipientOverride);
   const recipient =
     c && recipientOverride === null
@@ -217,7 +226,7 @@ export function Composer({
             value={recipient.personaId ?? ''}
             onChange={(e) => {
               setRecipientOverride(e.target.value);
-              setEdit(null);
+              if (!edited) setEdit(null);
             }}
           >
             {recipient.personaId === null ? <option value="">Choose a recipient</option> : null}
@@ -241,8 +250,17 @@ export function Composer({
         </label>
       </div>
       {recipient.personaId === null ? null : (
-        <p className="text-[13px] text-muted-foreground">{AUDIENCE_HINT[audience]}</p>
+        <p className="text-[13px] text-muted-foreground">
+          {AUDIENCE_HINT[audience]}
+          {edited ? ' Your edits are kept when you change To.' : ''}
+        </p>
       )}
+      {c && DEADLINE_TEMPLATES.has(templateId) && c.stage !== 'notice_to_cure' ? (
+        <p role="note" className="text-[13px] font-semibold text-warning">
+          This case is not in Notice to Cure, so a deadline message may not fit. Check the wording
+          before you send.
+        </p>
+      ) : null}
 
       <label className="flex flex-col gap-1.5">
         <span className={FIELD_LABEL}>Subject</span>

@@ -1,12 +1,13 @@
 import { STAGE_LABELS, formatCents, longDate, weekdayDate } from '@/lib/format';
 import { TEMPLATE_IDS, type TemplateId } from '../types';
 import type {
-  PersonaKind,
   Case,
+  Cents,
   CoiStatus,
   ISODate,
   Lease,
   NotificationTrigger,
+  PersonaKind,
   Property,
   Stage,
   Team,
@@ -147,9 +148,13 @@ ${close(f)}`,
       forTenant(
         f,
         `cure deadline ${shortOf(f)}`,
-        `This is a reminder about the notice we sent for ${f.where}. The cure period ends on ${deadlineOf(f)}.${f.balanceSentence}
+        f.deadline
+          ? `This is a reminder about the notice we sent for ${f.where}. The cure period ends on ${deadlineOf(f)}.${f.balanceSentence}
 
-If you have already resolved this, please let us know so we can update our records. If not, please contact us before ${shortOf(f)} so we can talk it through.`,
+If you have already resolved this, please let us know so we can update our records. If not, please contact us before ${shortOf(f)} so we can talk it through.`
+          : `This is a reminder about the notice we sent for ${f.where}.${f.balanceSentence}
+
+If you have already resolved this, please let us know so we can update our records. If not, please contact us so we can talk it through.`,
       ),
   },
   {
@@ -170,7 +175,7 @@ ${close(f)}`,
       forTenant(
         f,
         'cure deadline passed',
-        `The cure period in our notice for ${f.where} ended on ${deadlineOf(f)}, and our records show the matter has not yet been resolved.${f.balanceSentence}
+        `${f.deadline ? `The cure period in our notice for ${f.where} ended on ${deadlineOf(f)}` : `The cure period in our notice for ${f.where} has ended`}, and we have not yet seen the matter resolved.${f.balanceSentence}
 
 Please contact us as soon as possible so we can discuss next steps.`,
       ),
@@ -351,6 +356,13 @@ export interface FieldOptions {
   recipientName?: string | null;
 }
 
+/** The tenant is told a balance only for a payment issue that is still open. */
+function owesRent(c: Case, stage: Stage, balance: Cents | null): balance is Cents {
+  return (
+    c.issueType === 'monetary' && stage !== 'cured' && stage !== 'closed' && (balance ?? 0) > 0
+  );
+}
+
 export function buildMergeFields(
   c: Case,
   sources: FieldSources,
@@ -372,8 +384,9 @@ export function buildMergeFields(
     stageGuidance: STAGE_GUIDANCE[stage],
     tenantGuidance: TENANT_STAGE_GUIDANCE[stage],
     tenantTopic: TENANT_STAGE_TOPIC[stage],
-    balanceSentence:
-      balance !== null && balance > 0 ? ` The outstanding balance is ${formatCents(balance)}.` : '',
+    balanceSentence: owesRent(c, stage, balance)
+      ? ` The outstanding balance is ${formatCents(balance)}.`
+      : '',
     owner: OWNER_NAMES[options.owner ?? c.owner],
     deadline: deadline ? longDate(deadline) : null,
     deadlineShort: deadline ? weekdayDate(deadline) : null,

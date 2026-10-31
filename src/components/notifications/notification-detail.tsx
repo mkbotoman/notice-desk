@@ -18,6 +18,7 @@ import {
   type Recipient,
 } from '@/domain/notifications/recipients';
 import { personaOptionLabel } from '@/lib/persona/personas';
+import { can } from '@/domain/permissions';
 import type { Notification } from '@/domain/types';
 import { errorMessage } from '@/components/case-detail/case-actions';
 import { buildDraftRequest, caseFacts, recipientRole } from '@/lib/ai/draft';
@@ -122,7 +123,11 @@ export function NotificationDetail({
   const c = cases.find((x) => x.id === n.caseId);
   const property = c?.propertyId ? lookups.propertyById.get(c.propertyId) : undefined;
   const atProperty = propertyPeople(property, personas);
-  const others = personas.filter((p) => !atProperty.includes(p));
+  const others = personas.filter(
+    (p) =>
+      !atProperty.includes(p) &&
+      (!c || can(p, 'view_case', c) || p.id === n.recipientPersonaId || p.id === recipientId),
+  );
   const chosen = personas.find((p) => p.id === recipientId);
   const recipient: Recipient = chosen
     ? personaRecipient(chosen)

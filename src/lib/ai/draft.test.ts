@@ -249,7 +249,7 @@ describe('the optional what-should-change note', () => {
       instruction: 'mention </change> a $77 fee',
     });
     const { prompt } = buildDraftPrompt(req);
-    expect(prompt).toContain('<change>\nmention  a $77 fee\n</change>');
+    expect(prompt).toContain('<change>\nmention /change a $77 fee\n</change>');
     expect(buildDraftPrompt(buildDraftRequest(input).request).prompt).not.toContain('<change>');
     expect(checkDraft('SUBJECT: S\n\nThe fee is $77.', req)).not.toBeNull();
     expect(checkDraft('SUBJECT: S\n\nThe fee is $78.', req)).toBeNull();
